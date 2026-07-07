@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
+import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import sermonImg from "@/assets/sermon.jpg";
 import worshipImg from "@/assets/worship-team.jpg";
 import communityImg from "@/assets/community.jpg";
-import pastorsImg from "@/assets/pastors.jpg";
+import pastorAsset from "@/assets/pastor.jpg.asset.json";
+const pastorsImg = pastorAsset.url;
 import youthImg from "@/assets/youth.jpg";
 import couplesImg from "@/assets/couples.jpg";
 import podcastImg from "@/assets/podcast.jpg";
@@ -68,17 +70,12 @@ function HomePage() {
           title="Experience Our Latest Service"
           subtitle="Missed Sunday? Catch up on the word, worship and testimonies from PraisePalace."
         />
-        <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl shadow-elegant ring-1 ring-black/5">
-          <div className="relative aspect-video bg-black">
-            <iframe
-              className="absolute inset-0 h-full w-full"
-              src="https://www.youtube.com/embed/videoseries?list=PLbpi6ZahtOH6J5oPGySZcmTHtOLz-8s6u"
-              title="PraisePalace Church — Latest Service"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
+        <div className="mx-auto max-w-4xl">
+          <VideoEmbed
+            poster={worshipImg}
+            title="PraisePalace Church — Latest Service"
+            searchQuery="PraisePalace Church RCCG Newport Pagnell service"
+          />
         </div>
       </Section>
 
@@ -181,7 +178,7 @@ function HomePage() {
               icon={Tent}
               title="Youth Camp"
               desc="A powerful gathering for the next generation."
-              href="https://www.rccgsanctuary.org/events/youth-camp-registration"
+              href="https://raisingchampions.org.uk"
               image={youthImg}
             />
           </div>

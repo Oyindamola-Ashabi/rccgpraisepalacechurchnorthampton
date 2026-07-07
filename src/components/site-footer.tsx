@@ -44,7 +44,7 @@ export function SiteFooter() {
           <ul className="space-y-2 text-sm">
             <li><a href="https://praisepalaceradio.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">PraisePalace Radio ↗</a></li>
             <li><a href="https://praisepalacebusinessschool.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Business School ↗</a></li>
-            <li><a href="https://www.rccgsanctuary.org/events/youth-camp-registration" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Youth Camp ↗</a></li>
+            <li><a href="https://raisingchampions.org.uk" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Youth Camp ↗</a></li>
             <li><Link to="/events/couples" className="hover:text-[#F0DE51]">Couples</Link></li>
             <li><Link to="/media/podcast" className="hover:text-[#F0DE51]">Podcast</Link></li>
             <li><Link to="/give" className="hover:text-[#F0DE51]">Give</Link></li>

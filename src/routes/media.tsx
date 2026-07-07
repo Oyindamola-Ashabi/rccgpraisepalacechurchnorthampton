@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
-import { Play, Headphones, Video, ArrowRight } from "lucide-react";
+import { VideoEmbed } from "@/components/video-embed";
+import { Headphones, Video, ArrowRight } from "lucide-react";
 import worshipImg from "@/assets/worship-team.jpg";
 import sermonImg from "@/assets/sermon.jpg";
 import podcastImg from "@/assets/podcast.jpg";
@@ -28,17 +29,12 @@ function MediaPage() {
 
       <Section>
         <SectionHeader eyebrow="Featured" title="Latest Message" />
-        <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl shadow-elegant ring-1 ring-black/5">
-          <div className="relative aspect-video bg-black">
-            <iframe
-              className="absolute inset-0 h-full w-full"
-              src="https://www.youtube.com/embed/videoseries?list=PLbpi6ZahtOH6J5oPGySZcmTHtOLz-8s6u"
-              title="Latest sermon"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
+        <div className="mx-auto max-w-4xl">
+          <VideoEmbed
+            poster={sermonImg}
+            title="PraisePalace — Latest Message"
+            searchQuery="PraisePalace Church latest sermon"
+          />
         </div>
       </Section>
 
@@ -55,14 +51,7 @@ function MediaPage() {
               { image: communityImg, title: "Kingdom Purpose", speaker: "Pastor Olusola", date: "31 May 2026" },
             ].map((s) => (
               <article key={s.title} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5">
-                <div className="relative aspect-video overflow-hidden">
-                  <img src={s.image} alt={s.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition grid place-items-center">
-                    <div className="grid h-14 w-14 place-items-center rounded-full gradient-brand text-white shadow-elegant">
-                      <Play className="h-6 w-6 ml-0.5" />
-                    </div>
-                  </div>
-                </div>
+                <VideoEmbed poster={s.image} title={s.title} searchQuery={`PraisePalace Church ${s.title}`} />
                 <div className="p-5">
                   <h3 className="font-display font-bold text-lg leading-tight">{s.title}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">{s.speaker} · {s.date}</p>

@@ -14,7 +14,7 @@ const NAV: NavItem[] = [
     children: [
       { label: "PraisePalace Radio", href: "https://praisepalaceradio.com/", external: true },
       { label: "Business School", href: "https://praisepalacebusinessschool.com/", external: true },
-      { label: "Youth Camp", href: "https://www.rccgsanctuary.org/events/youth-camp-registration", external: true },
+      { label: "Youth Camp", href: "https://raisingchampions.org.uk", external: true },
     ],
   },
   {

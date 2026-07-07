@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Heart, Target, Eye, Users } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import pastorsImg from "@/assets/pastors.jpg";
+import pastorAsset from "@/assets/pastor.jpg.asset.json";
+import galleryMensAsset from "@/assets/gallery-mens.jpg.asset.json";
+import galleryFellowshipAsset from "@/assets/gallery-fellowship.jpg.asset.json";
+import galleryWomenAsset from "@/assets/gallery-women.jpg.asset.json";
+const pastorsImg = pastorAsset.url;
+const galleryMens = galleryMensAsset.url;
+const galleryFellowship = galleryFellowshipAsset.url;
+const galleryWomen = galleryWomenAsset.url;
 import communityImg from "@/assets/community.jpg";
 
 export const Route = createFileRoute("/about")({
@@ -64,22 +71,33 @@ function AboutPage() {
       </section>
 
       <Section>
-        <SectionHeader eyebrow="Leadership" title="Our Pastors" subtitle="Dedicated servants leading the PraisePalace family with grace and truth." />
+        <SectionHeader eyebrow="Leadership" title="Our Pastor" subtitle="Dedicated servant leading the PraisePalace family with grace and truth." />
         <div className="grid gap-10 lg:grid-cols-2 items-center">
-          <img src={pastorsImg} alt="Our Pastors" className="rounded-3xl shadow-elegant object-cover w-full max-w-md mx-auto aspect-[4/5]" loading="lazy" />
+          <img src={pastorsImg} alt="Lead Pastor of PraisePalace Church" className="rounded-3xl shadow-elegant object-cover w-full max-w-md mx-auto aspect-[3/4]" loading="lazy" />
           <div>
-            <h3 className="font-display font-bold text-3xl">Our Pastors</h3>
-            <p className="mt-2 text-sm font-semibold text-[#E13495] uppercase tracking-widest">Lead Pastors</p>
+            <h3 className="font-display font-bold text-3xl">Our Pastor</h3>
+            <p className="mt-2 text-sm font-semibold text-[#E13495] uppercase tracking-widest">Lead Pastor</p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              Our pastors are passionate about the spread of the gospel of Jesus Christ to the ends of the earth — evidenced by miracles, signs and wonders as in the days of the apostles. They have dedicated their lives to the cause of Christ, having pastored various other parishes of the RCCG before founding PraisePalace.
+              Our pastor is passionate about the spread of the gospel of Jesus Christ to the ends of the earth — evidenced by miracles, signs and wonders as in the days of the apostles. He has dedicated his life to the cause of Christ, having pastored various other parishes of the RCCG before founding PraisePalace.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
-              They believe deeply in prayer as a potent key to realising every person's divine purpose on the earth.
+              He believes deeply in prayer as a potent key to realising every person's divine purpose on the earth.
             </p>
             <div className="mt-6"><BrandButton to="/contact">Get in Touch</BrandButton></div>
           </div>
         </div>
       </Section>
+
+      <section className="bg-secondary/40 border-y">
+        <Section>
+          <SectionHeader eyebrow="Our Family" title="Life at PraisePalace" subtitle="Moments of fellowship, worship and joy across our community." />
+          <div className="grid gap-4 md:grid-cols-3">
+            <img src={galleryFellowship} alt="PraisePalace fellowship gathering" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
+            <img src={galleryWomen} alt="PraisePalace women's ministry" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
+            <img src={galleryMens} alt="PraisePalace men's ministry" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
+          </div>
+        </Section>
+      </section>
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-brand" />
