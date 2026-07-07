@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
-import { Calendar, MapPin, Clock, ArrowRight, Play } from "lucide-react";
+import { VideoEmbed } from "@/components/video-embed";
+import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import couplesImg from "@/assets/couples.jpg";
 import youthImg from "@/assets/youth.jpg";
 import podcastImg from "@/assets/podcast.jpg";
@@ -53,12 +54,16 @@ function EventsPage() {
                   <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#E13495]" /> {e.location}</div>
                 </div>
                 {e.to ? (
-                  <Link to={e.to} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
+                  <Link to={e.to} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline">
                     Learn more <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : (
-                  <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
-                    Save the date <ArrowRight className="h-4 w-4" />
+                  <button
+                    type="button"
+                    onClick={() => saveToCalendar(e.title, e.date, e.time, e.location)}
+                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline"
+                  >
+                    <CalendarPlus className="h-4 w-4" /> Save the date
                   </button>
                 )}
               </div>
@@ -71,19 +76,45 @@ function EventsPage() {
         <Section>
           <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at PraisePalace gatherings." />
           <div className="grid gap-6 md:grid-cols-2">
-            {[worshipImg, sermonImg].map((img, i) => (
-              <div key={i} className="group relative aspect-video overflow-hidden rounded-2xl shadow-card">
-                <img src={img} alt="Event highlight" className="h-full w-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition grid place-items-center">
-                  <div className="grid h-16 w-16 place-items-center rounded-full gradient-brand text-white shadow-elegant">
-                    <Play className="h-7 w-7 ml-1" />
-                  </div>
-                </div>
-              </div>
-            ))}
+            <VideoEmbed poster={worshipImg} title="Night of Worship" searchQuery="PraisePalace Church night of worship" />
+            <VideoEmbed poster={sermonImg} title="Annual Convention Highlights" searchQuery="PraisePalace Church convention" />
           </div>
         </Section>
       </section>
     </>
   );
+}
+
+function saveToCalendar(title: string, dateStr: string, time: string, location: string) {
+  // Best-effort .ics generation from human-readable date; falls back to today.
+  const parsed = new Date(dateStr.replace(/^[A-Za-z]+,\s*/, ""));
+  const start = isNaN(parsed.getTime()) ? new Date() : parsed;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fmt = (d: Date) =>
+    `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//PraisePalace Church//EN",
+    "BEGIN:VEVENT",
+    `UID:${Date.now()}@praisepalace.church`,
+    `DTSTAMP:${fmt(new Date())}`,
+    `DTSTART:${fmt(start)}`,
+    `DTEND:${fmt(end)}`,
+    `SUMMARY:${title}`,
+    `LOCATION:${location}`,
+    `DESCRIPTION:${title} — ${time} — PraisePalace Church`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${title.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
