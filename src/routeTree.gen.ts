@@ -15,8 +15,11 @@ import { Route as MediaRouteImport } from './routes/media'
 import { Route as GiveRouteImport } from './routes/give'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
+import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
 
@@ -50,6 +53,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookAppointmentRoute = BookAppointmentRouteImport.update({
+  id: '/book-appointment',
+  path: '/book-appointment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -60,6 +68,18 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MinistriesWomensFellowshipRoute =
+  MinistriesWomensFellowshipRouteImport.update({
+    id: '/ministries/womens-fellowship',
+    path: '/ministries/womens-fellowship',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MinistriesMensFellowshipRoute =
+  MinistriesMensFellowshipRouteImport.update({
+    id: '/ministries/mens-fellowship',
+    path: '/ministries/mens-fellowship',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MediaPodcastRoute = MediaPodcastRouteImport.update({
   id: '/podcast',
   path: '/podcast',
@@ -74,6 +94,7 @@ const EventsCouplesRoute = EventsCouplesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
@@ -82,10 +103,13 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
@@ -94,11 +118,14 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
@@ -107,12 +134,15 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/book-appointment'
     | '/contact'
     | '/events'
     | '/give'
@@ -121,10 +151,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/events/couples'
     | '/media/podcast'
+    | '/ministries/mens-fellowship'
+    | '/ministries/womens-fellowship'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/book-appointment'
     | '/contact'
     | '/events'
     | '/give'
@@ -133,10 +166,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/events/couples'
     | '/media/podcast'
+    | '/ministries/mens-fellowship'
+    | '/ministries/womens-fellowship'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/book-appointment'
     | '/contact'
     | '/events'
     | '/give'
@@ -145,17 +181,22 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/events/couples'
     | '/media/podcast'
+    | '/ministries/mens-fellowship'
+    | '/ministries/womens-fellowship'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  BookAppointmentRoute: typeof BookAppointmentRoute
   ContactRoute: typeof ContactRoute
   EventsRoute: typeof EventsRouteWithChildren
   GiveRoute: typeof GiveRoute
   MediaRoute: typeof MediaRouteWithChildren
   SermonsRoute: typeof SermonsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
+  MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -202,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book-appointment': {
+      id: '/book-appointment'
+      path: '/book-appointment'
+      fullPath: '/book-appointment'
+      preLoaderRoute: typeof BookAppointmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -214,6 +262,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/womens-fellowship': {
+      id: '/ministries/womens-fellowship'
+      path: '/ministries/womens-fellowship'
+      fullPath: '/ministries/womens-fellowship'
+      preLoaderRoute: typeof MinistriesWomensFellowshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/mens-fellowship': {
+      id: '/ministries/mens-fellowship'
+      path: '/ministries/mens-fellowship'
+      fullPath: '/ministries/mens-fellowship'
+      preLoaderRoute: typeof MinistriesMensFellowshipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/podcast': {
@@ -257,12 +319,15 @@ const MediaRouteWithChildren = MediaRoute._addFileChildren(MediaRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  BookAppointmentRoute: BookAppointmentRoute,
   ContactRoute: ContactRoute,
   EventsRoute: EventsRouteWithChildren,
   GiveRoute: GiveRoute,
   MediaRoute: MediaRouteWithChildren,
   SermonsRoute: SermonsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
+  MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
