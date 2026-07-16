@@ -6,9 +6,9 @@ import couplesImg from "@/assets/couples.jpg";
 export const Route = createFileRoute("/events/couples")({
   head: () => ({
     meta: [
-      { title: "Couples Ministry — PraisePalace Church" },
-      { name: "description", content: "Building God-honouring marriages at PraisePalace. Join our couples events, retreats and mentorship." },
-      { property: "og:title", content: "Couples Ministry — PraisePalace Church" },
+      { title: "Couples Retreat — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Couples Retreat at RCCG Praise Palace Northampton — retreats, mentorship and date nights for God-honouring marriages." },
+      { property: "og:title", content: "Couples Retreat — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Strengthening marriages through Christ." },
       { property: "og:url", content: "/events/couples" },
     ],
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/events/couples")({
 function CouplesPage() {
   return (
     <>
-      <PageHero eyebrow="Couples Ministry" title={<>Love. <span className="text-[#F0DE51]">Legacy.</span> Christ.</>} subtitle="Building marriages that reflect God's heart — one couple, one story at a time." image={couplesImg} />
+      <PageHero eyebrow="Couples Retreat" title={<>Love. <span className="text-[#F0DE51]">Legacy.</span> Christ.</>} subtitle="Building marriages that reflect God's heart — one couple, one story at a time." image={couplesImg} />
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-2 items-center">
