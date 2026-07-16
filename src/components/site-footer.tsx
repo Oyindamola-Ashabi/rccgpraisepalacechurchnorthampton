@@ -1,24 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
+import rccgLogoAsset from "@/assets/rccg-logo.png.asset.json";
 
 export function SiteFooter() {
   return (
     <footer className="mt-20 border-t bg-[#0f0a14] text-white/80">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3">
-            <img src={logoAsset.url} alt="PraisePalace Church" className="h-14 w-14 object-contain" />
+          <div className="flex items-center gap-2">
+            <img src={logoAsset.url} alt="PraisePalace" className="h-12 w-12 object-contain" />
+            <img src={rccgLogoAsset.url} alt="RCCG" className="h-12 w-12 object-contain bg-white/5 rounded-full p-0.5" />
             <div>
-              <div className="font-display font-extrabold text-xl text-white">
-                <span className="text-[#E13495]">Praise</span>
-                <span className="text-[#91D7F6]">Palace</span>
+              <div className="font-display font-extrabold text-base text-white leading-tight">
+                <span className="text-[#E13495]">RCCG</span>{" "}
+                <span className="text-[#91D7F6]">Praise Palace</span>
               </div>
-              <div className="text-[10px] tracking-[0.25em] text-[#F0DE51]">CHURCH</div>
+              <div className="text-[10px] tracking-[0.25em] text-[#F0DE51]">NORTHAMPTON</div>
             </div>
           </div>
           <p className="mt-4 text-sm leading-relaxed">
-            A vibrant Redeemed Christian Church of God parish in the UK. Come as you are — it shall end in praise.
+            A vibrant Redeemed Christian Church of God parish in Northampton, UK. Come as you are — it shall end in praise.
           </p>
           <div className="mt-5 flex gap-3">
             <SocialIcon href="#"><Facebook className="h-4 w-4" /></SocialIcon>
@@ -45,8 +47,10 @@ export function SiteFooter() {
             <li><a href="https://praisepalaceradio.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">PraisePalace Radio ↗</a></li>
             <li><a href="https://praisepalacebusinessschool.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Business School ↗</a></li>
             <li><a href="https://raisingchampions.org.uk" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Youth Camp ↗</a></li>
-            <li><Link to="/events/couples" className="hover:text-[#F0DE51]">Couples</Link></li>
-            <li><Link to="/media/podcast" className="hover:text-[#F0DE51]">Podcast</Link></li>
+            <li><Link to="/ministries/mens-fellowship" className="hover:text-[#F0DE51]">Men Fellowship</Link></li>
+            <li><Link to="/ministries/womens-fellowship" className="hover:text-[#F0DE51]">Women Fellowship</Link></li>
+            <li><Link to="/events/couples" className="hover:text-[#F0DE51]">Couples Retreat</Link></li>
+            <li><Link to="/book-appointment" className="hover:text-[#F0DE51]">Book Appointment</Link></li>
             <li><Link to="/give" className="hover:text-[#F0DE51]">Give</Link></li>
           </ul>
         </div>
@@ -62,7 +66,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/60">
-          <p>© {new Date().getFullYear()} PraisePalace Church. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} RCCG Praise Palace Northampton. All rights reserved.</p>
           <p className="font-display italic text-[#F0DE51]">It Shall End In Praise</p>
         </div>
       </div>
