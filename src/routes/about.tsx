@@ -6,9 +6,6 @@ import pastorAsset from "@/assets/pastor.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
 import { galleryPhotos, eventPhotos } from "@/lib/gallery-images";
 const communityImg = eventPhotos.family.url;
-const galleryMens = eventPhotos.fathers.url;
-const galleryFellowship = eventPhotos.study.url;
-const galleryWomen = eventPhotos.mothers.url;
 
 export const Route = createFileRoute("/about")({
   head: () => ({
