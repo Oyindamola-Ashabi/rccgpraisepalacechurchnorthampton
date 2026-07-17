@@ -1,16 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
-import { Heart, Target, Eye, Users } from "lucide-react";
+import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
-import galleryMensAsset from "@/assets/gallery-mens.jpg.asset.json";
-import galleryFellowshipAsset from "@/assets/gallery-fellowship.jpg.asset.json";
-import galleryWomenAsset from "@/assets/gallery-women.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-const galleryMens = galleryMensAsset.url;
-const galleryFellowship = galleryFellowshipAsset.url;
-const galleryWomen = galleryWomenAsset.url;
-import communityImg from "@/assets/community.jpg";
+import { galleryPhotos, eventPhotos } from "@/lib/gallery-images";
+const communityImg = eventPhotos.family.url;
+const galleryMens = eventPhotos.fathers.url;
+const galleryFellowship = eventPhotos.study.url;
+const galleryWomen = eventPhotos.mothers.url;
 
 export const Route = createFileRoute("/about")({
   head: () => ({
