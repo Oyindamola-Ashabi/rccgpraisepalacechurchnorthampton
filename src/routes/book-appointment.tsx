@@ -48,19 +48,8 @@ function BookAppointmentPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (disabled) return;
-    const pastorLabel = PASTORS.find((p) => p.id === pastor)?.name ?? "Pastor";
-    const subject = encodeURIComponent(`Appointment Request — ${name} — ${format(date!, "EEE, d MMM yyyy")} ${time}`);
-    const body = encodeURIComponent(
-      `Hello Praise Palace team,\n\nI would like to book an appointment.\n\n` +
-      `Pastor: ${pastorLabel}\n` +
-      `Date: ${format(date!, "EEEE, d MMMM yyyy")}\n` +
-      `Time: ${time}\n` +
-      `Reason: ${reason}\n\n` +
-      `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n` +
-      `Notes:\n${notes}\n\nThank you.`
-    );
-    window.location.href = `mailto:oyintesting@gmail.com?subject=${subject}&body=${body}`;
     setSubmitted(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
@@ -72,6 +61,21 @@ function BookAppointmentPage() {
       />
 
       <Section>
+        {submitted && (
+          <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm p-4 flex items-center justify-center animate-fade-in" onClick={() => setSubmitted(false)}>
+            <div className="max-w-md w-full rounded-3xl bg-card p-8 shadow-elegant text-center" onClick={(e) => e.stopPropagation()}>
+              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full gradient-brand text-white">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h3 className="mt-5 font-display font-bold text-2xl">Thank you, {name.split(" ")[0] || "friend"}!</h3>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Your appointment request with <span className="font-semibold text-foreground">{PASTORS.find((p) => p.id === pastor)?.name}</span> on{" "}
+                <span className="font-semibold text-foreground">{date && format(date, "EEE, d MMM yyyy")} at {time}</span> has been received. We'll confirm shortly by email.
+              </p>
+              <button onClick={() => setSubmitted(false)} className="mt-6 rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95">Close</button>
+            </div>
+          </div>
+        )}
         <div className="grid gap-8 lg:grid-cols-[1.1fr,1fr]">
           {/* Form */}
           <form onSubmit={handleSubmit} className="rounded-3xl bg-card p-6 md:p-8 shadow-card ring-1 ring-black/5 space-y-8">
