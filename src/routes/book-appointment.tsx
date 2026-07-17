@@ -205,15 +205,6 @@ function BookAppointmentPage() {
               Request Appointment
             </button>
 
-            {submitted && (
-              <div className="flex items-start gap-3 rounded-2xl bg-[#F0DE51]/20 p-4 text-sm">
-                <CheckCircle2 className="h-5 w-5 text-[#E13495] shrink-0 mt-0.5" />
-                <div>
-                  Your email client should have opened with the request. If not, please email us directly at{" "}
-                  <a href="mailto:oyintesting@gmail.com" className="font-semibold text-[#E13495] underline">oyintesting@gmail.com</a>.
-                </div>
-              </div>
-            )}
 
             <style>{`.input{width:100%;border:1px solid hsl(var(--border));border-radius:0.75rem;padding:0.65rem 0.9rem;font-size:0.875rem;background:hsl(var(--background))}.input:focus{outline:none;border-color:#E13495;box-shadow:0 0 0 3px rgba(225,52,149,0.15)}`}</style>
           </form>
