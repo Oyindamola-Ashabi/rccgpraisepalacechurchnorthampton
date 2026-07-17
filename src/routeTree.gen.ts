@@ -21,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
+import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -85,6 +86,11 @@ const MediaPodcastRoute = MediaPodcastRouteImport.update({
   path: '/podcast',
   getParentRoute: () => MediaRoute,
 } as any)
+const MediaGalleryRoute = MediaGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => MediaRoute,
+} as any)
 const EventsCouplesRoute = EventsCouplesRouteImport.update({
   id: '/couples',
   path: '/couples',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/sermons': typeof SermonsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/sermons': typeof SermonsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/sermons': typeof SermonsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/sitemap.xml'
     | '/events/couples'
+    | '/media/gallery'
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/sitemap.xml'
     | '/events/couples'
+    | '/media/gallery'
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/sitemap.xml'
     | '/events/couples'
+    | '/media/gallery'
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
@@ -285,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MediaPodcastRouteImport
       parentRoute: typeof MediaRoute
     }
+    '/media/gallery': {
+      id: '/media/gallery'
+      path: '/gallery'
+      fullPath: '/media/gallery'
+      preLoaderRoute: typeof MediaGalleryRouteImport
+      parentRoute: typeof MediaRoute
+    }
     '/events/couples': {
       id: '/events/couples'
       path: '/couples'
@@ -307,10 +326,12 @@ const EventsRouteWithChildren =
   EventsRoute._addFileChildren(EventsRouteChildren)
 
 interface MediaRouteChildren {
+  MediaGalleryRoute: typeof MediaGalleryRoute
   MediaPodcastRoute: typeof MediaPodcastRoute
 }
 
 const MediaRouteChildren: MediaRouteChildren = {
+  MediaGalleryRoute: MediaGalleryRoute,
   MediaPodcastRoute: MediaPodcastRoute,
 }
 

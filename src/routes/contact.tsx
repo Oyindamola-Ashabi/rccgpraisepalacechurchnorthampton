@@ -76,7 +76,7 @@ function ContactPage() {
                   <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Message</label>
                   <textarea required rows={5} name="message" className="mt-1 w-full rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]" />
                 </div>
-                <BrandButton to="#">Send message</BrandButton>
+                <button type="submit" className="inline-flex items-center justify-center rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">Send message</button>
               </form>
             )}
           </div>

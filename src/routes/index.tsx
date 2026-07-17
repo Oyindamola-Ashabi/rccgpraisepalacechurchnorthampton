@@ -1,16 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { VideoEmbed } from "@/components/video-embed";
+import { HeroSlider } from "@/components/hero-slider";
 import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import sermonImg from "@/assets/sermon.jpg";
 import worshipImg from "@/assets/worship-team.jpg";
-import communityImg from "@/assets/community.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-import youthImg from "@/assets/youth.jpg";
-import couplesImg from "@/assets/couples.jpg";
-import podcastImg from "@/assets/podcast.jpg";
+import { eventPhotos, heroSlides, galleryPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,10 +28,8 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="" className="h-full w-full object-cover" width={1600} height={1000} />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2a0d3a]/85 via-[#4a0d55]/70 to-[#7a1d70]/70" />
-        </div>
+        <HeroSlider images={[heroImg, heroSlides[0].url, heroSlides[1].url]} />
+
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-4 py-1.5 text-xs uppercase tracking-[0.25em]">
@@ -72,7 +67,8 @@ function HomePage() {
         />
         <div className="mx-auto max-w-4xl">
           <VideoEmbed
-            poster={worshipImg}
+            poster={galleryPhotos[7].url}
+
             title="PraisePalace Church — Latest Service"
             searchQuery="PraisePalace Church RCCG Newport Pagnell service"
           />
@@ -83,7 +79,7 @@ function HomePage() {
       <section className="bg-gradient-to-b from-background to-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
           <div className="relative">
-            <img src={communityImg} alt="Community" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
+            <img src={eventPhotos.family.url} alt="PraisePalace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
             <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[220px]">
               <div className="font-display font-bold text-3xl text-[#3a2b00]">15+</div>
               <div className="text-xs uppercase tracking-widest text-[#3a2b00]/70">Years of Faithful Service</div>
@@ -172,14 +168,14 @@ function HomePage() {
               title="Business School"
               desc="Empowering kingdom entrepreneurs with practical wisdom."
               href="https://praisepalacebusinessschool.com/"
-              image={sermonImg}
+              image={eventPhotos.wordEvening.url}
             />
             <MinistryCard
               icon={Tent}
               title="Youth Camp"
               desc="A powerful gathering for the next generation."
               href="https://raisingchampions.org.uk"
-              image={youthImg}
+              image={eventPhotos.family.url}
             />
           </div>
         </Section>
@@ -226,9 +222,9 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            <EventCard image={couplesImg} tag="Couples" title="Love & Legacy Couples Night" date="Sat, 15 Aug 2026" location="PraisePalace Auditorium" />
-            <EventCard image={youthImg} tag="Youth" title="Youth Camp 2026" date="Fri, 20 Jun 2026" location="Sanctuary Grounds" />
-            <EventCard image={podcastImg} tag="Podcast" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" />
+            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="PraisePalace Auditorium" />
+            <EventCard image={eventPhotos.fathers.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" />
+            <EventCard image={eventPhotos.wordEvening.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" />
           </div>
         </Section>
       </section>

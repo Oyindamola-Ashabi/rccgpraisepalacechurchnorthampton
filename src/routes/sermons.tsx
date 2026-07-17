@@ -2,18 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
 import { VideoEmbed } from "@/components/video-embed";
 import { Play, Download } from "lucide-react";
-import sermonImg from "@/assets/sermon.jpg";
-import worshipImg from "@/assets/worship-team.jpg";
-import communityImg from "@/assets/community.jpg";
+import { eventPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/sermons")({
   head: () => ({
     meta: [
-      { title: "Sermons — PraisePalace Church" },
-      { name: "description", content: "Life-transforming messages from PraisePalace Church. Watch, listen, download." },
-      { property: "og:title", content: "Sermons — PraisePalace Church" },
+      { title: "Sermons — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Life-transforming messages from RCCG Praise Palace Northampton. Watch, listen, download." },
+      { property: "og:title", content: "Sermons — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Word-based messages that transform lives." },
       { property: "og:url", content: "/sermons" },
+      { property: "og:image", content: eventPhotos.wordEvening.url },
     ],
     links: [{ rel: "canonical", href: "/sermons" }],
   }),
@@ -21,12 +20,12 @@ export const Route = createFileRoute("/sermons")({
 });
 
 const sermons = [
-  { image: sermonImg, title: "The Power of Praise", speaker: "Pastor Iredele", series: "It Shall End In Praise", date: "07 Jul 2026" },
-  { image: worshipImg, title: "Worship as Warfare", speaker: "Pastor Olusola", series: "Kingdom Living", date: "30 Jun 2026" },
-  { image: communityImg, title: "Faith Over Fear", speaker: "Pastor Olusola", series: "Anchored", date: "22 Jun 2026" },
-  { image: sermonImg, title: "Kingdom Purpose", speaker: "Pastor Iredele", series: "Kingdom Living", date: "14 Jun 2026" },
-  { image: worshipImg, title: "Encounter Sunday", speaker: "Guest Minister", series: "Special Services", date: "07 Jun 2026" },
-  { image: communityImg, title: "The Long Yes", speaker: "Pastor Olusola", series: "Anchored", date: "31 May 2026" },
+  { image: eventPhotos.wordEvening.url, title: "The Power of Praise", speaker: "Lead Pastor", series: "It Shall End In Praise", date: "07 Jul 2026" },
+  { image: eventPhotos.dinner.url, title: "Worship as Warfare", speaker: "Pastor (Mrs.)", series: "Kingdom Living", date: "30 Jun 2026" },
+  { image: eventPhotos.fathers.url, title: "Faith Over Fear", speaker: "Lead Pastor", series: "Anchored", date: "22 Jun 2026" },
+  { image: eventPhotos.family.url, title: "Kingdom Purpose", speaker: "Lead Pastor", series: "Kingdom Living", date: "14 Jun 2026" },
+  { image: eventPhotos.study.url, title: "Encounter Sunday", speaker: "Guest Minister", series: "Special Services", date: "07 Jun 2026" },
+  { image: eventPhotos.familyLife.url, title: "The Long Yes", speaker: "Pastor (Mrs.)", series: "Anchored", date: "31 May 2026" },
 ];
 
 function watchOnYouTube(title: string) {
@@ -53,7 +52,7 @@ function downloadNotes(title: string) {
 function SermonsPage() {
   return (
     <>
-      <PageHero eyebrow="Word of Life" title="Sermons" subtitle="Timeless truth delivered with clarity, power and love." image={sermonImg} />
+      <PageHero eyebrow="Word of Life" title="Sermons" subtitle="Timeless truth delivered with clarity, power and love." image={eventPhotos.wordEvening.url} />
       <Section>
         <SectionHeader eyebrow="Recent" title="Latest Messages" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -2,22 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
 import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
-import couplesImg from "@/assets/couples.jpg";
-import youthImg from "@/assets/youth.jpg";
-import podcastImg from "@/assets/podcast.jpg";
-import worshipImg from "@/assets/worship-team.jpg";
-import sermonImg from "@/assets/sermon.jpg";
-import communityImg from "@/assets/community.jpg";
 import heroImg from "@/assets/hero-worship.jpg";
+import { eventPhotos, galleryPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "Events — PraisePalace Church" },
-      { name: "description", content: "Upcoming events, conferences and gatherings at PraisePalace Church." },
-      { property: "og:title", content: "Events — PraisePalace Church" },
+      { title: "Events — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Upcoming events, conferences and gatherings at RCCG Praise Palace Northampton." },
+      { property: "og:title", content: "Events — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Join our upcoming gatherings, conferences and worship experiences." },
       { property: "og:url", content: "/events" },
+      { property: "og:image", content: eventPhotos.couples.url },
     ],
     links: [{ rel: "canonical", href: "/events" }],
   }),
@@ -25,12 +21,12 @@ export const Route = createFileRoute("/events")({
 });
 
 const events = [
-  { image: couplesImg, tag: "Couples", title: "Love & Legacy Couples Night", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "PraisePalace Auditorium", to: "/events/couples" },
-  { image: youthImg, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
-  { image: podcastImg, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
-  { image: worshipImg, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
-  { image: sermonImg, tag: "Conference", title: "Annual Convention 2026", date: "Thu–Sun, 10–13 Sep", time: "Multiple", location: "Newport Pagnell" },
-  { image: communityImg, tag: "Outreach", title: "Community Impact Day", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Howard Way" },
+  { image: eventPhotos.couples.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "PraisePalace Auditorium", to: "/events/couples" },
+  { image: eventPhotos.family.url, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
+  { image: eventPhotos.wordEvening.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
+  { image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
+  { image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
+  { image: eventPhotos.familyLife.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Howard Way" },
 ];
 
 function EventsPage() {
@@ -74,10 +70,15 @@ function EventsPage() {
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at PraisePalace gatherings." />
+          <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at Praise Palace gatherings." />
           <div className="grid gap-6 md:grid-cols-2">
-            <VideoEmbed poster={worshipImg} title="Night of Worship" searchQuery="PraisePalace Church night of worship" />
-            <VideoEmbed poster={sermonImg} title="Annual Convention Highlights" searchQuery="PraisePalace Church convention" />
+            <VideoEmbed poster={eventPhotos.wordEvening.url} title="Night of Worship" searchQuery="RCCG Praise Palace Northampton worship" />
+            <VideoEmbed poster={galleryPhotos[1].url} title="Annual Celebration Highlights" searchQuery="RCCG Praise Palace Northampton celebration" />
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
+              View Photo Gallery <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </Section>
       </section>

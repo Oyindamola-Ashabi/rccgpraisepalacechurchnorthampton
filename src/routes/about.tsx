@@ -1,16 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
-import { Heart, Target, Eye, Users } from "lucide-react";
+import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
-import galleryMensAsset from "@/assets/gallery-mens.jpg.asset.json";
-import galleryFellowshipAsset from "@/assets/gallery-fellowship.jpg.asset.json";
-import galleryWomenAsset from "@/assets/gallery-women.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-const galleryMens = galleryMensAsset.url;
-const galleryFellowship = galleryFellowshipAsset.url;
-const galleryWomen = galleryWomenAsset.url;
-import communityImg from "@/assets/community.jpg";
+import { galleryPhotos, eventPhotos } from "@/lib/gallery-images";
+const communityImg = eventPhotos.family.url;
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -90,11 +85,16 @@ function AboutPage() {
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="Our Family" title="Life at PraisePalace" subtitle="Moments of fellowship, worship and joy across our community." />
+          <SectionHeader eyebrow="Our Family" title="Life at Praise Palace" subtitle="Moments of fellowship, worship and joy across our community." />
           <div className="grid gap-4 md:grid-cols-3">
-            <img src={galleryFellowship} alt="PraisePalace fellowship gathering" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
-            <img src={galleryWomen} alt="PraisePalace women's ministry" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
-            <img src={galleryMens} alt="PraisePalace men's ministry" className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
+            {galleryPhotos.slice(0, 6).map((p) => (
+              <img key={p.url} src={p.url} alt={p.title} className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
+              <Images className="h-4 w-4" /> View Full Gallery <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </Section>
       </section>

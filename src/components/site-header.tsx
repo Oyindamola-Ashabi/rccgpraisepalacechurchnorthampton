@@ -33,6 +33,7 @@ const NAV: NavItem[] = [
     to: "/media",
     children: [
       { label: "All Media", to: "/media" },
+      { label: "Gallery", to: "/media/gallery" },
       { label: "Podcast", to: "/media/podcast" },
     ],
   },
