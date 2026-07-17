@@ -28,10 +28,8 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="" className="h-full w-full object-cover" width={1600} height={1000} />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2a0d3a]/85 via-[#4a0d55]/70 to-[#7a1d70]/70" />
-        </div>
+        <HeroSlider images={[heroImg, heroSlides[0].url, heroSlides[1].url]} />
+
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-4 py-1.5 text-xs uppercase tracking-[0.25em]">
@@ -69,7 +67,8 @@ function HomePage() {
         />
         <div className="mx-auto max-w-4xl">
           <VideoEmbed
-            poster={worshipImg}
+            poster={galleryPhotos[7].url}
+
             title="PraisePalace Church — Latest Service"
             searchQuery="PraisePalace Church RCCG Newport Pagnell service"
           />
