@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Calendar, MapPin, Shield, Users, Flame, Mail, Phone } from "lucide-react";
-import mensImg from "@/assets/gallery-mens.jpg.asset.json";
+import { eventPhotos } from "@/lib/gallery-images";
+const mensImg = { url: eventPhotos.fathers.url };
 
 export const Route = createFileRoute("/ministries/mens-fellowship")({
   head: () => ({

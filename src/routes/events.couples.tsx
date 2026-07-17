@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Calendar, MapPin, Heart, Users, Sparkles, Mail, Phone } from "lucide-react";
-import couplesImg from "@/assets/couples.jpg";
+import { eventPhotos } from "@/lib/gallery-images";
+const couplesImg = eventPhotos.couples.url;
+const dinnerImg = eventPhotos.dinner.url;
 
 export const Route = createFileRoute("/events/couples")({
   head: () => ({
@@ -24,7 +26,7 @@ function CouplesPage() {
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-2 items-center">
-          <img src={couplesImg} alt="Couples" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" />
+          <img src={dinnerImg} alt="Couples" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" />
           <div>
             <SectionHeader
               center={false}
