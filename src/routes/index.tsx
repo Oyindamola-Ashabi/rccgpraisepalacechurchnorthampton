@@ -79,7 +79,7 @@ function HomePage() {
       <section className="bg-gradient-to-b from-background to-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
           <div className="relative">
-            <img src={communityImg} alt="Community" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
+            <img src={eventPhotos.family.url} alt="PraisePalace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
             <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[220px]">
               <div className="font-display font-bold text-3xl text-[#3a2b00]">15+</div>
               <div className="text-xs uppercase tracking-widest text-[#3a2b00]/70">Years of Faithful Service</div>
@@ -168,14 +168,14 @@ function HomePage() {
               title="Business School"
               desc="Empowering kingdom entrepreneurs with practical wisdom."
               href="https://praisepalacebusinessschool.com/"
-              image={sermonImg}
+              image={eventPhotos.wordEvening.url}
             />
             <MinistryCard
               icon={Tent}
               title="Youth Camp"
               desc="A powerful gathering for the next generation."
               href="https://raisingchampions.org.uk"
-              image={youthImg}
+              image={eventPhotos.family.url}
             />
           </div>
         </Section>
@@ -222,9 +222,9 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            <EventCard image={couplesImg} tag="Couples" title="Love & Legacy Couples Night" date="Sat, 15 Aug 2026" location="PraisePalace Auditorium" />
-            <EventCard image={youthImg} tag="Youth" title="Youth Camp 2026" date="Fri, 20 Jun 2026" location="Sanctuary Grounds" />
-            <EventCard image={podcastImg} tag="Podcast" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" />
+            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="PraisePalace Auditorium" />
+            <EventCard image={eventPhotos.fathers.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" />
+            <EventCard image={eventPhotos.wordEvening.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" />
           </div>
         </Section>
       </section>
