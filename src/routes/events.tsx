@@ -70,10 +70,15 @@ function EventsPage() {
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at PraisePalace gatherings." />
+          <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at Praise Palace gatherings." />
           <div className="grid gap-6 md:grid-cols-2">
-            <VideoEmbed poster={worshipImg} title="Night of Worship" searchQuery="PraisePalace Church night of worship" />
-            <VideoEmbed poster={sermonImg} title="Annual Convention Highlights" searchQuery="PraisePalace Church convention" />
+            <VideoEmbed poster={eventPhotos.wordEvening.url} title="Night of Worship" searchQuery="RCCG Praise Palace Northampton worship" />
+            <VideoEmbed poster={galleryPhotos[1].url} title="Annual Celebration Highlights" searchQuery="RCCG Praise Palace Northampton celebration" />
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
+              View Photo Gallery <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </Section>
       </section>
