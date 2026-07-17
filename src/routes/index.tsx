@@ -1,16 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { VideoEmbed } from "@/components/video-embed";
+import { HeroSlider } from "@/components/hero-slider";
 import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import sermonImg from "@/assets/sermon.jpg";
 import worshipImg from "@/assets/worship-team.jpg";
-import communityImg from "@/assets/community.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-import youthImg from "@/assets/youth.jpg";
-import couplesImg from "@/assets/couples.jpg";
-import podcastImg from "@/assets/podcast.jpg";
+import { eventPhotos, heroSlides, galleryPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/")({
   head: () => ({
