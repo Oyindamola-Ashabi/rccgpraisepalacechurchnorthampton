@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Calendar, MapPin, Shield, Users, Flame, Mail, Phone } from "lucide-react";
 import { eventPhotos } from "@/lib/gallery-images";
-const mensImg = { url: eventPhotos.fathers.url };
+const mensImg = { url: eventPhotos.men.url };
 
 export const Route = createFileRoute("/ministries/mens-fellowship")({
   head: () => ({

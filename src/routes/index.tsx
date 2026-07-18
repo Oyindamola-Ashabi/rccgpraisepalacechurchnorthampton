@@ -1,21 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
-import { VideoEmbed } from "@/components/video-embed";
 import { HeroSlider } from "@/components/hero-slider";
 import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import worshipImg from "@/assets/worship-team.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-import { eventPhotos, heroSlides, galleryPhotos } from "@/lib/gallery-images";
+import { eventPhotos, heroSlides } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PraisePalace Church — It Shall End In Praise | RCCG UK" },
-      { name: "description", content: "PraisePalace Church, a Redeemed Christian Church of God parish in Newport Pagnell, UK. Join us for Sunday worship, bible study, ministries and community." },
-      { property: "og:title", content: "PraisePalace Church — It Shall End In Praise" },
-      { property: "og:description", content: "A vibrant RCCG family in Newport Pagnell. Worship, grow and serve with us." },
+      { title: "RCCG Praise Palace Northampton — It Shall End In Praise" },
+      { name: "description", content: "RCCG Praise Palace Northampton — a Redeemed Christian Church of God parish. Join us for Sunday worship, bible study, ministries and community." },
+      { property: "og:title", content: "RCCG Praise Palace Northampton — It Shall End In Praise" },
+      { property: "og:description", content: "A vibrant RCCG family in Northampton. Worship, grow and serve with us." },
       { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
@@ -41,7 +39,7 @@ function HomePage() {
               In <span className="text-[#F0DE51]">Praise</span>.
             </h1>
             <p className="mt-6 max-w-xl text-white/90 text-lg">
-              PraisePalace Church is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.
+              RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <BrandButton to="/about" variant="gold">Plan Your Visit</BrandButton>
@@ -58,31 +56,14 @@ function HomePage() {
         </div>
       </section>
 
-      {/* WELCOME VIDEO */}
-      <Section>
-        <SectionHeader
-          eyebrow="Watch & Worship"
-          title="Experience Our Latest Service"
-          subtitle="Missed Sunday? Catch up on the word, worship and testimonies from PraisePalace."
-        />
-        <div className="mx-auto max-w-4xl">
-          <VideoEmbed
-            poster={galleryPhotos[7].url}
-
-            title="PraisePalace Church — Latest Service"
-            searchQuery="PraisePalace Church RCCG Newport Pagnell service"
-          />
-        </div>
-      </Section>
-
       {/* WELCOME / ABOUT */}
       <section className="bg-gradient-to-b from-background to-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
           <div className="relative">
-            <img src={eventPhotos.family.url} alt="PraisePalace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
-            <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[220px]">
-              <div className="font-display font-bold text-3xl text-[#3a2b00]">15+</div>
-              <div className="text-xs uppercase tracking-widest text-[#3a2b00]/70">Years of Faithful Service</div>
+            <img src={eventPhotos.fathers.url} alt="RCCG Praise Palace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
+            <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[240px]">
+              <div className="font-display font-bold text-2xl text-[#3a2b00] leading-tight">A Family for All Nations</div>
+              <div className="mt-1 text-xs uppercase tracking-widest text-[#3a2b00]/70">One House. One Praise.</div>
             </div>
           </div>
           <div>
@@ -91,7 +72,7 @@ function HomePage() {
               We Have Been Waiting <span className="text-gradient-brand">For You.</span>
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              PraisePalace Church is a family church for all nations — a parish of The Redeemed Christian Church of God located in Newport Pagnell, UK. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.
+              RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
               You are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.
@@ -153,7 +134,7 @@ function HomePage() {
           <SectionHeader
             eyebrow="Our Ministries"
             title="Grow. Serve. Belong."
-            subtitle="Extensions of PraisePalace touching every area of life — radio, business, family and youth."
+            subtitle="Extensions of Praise Palace touching every area of life — radio, business, family and youth."
           />
           <div className="grid gap-6 md:grid-cols-3">
             <MinistryCard
@@ -161,21 +142,21 @@ function HomePage() {
               title="PraisePalace Radio"
               desc="Faith-filled broadcasts, worship and word — streaming globally."
               href="https://praisepalaceradio.com/"
-              image={worshipImg}
+              image={eventPhotos.students.url}
             />
             <MinistryCard
               icon={GraduationCap}
               title="Business School"
               desc="Empowering kingdom entrepreneurs with practical wisdom."
               href="https://praisepalacebusinessschool.com/"
-              image={eventPhotos.wordEvening.url}
+              image={eventPhotos.business.url}
             />
             <MinistryCard
               icon={Tent}
               title="Youth Camp"
               desc="A powerful gathering for the next generation."
               href="https://raisingchampions.org.uk"
-              image={eventPhotos.family.url}
+              image={eventPhotos.youth.url}
             />
           </div>
         </Section>
@@ -185,24 +166,25 @@ function HomePage() {
       <Section>
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">Our Leaders</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">Our Leader</div>
             <h2 className="font-display font-bold text-3xl md:text-5xl leading-tight">
               Passionate About <span className="text-gradient-brand">the Gospel.</span>
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              Our Pastors are dedicated to the cause of Jesus Christ, spreading His gospel to the ends of the earth — evidenced by signs, wonders and lives transformed. They lead PraisePalace with grace, wisdom and an unwavering conviction that it shall all end in praise.
+              Pastor Abiodun Bamgbala leads RCCG Praise Palace Northampton with grace, wisdom and an unwavering conviction that it shall all end in praise. He is dedicated to the cause of Jesus Christ, spreading the gospel — evidenced by signs, wonders and lives transformed.
             </p>
             <div className="mt-6 flex gap-3">
-              <BrandButton to="/about">Meet Our Pastors</BrandButton>
+              <BrandButton to="/about">Meet Our Pastor</BrandButton>
+              <BrandButton to="/book-appointment" variant="outline">Book Appointment</BrandButton>
             </div>
           </div>
           <div className="relative">
             <div className="relative overflow-hidden rounded-3xl shadow-elegant">
-              <img src={pastorsImg} alt="Our Pastors" className="w-full aspect-[4/5] object-cover" loading="lazy" width={1000} height={1200} />
+              <img src={pastorsImg} alt="Pastor Abiodun Bamgbala" className="w-full aspect-[4/5] object-cover" loading="lazy" width={1000} height={1200} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <div className="font-display font-bold text-2xl">Our Pastors</div>
-                <div className="text-sm text-white/80">Lead Pastors, PraisePalace Church</div>
+                <div className="font-display font-bold text-2xl">Pastor Abiodun Bamgbala</div>
+                <div className="text-sm text-white/80">Lead Pastor, RCCG Praise Palace Northampton</div>
               </div>
             </div>
           </div>
@@ -222,9 +204,9 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="PraisePalace Auditorium" />
-            <EventCard image={eventPhotos.fathers.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" />
-            <EventCard image={eventPhotos.wordEvening.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" />
+            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="Praise Palace Auditorium" to="/events/couples" />
+            <EventCard image={eventPhotos.celebration.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" to="/events" />
+            <EventCard image={eventPhotos.modernWorship.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" to="/events" />
           </div>
         </Section>
       </section>
@@ -281,9 +263,9 @@ function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; tit
   );
 }
 
-function EventCard({ image, tag, title, date, location }: { image: string; tag: string; title: string; date: string; location: string }) {
+function EventCard({ image, tag, title, date, location, to }: { image: string; tag: string; title: string; date: string; location: string; to: string }) {
   return (
-    <div className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5">
+    <Link to={to} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 block">
       <div className="relative aspect-[16/10] overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
         <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{tag}</span>
@@ -295,6 +277,6 @@ function EventCard({ image, tag, title, date, location }: { image: string; tag: 
           <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#E13495]" /> {location}</div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

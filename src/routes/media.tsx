@@ -13,7 +13,7 @@ export const Route = createFileRoute("/media")({
       { property: "og:title", content: "Media — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Watch, listen and relive our moments — anywhere, anytime." },
       { property: "og:url", content: "/media" },
-      { property: "og:image", content: eventPhotos.wordEvening.url },
+      { property: "og:image", content: eventPhotos.modernWorship.url },
     ],
     links: [{ rel: "canonical", href: "/media" }],
   }),
@@ -21,11 +21,11 @@ export const Route = createFileRoute("/media")({
 });
 
 const videos = [
-  { image: eventPhotos.wordEvening.url, title: "The Power of Praise", speaker: "Lead Pastor", date: "07 Jul 2026" },
+  { image: eventPhotos.modernWorship.url, title: "The Power of Praise", speaker: "Pastor Abiodun Bamgbala", date: "07 Jul 2026" },
   { image: eventPhotos.dinner.url, title: "Night of Worship — Highlights", speaker: "Praise Palace Worship", date: "28 Jun 2026" },
-  { image: eventPhotos.fathers.url, title: "Fathers' Honour Service", speaker: "Lead Pastor", date: "22 Jun 2026" },
-  { image: eventPhotos.family.url, title: "It Shall End In Praise", speaker: "Lead Pastor", date: "14 Jun 2026" },
-  { image: eventPhotos.study.url, title: "Midweek Encounter", speaker: "Guest Minister", date: "07 Jun 2026" },
+  { image: eventPhotos.fathers.url, title: "Fathers' Honour Service", speaker: "Pastor Abiodun Bamgbala", date: "22 Jun 2026" },
+  { image: eventPhotos.family.url, title: "It Shall End In Praise", speaker: "Pastor Abiodun Bamgbala", date: "14 Jun 2026" },
+  { image: eventPhotos.tableFellowship.url, title: "Midweek Encounter", speaker: "Guest Minister", date: "07 Jun 2026" },
   { image: eventPhotos.familyLife.url, title: "Family Life Teaching", speaker: "Pastor (Mrs.)", date: "31 May 2026" },
 ];
 
@@ -38,7 +38,7 @@ function MediaPage() {
         <SectionHeader eyebrow="Featured" title="Latest Message" />
         <div className="mx-auto max-w-4xl">
           <VideoEmbed
-            poster={eventPhotos.wordEvening.url}
+            poster={eventPhotos.celebration.url}
             title="RCCG Praise Palace — Latest Message"
             searchQuery="RCCG Praise Palace Northampton latest sermon"
           />
@@ -85,7 +85,7 @@ function MediaPage() {
             </div>
           </Link>
           <a href="https://praisepalaceradio.com/" target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden rounded-2xl shadow-elegant">
-            <img src={eventPhotos.wordEvening.url} alt="Radio" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+            <img src={eventPhotos.students.url} alt="Radio" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d2a3a]/90 via-[#0d2a3a]/40 to-transparent" />
             <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
               <Video className="h-8 w-8 text-[#91D7F6]" />

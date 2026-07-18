@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
-import { VideoEmbed } from "@/components/video-embed";
 import { Play, Download } from "lucide-react";
 import { eventPhotos } from "@/lib/gallery-images";
 
@@ -12,7 +11,7 @@ export const Route = createFileRoute("/sermons")({
       { property: "og:title", content: "Sermons — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Word-based messages that transform lives." },
       { property: "og:url", content: "/sermons" },
-      { property: "og:image", content: eventPhotos.wordEvening.url },
+      { property: "og:image", content: eventPhotos.modernWorship.url },
     ],
     links: [{ rel: "canonical", href: "/sermons" }],
   }),
@@ -20,24 +19,24 @@ export const Route = createFileRoute("/sermons")({
 });
 
 const sermons = [
-  { image: eventPhotos.wordEvening.url, title: "The Power of Praise", speaker: "Lead Pastor", series: "It Shall End In Praise", date: "07 Jul 2026" },
+  { image: eventPhotos.celebration.url, title: "The Power of Praise", speaker: "Pastor Abiodun Bamgbala", series: "It Shall End In Praise", date: "07 Jul 2026" },
   { image: eventPhotos.dinner.url, title: "Worship as Warfare", speaker: "Pastor (Mrs.)", series: "Kingdom Living", date: "30 Jun 2026" },
-  { image: eventPhotos.fathers.url, title: "Faith Over Fear", speaker: "Lead Pastor", series: "Anchored", date: "22 Jun 2026" },
-  { image: eventPhotos.family.url, title: "Kingdom Purpose", speaker: "Lead Pastor", series: "Kingdom Living", date: "14 Jun 2026" },
-  { image: eventPhotos.study.url, title: "Encounter Sunday", speaker: "Guest Minister", series: "Special Services", date: "07 Jun 2026" },
+  { image: eventPhotos.fathers.url, title: "Faith Over Fear", speaker: "Pastor Abiodun Bamgbala", series: "Anchored", date: "22 Jun 2026" },
+  { image: eventPhotos.family.url, title: "Kingdom Purpose", speaker: "Pastor Abiodun Bamgbala", series: "Kingdom Living", date: "14 Jun 2026" },
+  { image: eventPhotos.tableFellowship.url, title: "Encounter Sunday", speaker: "Guest Minister", series: "Special Services", date: "07 Jun 2026" },
   { image: eventPhotos.familyLife.url, title: "The Long Yes", speaker: "Pastor (Mrs.)", series: "Anchored", date: "31 May 2026" },
 ];
 
 function watchOnYouTube(title: string) {
   window.open(
-    `https://www.youtube.com/results?search_query=${encodeURIComponent("PraisePalace Church " + title)}`,
+    `https://www.youtube.com/results?search_query=${encodeURIComponent("RCCG Praise Palace Northampton " + title)}`,
     "_blank",
     "noopener,noreferrer",
   );
 }
 
 function downloadNotes(title: string) {
-  const content = `PraisePalace Church\nSermon Notes\n\nTitle: ${title}\n\n(Notes will be updated after the service. Visit praisepalace.church for the full transcript.)\n`;
+  const content = `RCCG Praise Palace Northampton\nSermon Notes\n\nTitle: ${title}\n\n(Notes will be updated after the service.)\n`;
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -52,7 +51,7 @@ function downloadNotes(title: string) {
 function SermonsPage() {
   return (
     <>
-      <PageHero eyebrow="Word of Life" title="Sermons" subtitle="Timeless truth delivered with clarity, power and love." image={eventPhotos.wordEvening.url} />
+      <PageHero eyebrow="Word of Life" title="Sermons" subtitle="Timeless truth delivered with clarity, power and love." image={eventPhotos.modernWorship.url} />
       <Section>
         <SectionHeader eyebrow="Recent" title="Latest Messages" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
