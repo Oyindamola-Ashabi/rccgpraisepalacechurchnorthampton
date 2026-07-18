@@ -3,7 +3,7 @@ import { PageHero, Section, SectionHeader, BrandButton } from "@/components/sect
 import { Calendar, MapPin, Heart, Users, Sparkles, Mail, Phone } from "lucide-react";
 import { eventPhotos } from "@/lib/gallery-images";
 const couplesImg = eventPhotos.couples.url;
-const dinnerImg = eventPhotos.dinner.url;
+const dinnerImg = eventPhotos.familyMeals.url;
 
 export const Route = createFileRoute("/events/couples")({
   head: () => ({
