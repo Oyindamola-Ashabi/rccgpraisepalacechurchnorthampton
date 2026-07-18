@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Calendar, MapPin, Heart, Users, Sparkles, Mail, Phone } from "lucide-react";
 import { eventPhotos } from "@/lib/gallery-images";
-const womenImg = { url: eventPhotos.mothers.url };
+const womenImg = { url: eventPhotos.women.url };
 
 export const Route = createFileRoute("/ministries/womens-fellowship")({
   head: () => ({

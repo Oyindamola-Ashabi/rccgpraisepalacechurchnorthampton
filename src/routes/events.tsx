@@ -3,7 +3,7 @@ import { PageHero, Section, SectionHeader } from "@/components/section-ui";
 import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import { eventPhotos, galleryPhotos } from "@/lib/gallery-images";
+import { eventPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -21,12 +21,12 @@ export const Route = createFileRoute("/events")({
 });
 
 const events = [
-  { image: eventPhotos.couples.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "PraisePalace Auditorium", to: "/events/couples" },
-  { image: eventPhotos.family.url, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
-  { image: eventPhotos.wordEvening.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
+  { image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples" },
+  { image: eventPhotos.youth.url, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
+  { image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
   { image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
   { image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
-  { image: eventPhotos.familyLife.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Howard Way" },
+  { image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Howard Way" },
 ];
 
 function EventsPage() {
@@ -72,8 +72,8 @@ function EventsPage() {
         <Section>
           <SectionHeader eyebrow="Highlights" title="Event Videos" subtitle="A glimpse of the atmosphere at Praise Palace gatherings." />
           <div className="grid gap-6 md:grid-cols-2">
-            <VideoEmbed poster={eventPhotos.wordEvening.url} title="Night of Worship" searchQuery="RCCG Praise Palace Northampton worship" />
-            <VideoEmbed poster={galleryPhotos[1].url} title="Annual Celebration Highlights" searchQuery="RCCG Praise Palace Northampton celebration" />
+            <VideoEmbed poster={eventPhotos.modernWorship.url} title="Night of Worship" searchQuery="RCCG Praise Palace Northampton worship" />
+            <VideoEmbed poster={eventPhotos.celebration.url} title="Annual Celebration Highlights" searchQuery="RCCG Praise Palace Northampton celebration" />
           </div>
           <div className="mt-10 text-center">
             <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
@@ -87,7 +87,6 @@ function EventsPage() {
 }
 
 function saveToCalendar(title: string, dateStr: string, time: string, location: string) {
-  // Best-effort .ics generation from human-readable date; falls back to today.
   const parsed = new Date(dateStr.replace(/^[A-Za-z]+,\s*/, ""));
   const start = isNaN(parsed.getTime()) ? new Date() : parsed;
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -97,7 +96,7 @@ function saveToCalendar(title: string, dateStr: string, time: string, location: 
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//PraisePalace Church//EN",
+    "PRODID:-//RCCG Praise Palace Northampton//EN",
     "BEGIN:VEVENT",
     `UID:${Date.now()}@praisepalace.church`,
     `DTSTAMP:${fmt(new Date())}`,
@@ -105,7 +104,7 @@ function saveToCalendar(title: string, dateStr: string, time: string, location: 
     `DTEND:${fmt(end)}`,
     `SUMMARY:${title}`,
     `LOCATION:${location}`,
-    `DESCRIPTION:${title} — ${time} — PraisePalace Church`,
+    `DESCRIPTION:${title} — ${time} — RCCG Praise Palace Northampton`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
