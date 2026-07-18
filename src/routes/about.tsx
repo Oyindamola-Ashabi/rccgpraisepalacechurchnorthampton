@@ -4,8 +4,18 @@ import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg.asset.json";
 const pastorsImg = pastorAsset.url;
-import { galleryPhotos, eventPhotos } from "@/lib/gallery-images";
-const communityImg = eventPhotos.family.url;
+import { eventPhotos } from "@/lib/gallery-images";
+const communityImg = eventPhotos.students.url;
+
+// Curated Life at Praise Palace mosaic — 6 unique images.
+const lifePhotos = [
+  eventPhotos.family,
+  eventPhotos.fathers,
+  eventPhotos.guests,
+  eventPhotos.familyMeals,
+  eventPhotos.familyLife,
+  eventPhotos.tableFellowship,
+];
 
 export const Route = createFileRoute("/about")({
   head: () => ({
