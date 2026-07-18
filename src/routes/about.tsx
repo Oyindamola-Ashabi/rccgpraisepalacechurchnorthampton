@@ -104,26 +104,6 @@ function AboutPage() {
               <img key={p.url} src={p.url} alt={p.title} className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
             ))}
           </div>
-            <p className="mt-2 text-sm font-semibold text-[#E13495] uppercase tracking-widest">Lead Pastor</p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              Our pastor is passionate about the spread of the gospel of Jesus Christ to the ends of the earth — evidenced by miracles, signs and wonders as in the days of the apostles. He has dedicated his life to the cause of Christ, having pastored various other parishes of the RCCG before founding PraisePalace.
-            </p>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              He believes deeply in prayer as a potent key to realising every person's divine purpose on the earth.
-            </p>
-            <div className="mt-6"><BrandButton to="/contact">Get in Touch</BrandButton></div>
-          </div>
-        </div>
-      </Section>
-
-      <section className="bg-secondary/40 border-y">
-        <Section>
-          <SectionHeader eyebrow="Our Family" title="Life at Praise Palace" subtitle="Moments of fellowship, worship and joy across our community." />
-          <div className="grid gap-4 md:grid-cols-3">
-            {galleryPhotos.slice(0, 6).map((p) => (
-              <img key={p.url} src={p.url} alt={p.title} className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
-            ))}
-          </div>
           <div className="mt-10 text-center">
             <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
               <Images className="h-4 w-4" /> View Full Gallery <ArrowRight className="h-4 w-4" />
