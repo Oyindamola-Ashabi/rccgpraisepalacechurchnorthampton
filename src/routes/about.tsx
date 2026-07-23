@@ -20,9 +20,9 @@ const lifePhotos = [
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — PraisePalace Church" },
-      { name: "description", content: "Discover the story, vision and mission of PraisePalace Church — an RCCG parish in Newport Pagnell, UK." },
-      { property: "og:title", content: "About PraisePalace Church" },
+      { title: "About — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Discover the story, vision and mission of RCCG Praise Palace Northampton — a Redeemed Christian Church of God parish." },
+      { property: "og:title", content: "About RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Our story, mission and pastors." },
       { property: "og:url", content: "/about" },
     ],
@@ -46,10 +46,10 @@ function AboutPage() {
               title={<>A House of <span className="text-gradient-brand">Praise & Purpose</span></>}
             />
             <p className="text-muted-foreground leading-relaxed">
-              PraisePalace Church exists to raise a generation of worshippers rooted in the word of God and empowered by His Spirit. We believe every life has a divine purpose, and every story shall end in praise.
+              RCCG Praise Palace Northampton exists to raise a generation of worshippers rooted in the word of God and empowered by His Spirit. We believe every life has a divine purpose, and every story shall end in praise.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
-              Located in Newport Pagnell, UK, we are a growing community of believers from many nations, united by our love for Jesus and our commitment to His kingdom.
+              Located at Briar Hill Community Centre, Northampton, we are a growing community of believers from many nations, united by our love for Jesus and our commitment to His kingdom.
             </p>
           </div>
         </div>
