@@ -3,8 +3,8 @@ import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { HeroSlider } from "@/components/hero-slider";
 import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import pastorAsset from "@/assets/pastor.jpg.asset.json";
-const pastorsImg = pastorAsset.url;
+import pastorAsset from "@/assets/pastor.jpg";
+const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/")({

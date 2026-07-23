@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import pastorAsset from "@/assets/pastor.jpg.asset.json";
-const pastorsImg = pastorAsset.url;
+import pastorAsset from "@/assets/pastor.jpg";
+const pastorsImg = pastorAsset;
 import { eventPhotos } from "@/lib/gallery-images";
 const communityImg = eventPhotos.students.url;
 
