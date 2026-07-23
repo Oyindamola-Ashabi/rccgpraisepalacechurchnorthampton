@@ -6,9 +6,9 @@ import heroImg from "@/assets/hero-worship.jpg";
 export const Route = createFileRoute("/give")({
   head: () => ({
     meta: [
-      { title: "Give — PraisePalace Church" },
-      { name: "description", content: "Give tithes, offerings and support the mission of PraisePalace Church." },
-      { property: "og:title", content: "Give — PraisePalace Church" },
+      { title: "Give — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Give tithes, offerings and support the mission of RCCG Praise Palace Northampton." },
+      { property: "og:title", content: "Give — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Partner with us to advance the gospel." },
       { property: "og:url", content: "/give" },
     ],
@@ -49,7 +49,7 @@ function GivePage() {
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <BrandButton to="/contact">Contact Office</BrandButton>
-              <BrandButton href="mailto:oyintesting@gmail.com" variant="gold">Email Us</BrandButton>
+              <BrandButton href="mailto:rccgpraisepalace01@gmail.com" variant="gold">Email Us</BrandButton>
             </div>
           </div>
         </Section>

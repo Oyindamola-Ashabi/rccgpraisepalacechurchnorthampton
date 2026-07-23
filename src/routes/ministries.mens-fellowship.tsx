@@ -95,8 +95,8 @@ function MensFellowshipPage() {
         <Section>
           <SectionHeader eyebrow="Get in Touch" title="Reach the Men's Team" />
           <div className="mx-auto max-w-2xl rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 grid gap-4 sm:grid-cols-2">
-            <a href="mailto:oyintesting@gmail.com" className="flex items-center gap-3 hover:text-[#E13495]">
-              <Mail className="h-5 w-5 text-[#E13495]" /> oyintesting@gmail.com
+            <a href="mailto:rccgpraisepalace01@gmail.com" className="flex items-center gap-3 hover:text-[#E13495]">
+              <Mail className="h-5 w-5 text-[#E13495]" /> rccgpraisepalace01@gmail.com
             </a>
             <a href="tel:+447000000000" className="flex items-center gap-3 hover:text-[#E13495]">
               <Phone className="h-5 w-5 text-[#E13495]" /> +44 7000 000 000

@@ -18,6 +18,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
@@ -69,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediaIndexRoute = MediaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MediaRoute,
+} as any)
 const MinistriesWomensFellowshipRoute =
   MinistriesWomensFellowshipRouteImport.update({
     id: '/ministries/womens-fellowship',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/media/': typeof MediaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,7 +127,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
-  '/media': typeof MediaRouteWithChildren
   '/sermons': typeof SermonsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/events/couples': typeof EventsCouplesRoute
@@ -128,6 +134,7 @@ export interface FileRoutesByTo {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/media': typeof MediaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -145,6 +152,7 @@ export interface FileRoutesById {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/media/': typeof MediaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,6 +171,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/media/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -171,7 +180,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/events'
     | '/give'
-    | '/media'
     | '/sermons'
     | '/sitemap.xml'
     | '/events/couples'
@@ -179,6 +187,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/media'
   id:
     | '__root__'
     | '/'
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/media/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -276,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/media/': {
+      id: '/media/'
+      path: '/'
+      fullPath: '/media/'
+      preLoaderRoute: typeof MediaIndexRouteImport
+      parentRoute: typeof MediaRoute
+    }
     '/ministries/womens-fellowship': {
       id: '/ministries/womens-fellowship'
       path: '/ministries/womens-fellowship'
@@ -328,11 +345,13 @@ const EventsRouteWithChildren =
 interface MediaRouteChildren {
   MediaGalleryRoute: typeof MediaGalleryRoute
   MediaPodcastRoute: typeof MediaPodcastRoute
+  MediaIndexRoute: typeof MediaIndexRoute
 }
 
 const MediaRouteChildren: MediaRouteChildren = {
   MediaGalleryRoute: MediaGalleryRoute,
   MediaPodcastRoute: MediaPodcastRoute,
+  MediaIndexRoute: MediaIndexRoute,
 }
 
 const MediaRouteWithChildren = MediaRoute._addFileChildren(MediaRouteChildren)

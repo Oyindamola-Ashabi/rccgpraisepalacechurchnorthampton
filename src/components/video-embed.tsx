@@ -9,7 +9,7 @@ import { Play } from "lucide-react";
  */
 export function VideoEmbed({
   youtubeId,
-  searchQuery = "PraisePalace Church",
+  searchQuery = "RCCG Praise Palace Northampton",
   poster,
   title = "Video",
 }: {

@@ -7,9 +7,9 @@ import heroImg from "@/assets/community.jpg";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — PraisePalace Church" },
-      { name: "description", content: "Get in touch with PraisePalace Church in Newport Pagnell, UK. Address, phone, email and directions." },
-      { property: "og:title", content: "Contact — PraisePalace Church" },
+      { title: "Contact — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Get in touch with RCCG Praise Palace Northampton at Briar Hill Community Centre. Address, phone, email and directions." },
+      { property: "og:title", content: "Contact — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Reach out or plan your visit today." },
       { property: "og:url", content: "/contact" },
     ],
@@ -31,9 +31,9 @@ function ContactPage() {
             <SectionHeader center={false} eyebrow="Reach Us" title="Contact Information" />
             <div className="space-y-5">
               {[
-                { icon: MapPin, label: "Address", value: "350A iCentre, Howard Way, Newport Pagnell, MK16 9PY" },
+                { icon: MapPin, label: "Address", value: "Briar Hill Community Centre NN4 8SX" },
                 { icon: Phone, label: "Phone", value: "+44 7000 000 000", href: "tel:+447000000000" },
-                { icon: Mail, label: "Email", value: "oyintesting@gmail.com", href: "mailto:oyintesting@gmail.com" },
+                { icon: Mail, label: "Email", value: "rccgpraisepalace01@gmail.com", href: "mailto:rccgpraisepalace01@gmail.com" },
                 { icon: Clock, label: "Service Times", value: "Sundays 10:00 AM · Wed 7:00 PM" },
               ].map((c) => (
                 <div key={c.label} className="flex gap-4 rounded-2xl bg-card p-5 shadow-card ring-1 ring-black/5">
@@ -86,8 +86,8 @@ function ContactPage() {
       <Section className="!pt-0">
         <div className="overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5">
           <iframe
-            title="PraisePalace Church location"
-            src="https://www.google.com/maps?q=350A+iCentre+Howard+Way+Newport+Pagnell+MK16+9PY&output=embed"
+            title="RCCG Praise Palace Northampton location"
+            src="https://www.google.com/maps?q=Briar+Hill+Community+Centre+NN4+8SX&output=embed"
             width="100%"
             height="420"
             style={{ border: 0 }}

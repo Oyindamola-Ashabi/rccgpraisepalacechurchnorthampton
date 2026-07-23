@@ -26,7 +26,7 @@ const events = [
   { image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
   { image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
   { image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
-  { image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Howard Way" },
+  { image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Briar Hill Community Centre" },
 ];
 
 function EventsPage() {
