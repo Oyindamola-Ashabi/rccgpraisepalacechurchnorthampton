@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
-import rccgLogoAsset from "@/assets/rccg-logo.png.asset.json";
+import logoAsset from "@/assets/logo.png";
+import rccgLogoAsset from "@/assets/rccg-logo.png";
 
 type NavChild = { label: string; to?: string; href?: string; external?: boolean };
 type NavItem = { label: string; to?: string; children?: NavChild[] };
@@ -83,8 +83,8 @@ export function SiteHeader() {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3 gap-3">
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <img src={rccgLogoAsset.url} alt="RCCG" className="h-11 w-11 shrink-0 object-contain" />
-            <img src={logoAsset.url} alt="Praise Palace" className="h-11 w-11 shrink-0 object-contain" />
+            <img src={rccgLogoAsset} alt="RCCG" className="h-11 w-11 shrink-0 object-contain" />
+            <img src={logoAsset} alt="Praise Palace" className="h-11 w-11 shrink-0 object-contain" />
             <div className="min-w-0 leading-tight">
               <div className="font-display font-extrabold text-sm sm:text-base truncate">
                 <span className="text-[#E13495]">RCCG</span>{" "}

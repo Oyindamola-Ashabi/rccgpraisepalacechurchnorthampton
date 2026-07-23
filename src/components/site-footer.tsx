@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
-import rccgLogoAsset from "@/assets/rccg-logo.png.asset.json";
+import logoAsset from "@/assets/logo.png";
+import rccgLogoAsset from "@/assets/rccg-logo.png";
 
 export function SiteFooter() {
   return (
@@ -9,8 +9,8 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <img src={rccgLogoAsset.url} alt="RCCG" className="h-12 w-12 object-contain bg-white/5 rounded-full p-0.5" />
-            <img src={logoAsset.url} alt="Praise Palace" className="h-12 w-12 object-contain" />
+            <img src={rccgLogoAsset} alt="RCCG" className="h-12 w-12 object-contain bg-white/5 rounded-full p-0.5" />
+            <img src={logoAsset} alt="Praise Palace" className="h-12 w-12 object-contain" />
             <div>
               <div className="font-display font-extrabold text-base text-white leading-tight">
                 <span className="text-[#E13495]">RCCG</span>{" "}
