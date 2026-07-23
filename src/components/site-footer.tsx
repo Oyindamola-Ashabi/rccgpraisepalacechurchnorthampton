@@ -58,9 +58,9 @@ export function SiteFooter() {
         <div>
           <h4 className="font-display text-lg text-white mb-4">Contact</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> 350A iCentre, Howard Way, Newport Pagnell, MK16 9PY</li>
+            <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> Briar Hill Community Centre NN4 8SX</li>
             <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> <a href="tel:+447000000000" className="hover:text-[#F0DE51]">+44 7000 000 000</a></li>
-            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> <a href="mailto:oyintesting@gmail.com" className="hover:text-[#F0DE51] break-all">oyintesting@gmail.com</a></li>
+            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> <a href="mailto:rccgpraisepalace01@gmail.com" className="hover:text-[#F0DE51] break-all">rccgpraisepalace01@gmail.com</a></li>
           </ul>
         </div>
       </div>

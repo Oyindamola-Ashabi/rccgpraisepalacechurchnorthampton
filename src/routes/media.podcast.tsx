@@ -7,9 +7,9 @@ import podcastImg from "@/assets/podcast.jpg";
 export const Route = createFileRoute("/media/podcast")({
   head: () => ({
     meta: [
-      { title: "Praise Talks Podcast — PraisePalace Church" },
-      { name: "description", content: "Praise Talks — the official PraisePalace Church podcast. Conversations that stir faith and fuel purpose." },
-      { property: "og:title", content: "Praise Talks Podcast — PraisePalace Church" },
+      { title: "Praise Talks Podcast — RCCG Praise Palace Northampton" },
+      { name: "description", content: "Praise Talks — the official RCCG Praise Palace Northampton podcast. Conversations that stir faith and fuel purpose." },
+      { property: "og:title", content: "Praise Talks Podcast — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Conversations that stir faith and fuel purpose." },
       { property: "og:url", content: "/media/podcast" },
     ],

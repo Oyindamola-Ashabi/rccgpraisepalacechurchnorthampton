@@ -226,7 +226,7 @@ function BookAppointmentPage() {
               <p className="mt-2 text-sm text-muted-foreground">For urgent prayer or care, please reach us directly.</p>
               <div className="mt-4 space-y-2 text-sm">
                 <a href="tel:+447000000000" className="flex items-center gap-2 hover:text-[#E13495]"><Phone className="h-4 w-4 text-[#E13495]" /> +44 7000 000 000</a>
-                <a href="mailto:oyintesting@gmail.com" className="flex items-center gap-2 hover:text-[#E13495] break-all"><Mail className="h-4 w-4 text-[#E13495]" /> oyintesting@gmail.com</a>
+                <a href="mailto:rccgpraisepalace01@gmail.com" className="flex items-center gap-2 hover:text-[#E13495] break-all"><Mail className="h-4 w-4 text-[#E13495]" /> rccgpraisepalace01@gmail.com</a>
               </div>
             </div>
           </aside>
