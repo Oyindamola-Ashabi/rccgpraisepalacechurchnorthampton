@@ -35,9 +35,12 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminPrayerRouteImport } from './routes/admin.prayer'
 import { Route as AdminPastorsRouteImport } from './routes/admin.pastors'
 import { Route as AdminPagesRouteImport } from './routes/admin.pages'
+import { Route as AdminMinistriesRouteImport } from './routes/admin.ministries'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminGivingRouteImport } from './routes/admin.giving'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
 
@@ -173,6 +176,11 @@ const AdminPagesRoute = AdminPagesRouteImport.update({
   path: '/pages',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMinistriesRoute = AdminMinistriesRouteImport.update({
+  id: '/ministries',
+  path: '/ministries',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMediaRoute = AdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
@@ -183,9 +191,19 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGivingRoute = AdminGivingRouteImport.update({
+  id: '/giving',
+  path: '/giving',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminGalleryRoute = AdminGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminContactRoute = AdminContactRouteImport.update({
@@ -215,9 +233,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
@@ -246,9 +267,12 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
@@ -280,9 +304,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
@@ -315,9 +342,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
     | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
     | '/admin/media'
+    | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
@@ -346,9 +376,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
     | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
     | '/admin/media'
+    | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
@@ -379,9 +412,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
     | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
     | '/admin/media'
+    | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
@@ -599,6 +635,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPagesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ministries': {
+      id: '/admin/ministries'
+      path: '/ministries'
+      fullPath: '/admin/ministries'
+      preLoaderRoute: typeof AdminMinistriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/media': {
       id: '/admin/media'
       path: '/media'
@@ -613,11 +656,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/giving': {
+      id: '/admin/giving'
+      path: '/giving'
+      fullPath: '/admin/giving'
+      preLoaderRoute: typeof AdminGivingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/gallery': {
       id: '/admin/gallery'
       path: '/gallery'
       fullPath: '/admin/gallery'
       preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/contact': {
@@ -640,9 +697,12 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminContactRoute: typeof AdminContactRoute
+  AdminEventsRoute: typeof AdminEventsRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminGivingRoute: typeof AdminGivingRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminMinistriesRoute: typeof AdminMinistriesRoute
   AdminPagesRoute: typeof AdminPagesRoute
   AdminPastorsRoute: typeof AdminPastorsRoute
   AdminPrayerRoute: typeof AdminPrayerRoute
@@ -655,9 +715,12 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminContactRoute: AdminContactRoute,
+  AdminEventsRoute: AdminEventsRoute,
   AdminGalleryRoute: AdminGalleryRoute,
+  AdminGivingRoute: AdminGivingRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMediaRoute: AdminMediaRoute,
+  AdminMinistriesRoute: AdminMinistriesRoute,
   AdminPagesRoute: AdminPagesRoute,
   AdminPastorsRoute: AdminPastorsRoute,
   AdminPrayerRoute: AdminPrayerRoute,

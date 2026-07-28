@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog } from "lucide-react";
+import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog, Settings, FileText, Image as ImageIcon, Images, Church, CalendarDays, HandCoins } from "lucide-react";
 import { adminSignOut, isStaff, roleLabel, useAdminSession } from "@/lib/admin-auth";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,15 @@ const NAV = [
   { to: "/admin/testimonies", label: "Testimonies", icon: Quote },
   { to: "/admin/visits", label: "Plan a Visit", icon: Users },
   { to: "/admin/pastors", label: "Pastors", icon: UserCog },
+  { to: "/admin/settings", label: "Site Settings", icon: Settings },
+  { to: "/admin/pages", label: "Page Content", icon: FileText },
+  { to: "/admin/media", label: "Media Library", icon: ImageIcon },
+  { to: "/admin/gallery", label: "Gallery", icon: Images },
+  { to: "/admin/ministries", label: "Ministries", icon: Church },
+  { to: "/admin/events", label: "Events", icon: CalendarDays },
+  { to: "/admin/giving", label: "Giving Page", icon: HandCoins },
 ];
+
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
