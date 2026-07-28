@@ -27,6 +27,7 @@ import { Route as SermonsIndexRouteImport } from './routes/sermons.index'
 import { Route as MinistriesIndexRouteImport } from './routes/ministries.index'
 import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SermonsSlugRouteImport } from './routes/sermons.$slug'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
@@ -137,6 +138,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SermonsSlugRoute = SermonsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SermonsRoute,
 } as any)
 const MinistriesWomensFellowshipRoute =
   MinistriesWomensFellowshipRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
@@ -313,6 +320,7 @@ export interface FileRoutesByTo {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/media': typeof MediaIndexRoute
   '/ministries': typeof MinistriesIndexRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/sermons/$slug'
     | '/admin/'
     | '/media/'
     | '/ministries/'
@@ -433,6 +443,7 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/sermons/$slug'
     | '/admin'
     | '/media'
     | '/ministries'
@@ -473,6 +484,7 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/sermons/$slug'
     | '/admin/'
     | '/media/'
     | '/ministries/'
@@ -627,6 +639,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/sermons/$slug': {
+      id: '/sermons/$slug'
+      path: '/$slug'
+      fullPath: '/sermons/$slug'
+      preLoaderRoute: typeof SermonsSlugRouteImport
+      parentRoute: typeof SermonsRoute
     }
     '/ministries/womens-fellowship': {
       id: '/ministries/womens-fellowship'
@@ -835,10 +854,12 @@ const MediaRouteChildren: MediaRouteChildren = {
 const MediaRouteWithChildren = MediaRoute._addFileChildren(MediaRouteChildren)
 
 interface SermonsRouteChildren {
+  SermonsSlugRoute: typeof SermonsSlugRoute
   SermonsIndexRoute: typeof SermonsIndexRoute
 }
 
 const SermonsRouteChildren: SermonsRouteChildren = {
+  SermonsSlugRoute: SermonsSlugRoute,
   SermonsIndexRoute: SermonsIndexRoute,
 }
 
