@@ -28,6 +28,7 @@ import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
+import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
 import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
@@ -143,6 +144,11 @@ const MinistriesMensFellowshipRoute =
     path: '/ministries/mens-fellowship',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MinistriesSlugRoute = MinistriesSlugRouteImport.update({
+  id: '/ministries/$slug',
+  path: '/ministries/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MediaPodcastRoute = MediaPodcastRouteImport.update({
   id: '/podcast',
   path: '/podcast',
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/events/couples': typeof EventsCouplesRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
@@ -297,6 +304,7 @@ export interface FileRoutesByTo {
   '/events/couples': typeof EventsCouplesRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin': typeof AdminIndexRoute
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/events/couples': typeof EventsCouplesRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
+  '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/events/couples'
     | '/media/gallery'
     | '/media/podcast'
+    | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
     | '/admin/'
@@ -412,6 +422,7 @@ export interface FileRouteTypes {
     | '/events/couples'
     | '/media/gallery'
     | '/media/podcast'
+    | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
     | '/admin'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/events/couples'
     | '/media/gallery'
     | '/media/podcast'
+    | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
     | '/admin/'
@@ -472,6 +484,7 @@ export interface RootRouteChildren {
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimoniesRoute: typeof TestimoniesRoute
+  MinistriesSlugRoute: typeof MinistriesSlugRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
@@ -610,6 +623,13 @@ declare module '@tanstack/react-router' {
       path: '/ministries/mens-fellowship'
       fullPath: '/ministries/mens-fellowship'
       preLoaderRoute: typeof MinistriesMensFellowshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/$slug': {
+      id: '/ministries/$slug'
+      path: '/ministries/$slug'
+      fullPath: '/ministries/$slug'
+      preLoaderRoute: typeof MinistriesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/podcast': {
@@ -812,6 +832,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimoniesRoute: TestimoniesRoute,
+  MinistriesSlugRoute: MinistriesSlugRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
