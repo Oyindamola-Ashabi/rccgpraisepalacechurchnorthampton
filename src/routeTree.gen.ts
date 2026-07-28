@@ -23,6 +23,7 @@ import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MinistriesIndexRouteImport } from './routes/ministries.index'
 import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
@@ -113,6 +114,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinistriesIndexRoute = MinistriesIndexRouteImport.update({
+  id: '/ministries/',
+  path: '/ministries/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaIndexRoute = MediaIndexRouteImport.update({
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
+  '/ministries/': typeof MinistriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin': typeof AdminIndexRoute
   '/media': typeof MediaIndexRoute
+  '/ministries': typeof MinistriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -332,6 +340,7 @@ export interface FileRoutesById {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
+  '/ministries/': typeof MinistriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin/'
     | '/media/'
+    | '/ministries/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin'
     | '/media'
+    | '/ministries'
   id:
     | '__root__'
     | '/'
@@ -443,6 +454,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin/'
     | '/media/'
+    | '/ministries/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -462,6 +474,7 @@ export interface RootRouteChildren {
   TestimoniesRoute: typeof TestimoniesRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
+  MinistriesIndexRoute: typeof MinistriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -562,6 +575,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/': {
+      id: '/ministries/'
+      path: '/ministries'
+      fullPath: '/ministries/'
+      preLoaderRoute: typeof MinistriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/': {
@@ -794,6 +814,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimoniesRoute: TestimoniesRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
+  MinistriesIndexRoute: MinistriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
