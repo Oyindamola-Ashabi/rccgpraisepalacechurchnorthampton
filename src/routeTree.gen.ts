@@ -23,6 +23,7 @@ import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SermonsIndexRouteImport } from './routes/sermons.index'
 import { Route as MinistriesIndexRouteImport } from './routes/ministries.index'
 import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -116,6 +117,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SermonsIndexRoute = SermonsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SermonsRoute,
 } as any)
 const MinistriesIndexRoute = MinistriesIndexRouteImport.update({
   id: '/ministries/',
@@ -246,7 +252,7 @@ export interface FileRoutesByFullPath {
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
+  '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
+  '/sermons/': typeof SermonsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -283,7 +290,6 @@ export interface FileRoutesByTo {
   '/give': typeof GiveRoute
   '/plan-a-visit': typeof PlanAVisitRoute
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -310,6 +316,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/media': typeof MediaIndexRoute
   '/ministries': typeof MinistriesIndexRoute
+  '/sermons': typeof SermonsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -323,7 +330,7 @@ export interface FileRoutesById {
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
+  '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -350,6 +357,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
+  '/sermons/': typeof SermonsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -391,6 +399,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/media/'
     | '/ministries/'
+    | '/sermons/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -401,7 +410,6 @@ export interface FileRouteTypes {
     | '/give'
     | '/plan-a-visit'
     | '/prayer-request'
-    | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
     | '/testimonies'
@@ -428,6 +436,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/media'
     | '/ministries'
+    | '/sermons'
   id:
     | '__root__'
     | '/'
@@ -467,6 +476,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/media/'
     | '/ministries/'
+    | '/sermons/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -480,7 +490,7 @@ export interface RootRouteChildren {
   MediaRoute: typeof MediaRouteWithChildren
   PlanAVisitRoute: typeof PlanAVisitRoute
   PrayerRequestRoute: typeof PrayerRequestRoute
-  SermonsRoute: typeof SermonsRoute
+  SermonsRoute: typeof SermonsRouteWithChildren
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimoniesRoute: typeof TestimoniesRoute
@@ -589,6 +599,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/sermons/': {
+      id: '/sermons/'
+      path: '/'
+      fullPath: '/sermons/'
+      preLoaderRoute: typeof SermonsIndexRouteImport
+      parentRoute: typeof SermonsRoute
     }
     '/ministries/': {
       id: '/ministries/'
@@ -817,6 +834,17 @@ const MediaRouteChildren: MediaRouteChildren = {
 
 const MediaRouteWithChildren = MediaRoute._addFileChildren(MediaRouteChildren)
 
+interface SermonsRouteChildren {
+  SermonsIndexRoute: typeof SermonsIndexRoute
+}
+
+const SermonsRouteChildren: SermonsRouteChildren = {
+  SermonsIndexRoute: SermonsIndexRoute,
+}
+
+const SermonsRouteWithChildren =
+  SermonsRoute._addFileChildren(SermonsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -828,7 +856,7 @@ const rootRouteChildren: RootRouteChildren = {
   MediaRoute: MediaRouteWithChildren,
   PlanAVisitRoute: PlanAVisitRoute,
   PrayerRequestRoute: PrayerRequestRoute,
-  SermonsRoute: SermonsRoute,
+  SermonsRoute: SermonsRouteWithChildren,
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimoniesRoute: TestimoniesRoute,
