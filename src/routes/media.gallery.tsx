@@ -100,7 +100,7 @@ function GalleryPage() {
               />
               <div className="flex flex-wrap gap-3">
                 <BrandButton to="/media">Watch Videos</BrandButton>
-                <BrandButton to="/contact" variant="gold">Plan a Visit</BrandButton>
+                <BrandButton to="/plan-a-visit" variant="gold">Plan a Visit</BrandButton>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
