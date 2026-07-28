@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Clock, User, Mail, Phone, MessageSquare, CheckCircle2 } from "lucide-react";
-import { PageHero, Section, SectionHeader } from "@/components/section-ui";
+import { Calendar as CalendarIcon, Clock, User, Mail, Phone, MessageSquare, CheckCircle2, Loader2 } from "lucide-react";
+import { PageHero, Section } from "@/components/section-ui";
 import { Calendar } from "@/components/ui/calendar";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book-appointment")({
@@ -20,12 +21,7 @@ export const Route = createFileRoute("/book-appointment")({
   component: BookAppointmentPage,
 });
 
-const PASTORS = [
-  { id: "pastor-lead", name: "Pastor (Lead Pastor)", focus: "General pastoral care, vision & counsel" },
-  { id: "pastor-mrs", name: "Pastor (Mrs.)", focus: "Women, marriage & family" },
-  { id: "pastor-youth", name: "Youth Pastor", focus: "Youth, career & discipleship" },
-  { id: "pastor-mens", name: "Men Fellowship Pastor", focus: "Men, fatherhood & purpose" },
-];
+type Pastor = { id: string; name: string; focus: string };
 
 const TIMES = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
 
@@ -33,7 +29,9 @@ const REASONS = ["Prayer", "Counselling", "Marriage", "Baptism / Dedication", "C
 
 function BookAppointmentPage() {
   const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
-  const [pastor, setPastor] = useState(PASTORS[0].id);
+  const [pastors, setPastors] = useState<Pastor[]>([]);
+  const [loadingPastors, setLoadingPastors] = useState(true);
+  const [pastor, setPastor] = useState("");
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState<string>("");
   const [reason, setReason] = useState(REASONS[0]);
@@ -42,12 +40,52 @@ function BookAppointmentPage() {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const disabled = !date || !time || !name.trim() || !email.trim();
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("pastors")
+        .select("id, full_name, title, bio")
+        .order("sort_order");
+      if (!active) return;
+      const list = (data ?? []).map((p: any) => ({
+        id: p.id,
+        name: p.title && !String(p.full_name).startsWith(p.title) ? `${p.title} ${p.full_name}` : p.full_name,
+        focus: p.bio ?? "Pastoral care, prayer & counsel",
+      }));
+      setPastors(list);
+      setPastor((cur) => cur || list[0]?.id || "");
+      setLoadingPastors(false);
+    })();
+    return () => { active = false; };
+  }, []);
 
-  function handleSubmit(e: React.FormEvent) {
+  const PASTORS = pastors;
+  const disabled = !pastor || !date || !time || !name.trim() || !email.trim() || sending;
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (disabled) return;
+    if (disabled || !date) return;
+    setSending(true);
+    setError(null);
+    const { error } = await supabase.from("appointment_requests").insert({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim() || null,
+      pastor_id: pastor,
+      appointment_date: format(date, "yyyy-MM-dd"),
+      appointment_time: time,
+      reason,
+      notes: notes.trim() || null,
+    });
+    setSending(false);
+    if (error) {
+      setError("Sorry, your request could not be submitted. Please try another date or contact us directly.");
+      return;
+    }
     setSubmitted(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -85,6 +123,11 @@ function BookAppointmentPage() {
                 <User className="h-4 w-4 text-[#E13495]" />
                 <h3 className="font-display font-bold text-lg">Choose a Pastor</h3>
               </div>
+              {loadingPastors ? (
+                <p className="text-sm text-muted-foreground">Loading pastors…</p>
+              ) : PASTORS.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No pastors are currently available for booking. Please contact us directly.</p>
+              ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {PASTORS.map((p) => (
                   <label
@@ -107,6 +150,7 @@ function BookAppointmentPage() {
                   </label>
                 ))}
               </div>
+              )}
             </div>
 
             {/* Date */}
@@ -197,12 +241,15 @@ function BookAppointmentPage() {
               </Field>
             </div>
 
+            {error && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+
             <button
               type="submit"
               disabled={disabled}
-              className="w-full rounded-full gradient-brand px-6 py-3.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full gradient-brand px-6 py-3.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Request Appointment
+              {sending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {sending ? "Sending…" : "Request Appointment"}
             </button>
 
 
