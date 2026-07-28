@@ -2,8 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from "lucide-react";
 import logoAsset from "@/assets/logo.png";
 import rccgLogoAsset from "@/assets/rccg-logo.png";
+import { useSiteSettings } from "@/lib/cms";
 
 export function SiteFooter() {
+  const s = useSiteSettings();
+  const copyright = (s.copyright_text ?? "").replace("{year}", String(new Date().getFullYear()));
+
   return (
     <footer className="mt-20 border-t bg-[#0f0a14] text-white/80">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
@@ -19,13 +23,11 @@ export function SiteFooter() {
               <div className="text-[10px] tracking-[0.25em] text-[#F0DE51]">NORTHAMPTON</div>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-relaxed">
-            A vibrant Redeemed Christian Church of God parish in Northampton, UK. Come as you are — it shall end in praise.
-          </p>
+          <p className="mt-4 text-sm leading-relaxed">{s.footer_text}</p>
           <div className="mt-5 flex gap-3">
-            <SocialIcon href="#"><Facebook className="h-4 w-4" /></SocialIcon>
-            <SocialIcon href="#"><Instagram className="h-4 w-4" /></SocialIcon>
-            <SocialIcon href="#"><Youtube className="h-4 w-4" /></SocialIcon>
+            {s.facebook_url && <SocialIcon href={s.facebook_url} label="Facebook"><Facebook className="h-4 w-4" /></SocialIcon>}
+            {s.instagram_url && <SocialIcon href={s.instagram_url} label="Instagram"><Instagram className="h-4 w-4" /></SocialIcon>}
+            {s.youtube_url && <SocialIcon href={s.youtube_url} label="YouTube"><Youtube className="h-4 w-4" /></SocialIcon>}
           </div>
         </div>
 
@@ -40,6 +42,7 @@ export function SiteFooter() {
             <li><Link to="/contact" className="hover:text-[#F0DE51]">Contact</Link></li>
             <li><Link to="/plan-a-visit" className="hover:text-[#F0DE51]">Plan a Visit</Link></li>
             <li><Link to="/prayer-request" className="hover:text-[#F0DE51]">Prayer Request</Link></li>
+            <li><Link to="/testimonies" className="hover:text-[#F0DE51]">Testimonies</Link></li>
             <li><Link to="/share-testimony" className="hover:text-[#F0DE51]">Share a Testimony</Link></li>
           </ul>
         </div>
@@ -47,6 +50,7 @@ export function SiteFooter() {
         <div>
           <h4 className="font-display text-lg text-white mb-4">Ministries</h4>
           <ul className="space-y-2 text-sm">
+            <li><Link to="/ministries" className="hover:text-[#F0DE51]">All Ministries</Link></li>
             <li><a href="https://praisepalaceradio.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">PraisePalace Radio ↗</a></li>
             <li><a href="https://praisepalacebusinessschool.com/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Business School ↗</a></li>
             <li><a href="https://raisingchampions.org.uk" target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">Youth Camp ↗</a></li>
@@ -61,15 +65,32 @@ export function SiteFooter() {
         <div>
           <h4 className="font-display text-lg text-white mb-4">Contact</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> Briar Hill Community Centre NN4 8SX</li>
-            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> <a href="tel:+447000000000" className="hover:text-[#F0DE51]">+44 7000 000 000</a></li>
-            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" /> <a href="mailto:rccgpraisepalace01@gmail.com" className="hover:text-[#F0DE51] break-all">rccgpraisepalace01@gmail.com</a></li>
+            <li className="flex gap-3">
+              <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" />
+              {s.map_url ? (
+                <a href={s.map_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#F0DE51]">{s.address}</a>
+              ) : (
+                <span>{s.address}</span>
+              )}
+            </li>
+            {s.phone && (
+              <li className="flex gap-3">
+                <Phone className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" />
+                <a href={`tel:${s.phone.replace(/\s+/g, "")}`} className="hover:text-[#F0DE51]">{s.phone}</a>
+              </li>
+            )}
+            {s.email && (
+              <li className="flex gap-3">
+                <Mail className="h-4 w-4 mt-0.5 shrink-0 text-[#E13495]" />
+                <a href={`mailto:${s.email}`} className="hover:text-[#F0DE51] break-all">{s.email}</a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/60">
-          <p>© {new Date().getFullYear()} RCCG Praise Palace Northampton. All rights reserved.</p>
+          <p>{copyright}</p>
           <p className="font-display italic text-[#F0DE51]">It Shall End In Praise</p>
         </div>
       </div>
@@ -77,10 +98,11 @@ export function SiteFooter() {
   );
 }
 
-function SocialIcon({ href, children }: { href: string; children: React.ReactNode }) {
+function SocialIcon({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
   return (
     <a
       href={href}
+      aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
       className="grid h-9 w-9 place-items-center rounded-full bg-white/10 hover:gradient-brand transition"

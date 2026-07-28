@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
+import { useSiteSettings } from "@/lib/cms";
 import logoAsset from "@/assets/logo.png";
 import rccgLogoAsset from "@/assets/rccg-logo.png";
 
@@ -12,7 +13,9 @@ const NAV: NavItem[] = [
   { label: "About", to: "/about" },
   {
     label: "Ministries",
+    to: "/ministries",
     children: [
+      { label: "All Ministries", to: "/ministries" },
       { label: "PraisePalace Radio", href: "https://praisepalaceradio.com/", external: true },
       { label: "Business School", href: "https://praisepalacebusinessschool.com/", external: true },
       { label: "Youth Camp", href: "https://raisingchampions.org.uk", external: true },
@@ -46,6 +49,7 @@ const NAV: NavItem[] = [
       { label: "Contact Us", to: "/contact" },
       { label: "Plan a Visit", to: "/plan-a-visit" },
       { label: "Prayer Request", to: "/prayer-request" },
+      { label: "Testimonies", to: "/testimonies" },
       { label: "Share a Testimony", to: "/share-testimony" },
     ],
   },
@@ -55,6 +59,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const settings = useSiteSettings();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -74,12 +79,16 @@ export function SiteHeader() {
       <div className="hidden md:block gradient-brand text-white text-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
           <div className="flex items-center gap-5">
-            <a href="mailto:rccgpraisepalace01@gmail.com" className="flex items-center gap-2 hover:opacity-90">
-              <Mail className="h-3.5 w-3.5" /> rccgpraisepalace01@gmail.com
-            </a>
-            <a href="tel:+447000000000" className="flex items-center gap-2 hover:opacity-90">
-              <Phone className="h-3.5 w-3.5" /> +44 7000 000 000
-            </a>
+            {settings.email && (
+              <a href={`mailto:${settings.email}`} className="flex items-center gap-2 hover:opacity-90">
+                <Mail className="h-3.5 w-3.5" /> {settings.email}
+              </a>
+            )}
+            {settings.phone && (
+              <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="flex items-center gap-2 hover:opacity-90">
+                <Phone className="h-3.5 w-3.5" /> {settings.phone}
+              </a>
+            )}
           </div>
           <div className="opacity-90 font-medium tracking-wide">It Shall End In Praise</div>
         </div>

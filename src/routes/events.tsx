@@ -4,6 +4,7 @@ import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { eventPhotos } from "@/lib/gallery-images";
+import { usePublishedEvents, formatEventDate, formatEventTime } from "@/lib/cms";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/events")({
   component: EventsPage,
 });
 
-const events = [
+const FALLBACK_EVENTS = [
   { image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples" },
   { image: eventPhotos.youth.url, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
   { image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
@@ -30,6 +31,22 @@ const events = [
 ];
 
 function EventsPage() {
+  const { rows } = usePublishedEvents();
+
+  const events = rows.length
+    ? rows.map((e) => ({
+        image: e.image_url ?? heroImg,
+        tag: e.is_featured ? "Featured" : "Event",
+        title: e.title,
+        date: formatEventDate(e.start_at),
+        time: formatEventTime(e.start_at),
+        location: e.venue ?? "RCCG Praise Palace Northampton",
+        to: undefined as string | undefined,
+        href: e.registration_url ?? undefined,
+        description: e.description ?? undefined,
+      }))
+    : FALLBACK_EVENTS.map((e) => ({ ...e, to: (e as any).to as string | undefined, href: undefined as string | undefined, description: undefined as string | undefined }));
+
   return (
     <>
       <PageHero eyebrow="Gather With Us" title="Upcoming Events" subtitle="Life-shaping moments of worship, teaching and connection." image={heroImg} />
@@ -49,7 +66,12 @@ function EventsPage() {
                   <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-[#E13495]" /> {e.time}</div>
                   <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#E13495]" /> {e.location}</div>
                 </div>
-                {e.to ? (
+                {e.description && <p className="mt-3 text-sm text-muted-foreground">{e.description}</p>}
+                {e.href ? (
+                  <a href={e.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline">
+                    Register <ArrowRight className="h-4 w-4" />
+                  </a>
+                ) : e.to ? (
                   <Link to={e.to} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline">
                     Learn more <ArrowRight className="h-4 w-4" />
                   </Link>

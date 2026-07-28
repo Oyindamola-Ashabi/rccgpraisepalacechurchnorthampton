@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { galleryPhotos, type GalleryPhoto } from "@/lib/gallery-images";
+import { CmsAlbums } from "@/components/cms-albums";
 
 export const Route = createFileRoute("/media/gallery")({
   head: () => ({
@@ -87,6 +88,8 @@ function GalleryPage() {
         </div>
       </Section>
 
+      <CmsAlbums />
+
       {/* CTA */}
       <section className="bg-secondary/40 border-y">
         <Section>
@@ -100,7 +103,7 @@ function GalleryPage() {
               />
               <div className="flex flex-wrap gap-3">
                 <BrandButton to="/media">Watch Videos</BrandButton>
-                <BrandButton to="/contact" variant="gold">Plan a Visit</BrandButton>
+                <BrandButton to="/plan-a-visit" variant="gold">Plan a Visit</BrandButton>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">

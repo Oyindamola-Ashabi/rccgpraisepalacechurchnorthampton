@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { HandHeart, Landmark, Gift } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
+import { useGivingContent, useSiteSettings, textOr } from "@/lib/cms";
 
 export const Route = createFileRoute("/give")({
   head: () => ({
@@ -18,9 +19,17 @@ export const Route = createFileRoute("/give")({
 });
 
 function GivePage() {
+  const giving = useGivingContent();
+  const settings = useSiteSettings();
+
   return (
     <>
-      <PageHero eyebrow="Partnership" title="Give Cheerfully" subtitle="Bring your tithes into the storehouse — and see the windows of heaven open." image={heroImg} />
+      <PageHero
+        eyebrow="Partnership"
+        title="Give Cheerfully"
+        subtitle={textOr(giving?.intro_text, "Bring your tithes into the storehouse — and see the windows of heaven open.")}
+        image={giving?.image_url ?? heroImg}
+      />
 
       <Section>
         <div className="grid gap-6 md:grid-cols-3">
@@ -42,14 +51,31 @@ function GivePage() {
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="How To Give" title="Bank Transfer Details" subtitle="Please contact the church office for our current bank details or to set up a standing order." />
+          <SectionHeader
+            eyebrow="How To Give"
+            title="Bank Transfer Details"
+            subtitle={textOr(giving?.instructions, "Please contact the church office for our current bank details or to set up a standing order.")}
+          />
           <div className="mx-auto max-w-xl rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 text-center">
-            <p className="text-muted-foreground">
-              For giving details, standing orders, or Gift Aid enrolment, please reach out to us.
-            </p>
+            {giving?.payment_details ? (
+              <pre className="whitespace-pre-wrap text-left font-sans text-sm text-muted-foreground">{giving.payment_details}</pre>
+            ) : (
+              <p className="text-muted-foreground">
+                For giving details, standing orders, or Gift Aid enrolment, please reach out to us.
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <BrandButton to="/contact">Contact Office</BrandButton>
-              <BrandButton href="mailto:rccgpraisepalace01@gmail.com" variant="gold">Email Us</BrandButton>
+              {giving?.cta_href ? (
+                <BrandButton href={giving.cta_href}>{textOr(giving.cta_label, "Give Now")}</BrandButton>
+              ) : (
+                <BrandButton to="/contact">Contact Office</BrandButton>
+              )}
+              {settings.email && (
+                <BrandButton href={`mailto:${settings.email}`} variant="gold">Email Us</BrandButton>
+              )}
+              {giving?.external_link && (
+                <BrandButton href={giving.external_link} variant="gold">Online Giving</BrandButton>
+              )}
             </div>
           </div>
         </Section>

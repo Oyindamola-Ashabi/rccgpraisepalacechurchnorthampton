@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestimoniesRouteImport } from './routes/testimonies'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShareTestimonyRouteImport } from './routes/share-testimony'
 import { Route as SermonsRouteImport } from './routes/sermons'
@@ -22,6 +23,7 @@ import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MinistriesIndexRouteImport } from './routes/ministries.index'
 import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
@@ -31,12 +33,24 @@ import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
 import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AdminTestimoniesRouteImport } from './routes/admin.testimonies'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminPrayerRouteImport } from './routes/admin.prayer'
 import { Route as AdminPastorsRouteImport } from './routes/admin.pastors'
+import { Route as AdminPagesRouteImport } from './routes/admin.pages'
+import { Route as AdminMinistriesRouteImport } from './routes/admin.ministries'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminGivingRouteImport } from './routes/admin.giving'
+import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
 
+const TestimoniesRoute = TestimoniesRouteImport.update({
+  id: '/testimonies',
+  path: '/testimonies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -102,6 +116,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MinistriesIndexRoute = MinistriesIndexRouteImport.update({
+  id: '/ministries/',
+  path: '/ministries/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MediaIndexRoute = MediaIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -149,6 +168,11 @@ const AdminTestimoniesRoute = AdminTestimoniesRouteImport.update({
   path: '/testimonies',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPrayerRoute = AdminPrayerRouteImport.update({
   id: '/prayer',
   path: '/prayer',
@@ -159,9 +183,39 @@ const AdminPastorsRoute = AdminPastorsRouteImport.update({
   path: '/pastors',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagesRoute = AdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMinistriesRoute = AdminMinistriesRouteImport.update({
+  id: '/ministries',
+  path: '/ministries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGivingRoute = AdminGivingRouteImport.update({
+  id: '/giving',
+  path: '/giving',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGalleryRoute = AdminGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminContactRoute = AdminContactRouteImport.update({
@@ -189,11 +243,19 @@ export interface FileRoutesByFullPath {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
@@ -203,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
+  '/ministries/': typeof MinistriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -216,11 +279,19 @@ export interface FileRoutesByTo {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
@@ -230,6 +301,7 @@ export interface FileRoutesByTo {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin': typeof AdminIndexRoute
   '/media': typeof MediaIndexRoute
+  '/ministries': typeof MinistriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -246,11 +318,19 @@ export interface FileRoutesById {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/giving': typeof AdminGivingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/ministries': typeof AdminMinistriesRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
@@ -260,6 +340,7 @@ export interface FileRoutesById {
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
+  '/ministries/': typeof MinistriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -277,11 +358,19 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
+    | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
+    | '/admin/media'
+    | '/admin/ministries'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
+    | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
@@ -291,6 +380,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin/'
     | '/media/'
+    | '/ministries/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -304,11 +394,19 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
+    | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
+    | '/admin/media'
+    | '/admin/ministries'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
+    | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
@@ -318,6 +416,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin'
     | '/media'
+    | '/ministries'
   id:
     | '__root__'
     | '/'
@@ -333,11 +432,19 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
+    | '/admin/events'
+    | '/admin/gallery'
+    | '/admin/giving'
     | '/admin/login'
+    | '/admin/media'
+    | '/admin/ministries'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
+    | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
@@ -347,6 +454,7 @@ export interface FileRouteTypes {
     | '/ministries/womens-fellowship'
     | '/admin/'
     | '/media/'
+    | '/ministries/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -363,12 +471,21 @@ export interface RootRouteChildren {
   SermonsRoute: typeof SermonsRoute
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TestimoniesRoute: typeof TestimoniesRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
+  MinistriesIndexRoute: typeof MinistriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/testimonies': {
+      id: '/testimonies'
+      path: '/testimonies'
+      fullPath: '/testimonies'
+      preLoaderRoute: typeof TestimoniesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -460,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ministries/': {
+      id: '/ministries/'
+      path: '/ministries'
+      fullPath: '/ministries/'
+      preLoaderRoute: typeof MinistriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/media/': {
       id: '/media/'
       path: '/'
@@ -523,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTestimoniesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/prayer': {
       id: '/admin/prayer'
       path: '/prayer'
@@ -537,11 +668,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPastorsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pages': {
+      id: '/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ministries': {
+      id: '/admin/ministries'
+      path: '/ministries'
+      fullPath: '/admin/ministries'
+      preLoaderRoute: typeof AdminMinistriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/giving': {
+      id: '/admin/giving'
+      path: '/giving'
+      fullPath: '/admin/giving'
+      preLoaderRoute: typeof AdminGivingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/gallery': {
+      id: '/admin/gallery'
+      path: '/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/contact': {
@@ -564,9 +737,16 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminContactRoute: typeof AdminContactRoute
+  AdminEventsRoute: typeof AdminEventsRoute
+  AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminGivingRoute: typeof AdminGivingRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMediaRoute: typeof AdminMediaRoute
+  AdminMinistriesRoute: typeof AdminMinistriesRoute
+  AdminPagesRoute: typeof AdminPagesRoute
   AdminPastorsRoute: typeof AdminPastorsRoute
   AdminPrayerRoute: typeof AdminPrayerRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTestimoniesRoute: typeof AdminTestimoniesRoute
   AdminVisitsRoute: typeof AdminVisitsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -575,9 +755,16 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminContactRoute: AdminContactRoute,
+  AdminEventsRoute: AdminEventsRoute,
+  AdminGalleryRoute: AdminGalleryRoute,
+  AdminGivingRoute: AdminGivingRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMediaRoute: AdminMediaRoute,
+  AdminMinistriesRoute: AdminMinistriesRoute,
+  AdminPagesRoute: AdminPagesRoute,
   AdminPastorsRoute: AdminPastorsRoute,
   AdminPrayerRoute: AdminPrayerRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminTestimoniesRoute: AdminTestimoniesRoute,
   AdminVisitsRoute: AdminVisitsRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -624,9 +811,21 @@ const rootRouteChildren: RootRouteChildren = {
   SermonsRoute: SermonsRoute,
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TestimoniesRoute: TestimoniesRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
+  MinistriesIndexRoute: MinistriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

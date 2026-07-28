@@ -6,6 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
+import { usePageSections, useSiteSettings, textOr } from "@/lib/cms";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,6 +23,10 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const sections = usePageSections("home");
+  const settings = useSiteSettings();
+  const hero = sections.hero ?? null;
+
   return (
     <>
       {/* HERO */}
@@ -31,15 +36,21 @@ function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-4 py-1.5 text-xs uppercase tracking-[0.25em]">
-              <Sparkles className="h-3.5 w-3.5 text-[#F0DE51]" /> Welcome Home
+              <Sparkles className="h-3.5 w-3.5 text-[#F0DE51]" /> {textOr(hero?.subheading, "Welcome Home")}
             </div>
             <h1 className="font-display font-black text-5xl md:text-7xl leading-[1.05]">
-              It Shall End
-              <br />
-              In <span className="text-[#F0DE51]">Praise</span>.
+              {hero?.headline ? (
+                hero.headline
+              ) : (
+                <>
+                  It Shall End
+                  <br />
+                  In <span className="text-[#F0DE51]">Praise</span>.
+                </>
+              )}
             </h1>
             <p className="mt-6 max-w-xl text-white/90 text-lg">
-              RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.
+              {textOr(hero?.body, settings.short_description ?? "RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <BrandButton to="/plan-a-visit" variant="gold">Plan Your Visit</BrandButton>
