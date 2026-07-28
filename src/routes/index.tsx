@@ -200,7 +200,7 @@ function HomePage() {
           </div>
           <div className="relative">
             <div className="relative overflow-hidden rounded-3xl shadow-elegant">
-              <img src={pastorsImg} alt="Pastor Abiodun Bamgbala" className="w-full aspect-[4/5] object-cover" loading="lazy" width={1000} height={1200} />
+              <img src={image("pastor", pastorsImg)} alt="Pastor Abiodun Bamgbala" className="w-full aspect-[4/5] object-cover" loading="lazy" width={1000} height={1200} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <div className="font-display font-bold text-2xl">Pastor Abiodun Bamgbala</div>

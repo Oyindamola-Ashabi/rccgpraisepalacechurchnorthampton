@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { HandHeart, Landmark, Gift } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
-import { useGivingContent, useSiteSettings, textOr } from "@/lib/cms";
+import { useGivingContent, useSiteSettings, textOr, usePageContent } from "@/lib/cms";
 
 export const Route = createFileRoute("/give")({
   head: () => ({
@@ -20,15 +20,16 @@ export const Route = createFileRoute("/give")({
 
 function GivePage() {
   const giving = useGivingContent();
+  const { text, image } = usePageContent("give");
   const settings = useSiteSettings();
 
   return (
     <>
       <PageHero
-        eyebrow="Partnership"
-        title="Give Cheerfully"
-        subtitle={textOr(giving?.intro_text, "Bring your tithes into the storehouse — and see the windows of heaven open.")}
-        image={giving?.image_url ?? heroImg}
+        eyebrow={text("hero", "subheading", "Partnership")}
+        title={text("hero", "headline", "Give Cheerfully")}
+        subtitle={textOr(giving?.intro_text, text("hero", "body", "Bring your tithes into the storehouse — and see the windows of heaven open."))}
+        image={giving?.image_url ?? image("hero", heroImg)}
       />
 
       <Section>
@@ -52,8 +53,8 @@ function GivePage() {
       <section className="bg-secondary/40 border-y">
         <Section>
           <SectionHeader
-            eyebrow="How To Give"
-            title="Bank Transfer Details"
+            eyebrow={text("bank_details", "subheading", "How To Give")}
+            title={text("bank_details", "headline", "Bank Transfer Details")}
             subtitle={textOr(giving?.instructions, "Please contact the church office for our current bank details or to set up a standing order.")}
           />
           <div className="mx-auto max-w-xl rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 text-center">

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { CmsPageHero } from "@/components/cms-page-hero";
+import { usePageContent } from "@/lib/cms";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,7 +50,7 @@ function ContactPage() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHeader center={false} eyebrow="Reach Us" title="Contact Information" />
+            <SectionHeader center={false} eyebrow={text("contact_info", "subheading", "Reach Us")} title={text("contact_info", "headline", "Contact Information")} />
             <div className="space-y-5">
               {[
                 { icon: MapPin, label: "Address", value: "Briar Hill Community Centre NN4 8SX" },
@@ -75,7 +76,7 @@ function ContactPage() {
           </div>
 
           <div>
-            <SectionHeader center={false} eyebrow="Message" title="Send a Note" />
+            <SectionHeader center={false} eyebrow={text("form", "subheading", "Message")} title={text("form", "headline", "Send a Note")} />
             {sent ? (
               <div className="rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 text-center">
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-full gradient-brand text-white">✓</div>
