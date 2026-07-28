@@ -465,6 +465,60 @@ export type Database = {
         }
         Relationships: []
       }
+      podcasts: {
+        Row: {
+          audio_file_url: string | null
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          duration: string | null
+          external_audio_url: string | null
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          publication_date: string | null
+          slug: string
+          sort_order: number
+          speaker_or_host: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audio_file_url?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          external_audio_url?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          publication_date?: string | null
+          slug: string
+          sort_order?: number
+          speaker_or_host?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audio_file_url?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          external_audio_url?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          publication_date?: string | null
+          slug?: string
+          sort_order?: number
+          speaker_or_host?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prayer_requests: {
         Row: {
           admin_notes: string | null
@@ -507,6 +561,63 @@ export type Database = {
           request?: string
           status?: Database["public"]["Enums"]["submission_status"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      sermons: {
+        Row: {
+          category: string | null
+          created_at: string
+          full_description: string | null
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          sermon_date: string | null
+          short_description: string | null
+          slug: string
+          sort_order: number
+          speaker: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_url: string | null
+          youtube_video_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          full_description?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          sermon_date?: string | null
+          short_description?: string | null
+          slug: string
+          sort_order?: number
+          speaker?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          full_description?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          sermon_date?: string | null
+          short_description?: string | null
+          slug?: string
+          sort_order?: number
+          speaker?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: []
       }
