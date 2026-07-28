@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShareTestimonyRouteImport } from './routes/share-testimony'
 import { Route as SermonsRouteImport } from './routes/sermons'
 import { Route as PrayerRequestRouteImport } from './routes/prayer-request'
+import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PlanAVisitRouteImport } from './routes/plan-a-visit'
 import { Route as MediaRouteImport } from './routes/media'
 import { Route as GiveRouteImport } from './routes/give'
@@ -72,6 +73,11 @@ const SermonsRoute = SermonsRouteImport.update({
 const PrayerRequestRoute = PrayerRequestRouteImport.update({
   id: '/prayer-request',
   path: '/prayer-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastsRoute = PodcastsRouteImport.update({
+  id: '/podcasts',
+  path: '/podcasts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanAVisitRoute = PlanAVisitRouteImport.update({
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
+  '/podcasts': typeof PodcastsRoute
   '/prayer-request': typeof PrayerRequestRoute
   '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
   '/plan-a-visit': typeof PlanAVisitRoute
+  '/podcasts': typeof PodcastsRoute
   '/prayer-request': typeof PrayerRequestRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
+  '/podcasts': typeof PodcastsRoute
   '/prayer-request': typeof PrayerRequestRoute
   '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
@@ -380,6 +389,7 @@ export interface FileRouteTypes {
     | '/give'
     | '/media'
     | '/plan-a-visit'
+    | '/podcasts'
     | '/prayer-request'
     | '/sermons'
     | '/share-testimony'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/give'
     | '/plan-a-visit'
+    | '/podcasts'
     | '/prayer-request'
     | '/share-testimony'
     | '/sitemap.xml'
@@ -459,6 +470,7 @@ export interface FileRouteTypes {
     | '/give'
     | '/media'
     | '/plan-a-visit'
+    | '/podcasts'
     | '/prayer-request'
     | '/sermons'
     | '/share-testimony'
@@ -501,6 +513,7 @@ export interface RootRouteChildren {
   GiveRoute: typeof GiveRoute
   MediaRoute: typeof MediaRouteWithChildren
   PlanAVisitRoute: typeof PlanAVisitRoute
+  PodcastsRoute: typeof PodcastsRoute
   PrayerRequestRoute: typeof PrayerRequestRoute
   SermonsRoute: typeof SermonsRouteWithChildren
   ShareTestimonyRoute: typeof ShareTestimonyRoute
@@ -547,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/prayer-request'
       fullPath: '/prayer-request'
       preLoaderRoute: typeof PrayerRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcasts': {
+      id: '/podcasts'
+      path: '/podcasts'
+      fullPath: '/podcasts'
+      preLoaderRoute: typeof PodcastsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plan-a-visit': {
@@ -876,6 +896,7 @@ const rootRouteChildren: RootRouteChildren = {
   GiveRoute: GiveRoute,
   MediaRoute: MediaRouteWithChildren,
   PlanAVisitRoute: PlanAVisitRoute,
+  PodcastsRoute: PodcastsRoute,
   PrayerRequestRoute: PrayerRequestRoute,
   SermonsRoute: SermonsRouteWithChildren,
   ShareTestimonyRoute: ShareTestimonyRoute,
