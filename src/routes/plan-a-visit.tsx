@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section, SectionHeader } from "@/components/section-ui";
 import { CmsPageHero } from "@/components/cms-page-hero";
+import { usePageContent } from "@/lib/cms";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/community.jpg";
@@ -31,6 +32,7 @@ const SERVICES = [
 const today = () => new Date().toISOString().slice(0, 10);
 
 function PlanAVisitPage() {
+  const { text } = usePageContent("plan-a-visit");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ function PlanAVisitPage() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <SectionHeader center={false} eyebrow="Your First Visit" title="What To Expect" />
+            <SectionHeader center={false} eyebrow={text("what_to_expect", "subheading", "Your First Visit")} title={text("what_to_expect", "headline", "What To Expect")} />
             <div className="space-y-4 text-muted-foreground">
               <p>Come exactly as you are. You'll be met at the door, shown around, and there's no pressure to give or take part in anything.</p>
               <p>Services last about two hours with worship, the word and prayer. Children are very welcome, and our team will help you settle in.</p>
@@ -87,7 +89,7 @@ function PlanAVisitPage() {
           </div>
 
           <div>
-            <SectionHeader center={false} eyebrow="Let Us Know" title="Tell Us You're Coming" />
+            <SectionHeader center={false} eyebrow={text("form", "subheading", "Let Us Know")} title={text("form", "headline", "Tell Us You're Coming")} />
             {sent ? (
               <div className="rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 text-center">
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-full gradient-brand text-white">✓</div>

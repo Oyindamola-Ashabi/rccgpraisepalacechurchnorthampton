@@ -128,6 +128,26 @@ export function usePageSection(pageSlug: string, sectionKey: string): PageSectio
   return sections[sectionKey] ?? null;
 }
 
+/**
+ * Content helpers for a page. Every getter falls back to the wording or image
+ * already designed into the page, so nothing ever goes blank or disappears.
+ */
+export function usePageContent(pageSlug: string) {
+  const sections = usePageSections(pageSlug);
+
+  function text(key: string, field: "headline" | "subheading" | "body" | "cta_label" | "cta_href" | "page_title", fallback: string) {
+    const value = sections[key]?.[field];
+    return typeof value === "string" && value.trim() ? value : fallback;
+  }
+
+  function image(key: string, fallback: string) {
+    return mediaUrl(sections[key]?.image_url) || fallback;
+  }
+
+  return { sections, text, image };
+}
+
+
 export type Ministry = {
   id: string;
   name: string;
@@ -219,9 +239,15 @@ export function useCmsList<T>(
   return { rows, loading };
 }
 
+/** Published events that have not happened yet, soonest first. */
 export function usePublishedEvents() {
   return useCmsList<ChurchEvent>(() =>
-    supabase.from("events").select("*").eq("is_published", true).order("start_at", { ascending: true }),
+    supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .gte("start_at", new Date().toISOString())
+      .order("start_at", { ascending: true }),
   );
 }
 
@@ -230,6 +256,7 @@ export function useActiveMinistries() {
     supabase.from("ministries").select("*").eq("is_active", true).order("sort_order").order("name"),
   );
 }
+
 
 export function usePublishedTestimonies(limit?: number) {
   return useCmsList<PublishedTestimony>(() => {

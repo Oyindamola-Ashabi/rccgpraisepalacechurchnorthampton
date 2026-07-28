@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
-import { useSiteSettings } from "@/lib/cms";
+import { useSiteSettings, useActiveMinistries } from "@/lib/cms";
 import logoAsset from "@/assets/logo.png";
 import rccgLogoAsset from "@/assets/rccg-logo.png";
 
@@ -60,6 +60,20 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const settings = useSiteSettings();
+  const { rows: ministries } = useActiveMinistries();
+
+  // Ministries menu always mirrors the ministries managed in the admin area.
+  const nav: NavItem[] = NAV.map((item) =>
+    item.label === "Ministries" && ministries.length
+      ? {
+          ...item,
+          children: [
+            { label: "All Ministries", to: "/ministries" },
+            ...ministries.map((m) => ({ label: m.name, to: `/ministries/${m.slug}` })),
+          ],
+        }
+      : item,
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -115,7 +129,7 @@ export function SiteHeader() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <NavDesktopItem key={item.label} item={item} />
             ))}
           </nav>
@@ -142,7 +156,7 @@ export function SiteHeader() {
         {open && (
           <div className="lg:hidden border-t bg-background max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="px-4 py-3 space-y-1">
-              {NAV.map((item) => {
+              {nav.map((item) => {
                 if (!item.children) {
                   return (
                     <Link

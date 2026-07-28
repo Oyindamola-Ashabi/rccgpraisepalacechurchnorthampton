@@ -21,31 +21,61 @@ export const Route = createFileRoute("/events")({
   component: EventsPage,
 });
 
+/** Built-in events kept alongside anything added in the admin area. */
 const FALLBACK_EVENTS = [
-  { image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples" },
-  { image: eventPhotos.youth.url, tag: "Youth", title: "Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
-  { image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
-  { image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
-  { image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
-  { image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Briar Hill Community Centre" },
+  { start: "2026-08-15T17:00:00Z", image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples" },
+  { start: "2026-06-20T08:00:00Z", image: eventPhotos.youth.url, tag: "Youth", title: "Raising Champions Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
+  { start: "2026-07-09T18:30:00Z", image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
+  { start: "2026-07-25T19:00:00Z", image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
+  { start: "2026-06-21T09:00:00Z", image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
+  { start: "2026-10-04T09:00:00Z", image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Briar Hill Community Centre" },
 ];
+
+type EventCardData = {
+  start: number;
+  image: string;
+  tag: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  to?: string;
+  href?: string;
+  description?: string;
+};
 
 function EventsPage() {
   const { rows } = usePublishedEvents();
+  const now = Date.now();
 
-  const events = rows.length
-    ? rows.map((e) => ({
-        image: e.image_url ?? heroImg,
-        tag: e.is_featured ? "Featured" : "Event",
-        title: e.title,
-        date: formatEventDate(e.start_at),
-        time: formatEventTime(e.start_at),
-        location: e.venue ?? "RCCG Praise Palace Northampton",
-        to: undefined as string | undefined,
-        href: e.registration_url ?? undefined,
-        description: e.description ?? undefined,
-      }))
-    : FALLBACK_EVENTS.map((e) => ({ ...e, to: (e as any).to as string | undefined, href: undefined as string | undefined, description: undefined as string | undefined }));
+  // Admin-managed events come first; built-in ones are kept unless the admin
+  // already manages an event with the same name. Past events are never shown.
+  const fromCms: EventCardData[] = rows.map((e) => {
+    const link = e.registration_url ?? undefined;
+    const internal = !!link && link.startsWith("/");
+    return {
+      start: new Date(e.start_at).getTime(),
+      image: e.image_url ?? heroImg,
+      tag: e.is_featured ? "Featured" : "Event",
+      title: e.title,
+      date: formatEventDate(e.start_at),
+      time: formatEventTime(e.start_at),
+      location: e.venue ?? "RCCG Praise Palace Northampton",
+      to: internal ? link : undefined,
+      href: internal ? undefined : link,
+      description: e.description ?? undefined,
+    };
+  });
+
+  const cmsTitles = new Set(fromCms.map((e) => e.title.toLowerCase()));
+  const fromBuiltIn: EventCardData[] = FALLBACK_EVENTS.filter(
+    (e) => new Date(e.start).getTime() >= now && !cmsTitles.has(e.title.toLowerCase()),
+  ).map((e) => ({ ...e, start: new Date(e.start).getTime(), to: (e as any).to as string | undefined }));
+
+  const events = [...fromCms, ...fromBuiltIn]
+    .filter((e) => e.start >= now)
+    .sort((a, b) => a.start - b.start);
+
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section, SectionHeader } from "@/components/section-ui";
 import { CmsPageHero } from "@/components/cms-page-hero";
+import { usePageContent } from "@/lib/cms";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/worship-team.jpg";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/prayer-request")({
 });
 
 function PrayerRequestPage() {
+  const { text } = usePageContent("prayer-request");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +70,7 @@ function PrayerRequestPage() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <SectionHeader center={false} eyebrow="Confidential" title="Held In Confidence" />
+            <SectionHeader center={false} eyebrow={text("confidential", "subheading", "Confidential")} title={text("confidential", "headline", "Held In Confidence")} />
             <div className="space-y-4 text-muted-foreground">
               <p>Every request is received privately by our pastoral and prayer team. Prayer requests are <strong className="text-foreground">never published</strong> on this website or shared publicly.</p>
               <p>You may submit anonymously if you'd prefer — simply tick the anonymous box and leave your name out.</p>
@@ -77,7 +79,7 @@ function PrayerRequestPage() {
           </div>
 
           <div>
-            <SectionHeader center={false} eyebrow="Your Request" title="Send Us Your Prayer Need" />
+            <SectionHeader center={false} eyebrow={text("form", "subheading", "Your Request")} title={text("form", "headline", "Send Us Your Prayer Need")} />
             {sent ? (
               <div className="rounded-2xl bg-card p-8 shadow-card ring-1 ring-black/5 text-center">
                 <div className="mx-auto grid h-14 w-14 place-items-center rounded-full gradient-brand text-white">✓</div>
