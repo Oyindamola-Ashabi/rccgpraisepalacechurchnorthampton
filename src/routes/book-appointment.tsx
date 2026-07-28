@@ -49,7 +49,6 @@ function BookAppointmentPage() {
       const { data } = await supabase
         .from("pastors")
         .select("id, full_name, title, bio")
-        .eq("is_active", true)
         .order("sort_order");
       if (!active) return;
       const list = (data ?? []).map((p: any) => ({
