@@ -34,6 +34,7 @@ import { Route as AdminTestimoniesRouteImport } from './routes/admin.testimonies
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminPrayerRouteImport } from './routes/admin.prayer'
 import { Route as AdminPastorsRouteImport } from './routes/admin.pastors'
+import { Route as AdminPagesRouteImport } from './routes/admin.pages'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
@@ -165,6 +166,11 @@ const AdminPastorsRoute = AdminPastorsRouteImport.update({
   path: '/pastors',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPagesRoute = AdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
   '/admin/prayer': typeof AdminPrayerRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
     | '/admin/settings'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
     | '/admin/settings'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/login'
+    | '/admin/pages'
     | '/admin/pastors'
     | '/admin/prayer'
     | '/admin/settings'
@@ -556,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPastorsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pages': {
+      id: '/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -584,6 +603,7 @@ interface AdminRouteChildren {
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPagesRoute: typeof AdminPagesRoute
   AdminPastorsRoute: typeof AdminPastorsRoute
   AdminPrayerRoute: typeof AdminPrayerRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -596,6 +616,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminContactRoute: AdminContactRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPagesRoute: AdminPagesRoute,
   AdminPastorsRoute: AdminPastorsRoute,
   AdminPrayerRoute: AdminPrayerRoute,
   AdminSettingsRoute: AdminSettingsRoute,
