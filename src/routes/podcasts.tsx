@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/sermons")({
+export const Route = createFileRoute("/podcasts")({
   component: () => <Outlet />,
 });

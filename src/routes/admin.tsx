@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog, Settings, FileText, Image as ImageIcon, Images, Church, CalendarDays, HandCoins } from "lucide-react";
+import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog, Settings, FileText, Image as ImageIcon, Images, Church, CalendarDays, HandCoins, Mic, Headphones } from "lucide-react";
 import { adminSignOut, isStaff, roleLabel, useAdminSession } from "@/lib/admin-auth";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,8 @@ const NAV = [
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/ministries", label: "Ministries", icon: Church },
   { to: "/admin/events", label: "Events", icon: CalendarDays },
+  { to: "/admin/sermons", label: "Sermons", icon: Mic },
+  { to: "/admin/podcasts", label: "Podcasts", icon: Headphones },
   { to: "/admin/giving", label: "Giving Page", icon: HandCoins },
 ];
 

@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useActiveMinistries, mediaUrl } from "@/lib/cms";
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +26,23 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { text, image } = usePageContent("home");
   const settings = useSiteSettings();
+  const { rows: cmsMinistries } = useActiveMinistries();
+  const ministryIcons = [Radio, GraduationCap, Tent];
+  const fallbackMinistries = [
+    { title: "PraisePalace Radio", desc: "Faith-filled broadcasts, worship and word — streaming globally.", href: "https://praisepalaceradio.com/", image: eventPhotos.students.url, icon: Radio },
+    { title: "Business School", desc: "Empowering kingdom entrepreneurs with practical wisdom.", href: "https://praisepalacebusinessschool.com/", image: eventPhotos.business.url, icon: GraduationCap },
+    { title: "Youth Camp", desc: "A powerful gathering for the next generation.", href: "https://raisingchampions.org.uk", image: eventPhotos.youth.url, icon: Tent },
+  ];
+  const homeMinistries =
+    cmsMinistries.length > 0
+      ? cmsMinistries.slice(0, 3).map((m, i) => ({
+          title: m.name,
+          desc: m.short_description ?? "",
+          href: m.link_url || `/ministries/${m.slug}`,
+          image: mediaUrl(m.image_url) || fallbackMinistries[i % 3].image,
+          icon: ministryIcons[i % ministryIcons.length],
+        }))
+      : fallbackMinistries;
   const watchLiveHref = text("hero_watch_live", "cta_href", "/media");
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
   const heroHref = text("hero", "cta_href", "/plan-a-visit");
@@ -71,9 +88,21 @@ function HomePage() {
               )}
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-xl">
-              <ServiceTime day="Sundays" time="10:00 AM" label="Worship" />
-              <ServiceTime day="Wednesdays" time="7:00 PM" label="Bible Study" />
-              <ServiceTime day="Last Friday" time="11:00 PM" label="Night Vigil" />
+              <ServiceTime
+                label={text("hero_service_1", "headline", "Worship")}
+                day={text("hero_service_1", "subheading", "Sundays")}
+                time={text("hero_service_1", "body", "10:00 AM")}
+              />
+              <ServiceTime
+                label={text("hero_service_2", "headline", "Bible Study")}
+                day={text("hero_service_2", "subheading", "Wednesdays")}
+                time={text("hero_service_2", "body", "7:00 PM")}
+              />
+              <ServiceTime
+                label={text("hero_service_3", "headline", "Night Vigil")}
+                day={text("hero_service_3", "subheading", "Last Friday")}
+                time={text("hero_service_3", "body", "11:00 PM")}
+              />
             </div>
           </div>
         </div>
@@ -128,10 +157,10 @@ function HomePage() {
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Heart, title: "Sunday Service", time: "10:00 AM Prompt", desc: "Worship, word and community for the whole family." },
-            { icon: BookOpen, title: "Bible Study", time: "Wed · 7:00 PM", desc: "Go deep into the scriptures every Wednesday." },
-            { icon: Music, title: "Night Vigil", time: "Last Fri · 11:00 PM", desc: "A monthly night of prayer, worship and breakthrough." },
-            { icon: Users, title: "Prayer Connect", time: "Last Day · 11:30 PM", desc: "Closing every month in agreement and intercession." },
+            { icon: Heart, title: text("program_card_1", "headline", "Sunday Service"), time: text("program_card_1", "subheading", "10:00 AM"), desc: text("program_card_1", "body", "Worship, word and community for the whole family.") },
+            { icon: BookOpen, title: text("program_card_2", "headline", "Bible Study"), time: text("program_card_2", "subheading", "Wed · 7:00 PM"), desc: text("program_card_2", "body", "Go deep into the scriptures every Wednesday.") },
+            { icon: Music, title: text("program_card_3", "headline", "Night Vigil"), time: text("program_card_3", "subheading", "Last Fri · 11:00 PM"), desc: text("program_card_3", "body", "A monthly night of prayer, worship and breakthrough.") },
+            { icon: Users, title: text("program_card_4", "headline", "Prayer Connect"), time: text("program_card_4", "subheading", "Last Day · 11:30 PM"), desc: text("program_card_4", "body", "Closing every month in agreement and intercession.") },
           ].map((p) => (
             <div key={p.title} className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full gradient-brand opacity-10 group-hover:opacity-20 transition" />
@@ -157,27 +186,16 @@ function HomePage() {
             subtitle={text("ministries", "body", "Extensions of Praise Palace touching every area of life — radio, business, family and youth.")}
           />
           <div className="grid gap-6 md:grid-cols-3">
-            <MinistryCard
-              icon={Radio}
-              title="PraisePalace Radio"
-              desc="Faith-filled broadcasts, worship and word — streaming globally."
-              href="https://praisepalaceradio.com/"
-              image={eventPhotos.students.url}
-            />
-            <MinistryCard
-              icon={GraduationCap}
-              title="Business School"
-              desc="Empowering kingdom entrepreneurs with practical wisdom."
-              href="https://praisepalacebusinessschool.com/"
-              image={eventPhotos.business.url}
-            />
-            <MinistryCard
-              icon={Tent}
-              title="Youth Camp"
-              desc="A powerful gathering for the next generation."
-              href="https://raisingchampions.org.uk"
-              image={eventPhotos.youth.url}
-            />
+            {homeMinistries.map((m) => (
+              <MinistryCard
+                key={m.title}
+                icon={m.icon}
+                title={m.title}
+                desc={m.desc}
+                href={m.href}
+                image={m.image}
+              />
+            ))}
           </div>
         </Section>
       </section>
@@ -263,8 +281,13 @@ function ServiceTime({ day, time, label }: { day: string; time: string; label: s
 }
 
 function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; title: string; desc: string; href: string; image: string }) {
+  const internal = href.startsWith("/");
+  const Wrapper: any = internal ? Link : "a";
+  const wrapperProps: any = internal
+    ? { to: href }
+    : { href, target: "_blank", rel: "noopener noreferrer" };
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5 bg-card">
+    <Wrapper {...wrapperProps} className="group relative overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5 bg-card block">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -276,10 +299,10 @@ function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; tit
         <h3 className="font-display font-bold text-xl">{title}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
-          Visit site <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+          {internal ? "Learn more" : "Visit site"} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
       </div>
-    </a>
+    </Wrapper>
   );
 }
 

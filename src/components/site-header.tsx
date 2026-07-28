@@ -38,6 +38,8 @@ const NAV: NavItem[] = [
       { label: "All Media", to: "/media" },
       { label: "Gallery", to: "/media/gallery" },
       { label: "Podcast", to: "/media/podcast" },
+      { label: "Podcast Episodes", to: "/podcasts" },
+      { label: "Sermons", to: "/sermons" },
     ],
   },
   { label: "Sermons", to: "/sermons" },

@@ -212,8 +212,90 @@ export type PublishedTestimony = {
   title: string;
   testimony: string;
   created_at: string;
-  updated_at?: string | null;
 };
+
+export type Sermon = {
+  id: string;
+  title: string;
+  slug: string;
+  speaker: string | null;
+  sermon_date: string | null;
+  short_description: string | null;
+  full_description: string | null;
+  category: string | null;
+  youtube_url: string | null;
+  youtube_video_id: string | null;
+  thumbnail_url: string | null;
+  is_featured: boolean;
+  is_published: boolean;
+  sort_order: number;
+};
+
+export type Podcast = {
+  id: string;
+  title: string;
+  slug: string;
+  speaker_or_host: string | null;
+  description: string | null;
+  publication_date: string | null;
+  audio_file_url: string | null;
+  external_audio_url: string | null;
+  cover_image_url: string | null;
+  duration: string | null;
+  is_featured: boolean;
+  is_published: boolean;
+  sort_order: number;
+};
+
+export const PODCAST_BUCKET = "podcasts";
+
+/** Pull the 11-character video id out of any common YouTube URL form. */
+export function youTubeId(input: string | null | undefined): string | null {
+  if (!input) return null;
+  const raw = input.trim();
+  if (/^[\w-]{11}$/.test(raw)) return raw;
+  const m =
+    raw.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/) ?? null;
+  return m ? m[1] : null;
+}
+
+export function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+export function usePublishedSermons() {
+  return useCmsList<Sermon>(() =>
+    supabase
+      .from("sermons" as any)
+      .select("*")
+      .eq("is_published", true)
+      .order("sort_order")
+      .order("sermon_date", { ascending: false }),
+  );
+}
+
+export function usePublishedPodcasts() {
+  return useCmsList<Podcast>(() =>
+    supabase
+      .from("podcasts" as any)
+      .select("*")
+      .eq("is_published", true)
+      .order("sort_order")
+      .order("publication_date", { ascending: false }),
+  );
+}
+
+/** Public URL for an uploaded podcast audio file (accepts a full URL too). */
+export function podcastAudioUrl(pathOrUrl: string | null | undefined): string | null {
+  if (!pathOrUrl) return null;
+  if (/^(https?:)?\/\//.test(pathOrUrl) || pathOrUrl.startsWith("/")) return pathOrUrl;
+  return supabase.storage.from(PODCAST_BUCKET).getPublicUrl(pathOrUrl).data.publicUrl;
+}
 
 /** Generic read hook with a safe fallback so the public site never renders blank. */
 export function useCmsList<T>(

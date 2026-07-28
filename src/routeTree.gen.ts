@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShareTestimonyRouteImport } from './routes/share-testimony'
 import { Route as SermonsRouteImport } from './routes/sermons'
 import { Route as PrayerRequestRouteImport } from './routes/prayer-request'
+import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PlanAVisitRouteImport } from './routes/plan-a-visit'
 import { Route as MediaRouteImport } from './routes/media'
 import { Route as GiveRouteImport } from './routes/give'
@@ -23,9 +24,13 @@ import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SermonsIndexRouteImport } from './routes/sermons.index'
+import { Route as PodcastsIndexRouteImport } from './routes/podcasts.index'
 import { Route as MinistriesIndexRouteImport } from './routes/ministries.index'
 import { Route as MediaIndexRouteImport } from './routes/media.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SermonsSlugRouteImport } from './routes/sermons.$slug'
+import { Route as PodcastsSlugRouteImport } from './routes/podcasts.$slug'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
@@ -35,7 +40,9 @@ import { Route as EventsCouplesRouteImport } from './routes/events.couples'
 import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AdminTestimoniesRouteImport } from './routes/admin.testimonies'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminSermonsRouteImport } from './routes/admin.sermons'
 import { Route as AdminPrayerRouteImport } from './routes/admin.prayer'
+import { Route as AdminPodcastsRouteImport } from './routes/admin.podcasts'
 import { Route as AdminPastorsRouteImport } from './routes/admin.pastors'
 import { Route as AdminPagesRouteImport } from './routes/admin.pages'
 import { Route as AdminMinistriesRouteImport } from './routes/admin.ministries'
@@ -70,6 +77,11 @@ const SermonsRoute = SermonsRouteImport.update({
 const PrayerRequestRoute = PrayerRequestRouteImport.update({
   id: '/prayer-request',
   path: '/prayer-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastsRoute = PodcastsRouteImport.update({
+  id: '/podcasts',
+  path: '/podcasts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanAVisitRoute = PlanAVisitRouteImport.update({
@@ -117,6 +129,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SermonsIndexRoute = SermonsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SermonsRoute,
+} as any)
+const PodcastsIndexRoute = PodcastsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PodcastsRoute,
+} as any)
 const MinistriesIndexRoute = MinistriesIndexRouteImport.update({
   id: '/ministries/',
   path: '/ministries/',
@@ -131,6 +153,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SermonsSlugRoute = SermonsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SermonsRoute,
+} as any)
+const PodcastsSlugRoute = PodcastsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PodcastsRoute,
 } as any)
 const MinistriesWomensFellowshipRoute =
   MinistriesWomensFellowshipRouteImport.update({
@@ -179,9 +211,19 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSermonsRoute = AdminSermonsRouteImport.update({
+  id: '/sermons',
+  path: '/sermons',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPrayerRoute = AdminPrayerRouteImport.update({
   id: '/prayer',
   path: '/prayer',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPodcastsRoute = AdminPodcastsRouteImport.update({
+  id: '/podcasts',
+  path: '/podcasts',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPastorsRoute = AdminPastorsRouteImport.update({
@@ -245,8 +287,9 @@ export interface FileRoutesByFullPath {
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
+  '/podcasts': typeof PodcastsRouteWithChildren
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
+  '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -260,7 +303,9 @@ export interface FileRoutesByFullPath {
   '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
+  '/admin/podcasts': typeof AdminPodcastsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/sermons': typeof AdminSermonsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
@@ -270,9 +315,13 @@ export interface FileRoutesByFullPath {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
+  '/podcasts/': typeof PodcastsIndexRoute
+  '/sermons/': typeof SermonsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -283,7 +332,6 @@ export interface FileRoutesByTo {
   '/give': typeof GiveRoute
   '/plan-a-visit': typeof PlanAVisitRoute
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -297,7 +345,9 @@ export interface FileRoutesByTo {
   '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
+  '/admin/podcasts': typeof AdminPodcastsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/sermons': typeof AdminSermonsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
@@ -307,9 +357,13 @@ export interface FileRoutesByTo {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/media': typeof MediaIndexRoute
   '/ministries': typeof MinistriesIndexRoute
+  '/podcasts': typeof PodcastsIndexRoute
+  '/sermons': typeof SermonsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -322,8 +376,9 @@ export interface FileRoutesById {
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
+  '/podcasts': typeof PodcastsRouteWithChildren
   '/prayer-request': typeof PrayerRequestRoute
-  '/sermons': typeof SermonsRoute
+  '/sermons': typeof SermonsRouteWithChildren
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/testimonies': typeof TestimoniesRoute
@@ -337,7 +392,9 @@ export interface FileRoutesById {
   '/admin/ministries': typeof AdminMinistriesRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/pastors': typeof AdminPastorsRoute
+  '/admin/podcasts': typeof AdminPodcastsRoute
   '/admin/prayer': typeof AdminPrayerRoute
+  '/admin/sermons': typeof AdminSermonsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
@@ -347,9 +404,13 @@ export interface FileRoutesById {
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/media/': typeof MediaIndexRoute
   '/ministries/': typeof MinistriesIndexRoute
+  '/podcasts/': typeof PodcastsIndexRoute
+  '/sermons/': typeof SermonsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -363,6 +424,7 @@ export interface FileRouteTypes {
     | '/give'
     | '/media'
     | '/plan-a-visit'
+    | '/podcasts'
     | '/prayer-request'
     | '/sermons'
     | '/share-testimony'
@@ -378,7 +440,9 @@ export interface FileRouteTypes {
     | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
+    | '/admin/podcasts'
     | '/admin/prayer'
+    | '/admin/sermons'
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
@@ -388,9 +452,13 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/podcasts/$slug'
+    | '/sermons/$slug'
     | '/admin/'
     | '/media/'
     | '/ministries/'
+    | '/podcasts/'
+    | '/sermons/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -401,7 +469,6 @@ export interface FileRouteTypes {
     | '/give'
     | '/plan-a-visit'
     | '/prayer-request'
-    | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
     | '/testimonies'
@@ -415,7 +482,9 @@ export interface FileRouteTypes {
     | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
+    | '/admin/podcasts'
     | '/admin/prayer'
+    | '/admin/sermons'
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
@@ -425,9 +494,13 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/podcasts/$slug'
+    | '/sermons/$slug'
     | '/admin'
     | '/media'
     | '/ministries'
+    | '/podcasts'
+    | '/sermons'
   id:
     | '__root__'
     | '/'
@@ -439,6 +512,7 @@ export interface FileRouteTypes {
     | '/give'
     | '/media'
     | '/plan-a-visit'
+    | '/podcasts'
     | '/prayer-request'
     | '/sermons'
     | '/share-testimony'
@@ -454,7 +528,9 @@ export interface FileRouteTypes {
     | '/admin/ministries'
     | '/admin/pages'
     | '/admin/pastors'
+    | '/admin/podcasts'
     | '/admin/prayer'
+    | '/admin/sermons'
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
@@ -464,9 +540,13 @@ export interface FileRouteTypes {
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
     | '/ministries/womens-fellowship'
+    | '/podcasts/$slug'
+    | '/sermons/$slug'
     | '/admin/'
     | '/media/'
     | '/ministries/'
+    | '/podcasts/'
+    | '/sermons/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -479,8 +559,9 @@ export interface RootRouteChildren {
   GiveRoute: typeof GiveRoute
   MediaRoute: typeof MediaRouteWithChildren
   PlanAVisitRoute: typeof PlanAVisitRoute
+  PodcastsRoute: typeof PodcastsRouteWithChildren
   PrayerRequestRoute: typeof PrayerRequestRoute
-  SermonsRoute: typeof SermonsRoute
+  SermonsRoute: typeof SermonsRouteWithChildren
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimoniesRoute: typeof TestimoniesRoute
@@ -525,6 +606,13 @@ declare module '@tanstack/react-router' {
       path: '/prayer-request'
       fullPath: '/prayer-request'
       preLoaderRoute: typeof PrayerRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcasts': {
+      id: '/podcasts'
+      path: '/podcasts'
+      fullPath: '/podcasts'
+      preLoaderRoute: typeof PodcastsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plan-a-visit': {
@@ -590,6 +678,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sermons/': {
+      id: '/sermons/'
+      path: '/'
+      fullPath: '/sermons/'
+      preLoaderRoute: typeof SermonsIndexRouteImport
+      parentRoute: typeof SermonsRoute
+    }
+    '/podcasts/': {
+      id: '/podcasts/'
+      path: '/'
+      fullPath: '/podcasts/'
+      preLoaderRoute: typeof PodcastsIndexRouteImport
+      parentRoute: typeof PodcastsRoute
+    }
     '/ministries/': {
       id: '/ministries/'
       path: '/ministries'
@@ -610,6 +712,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/sermons/$slug': {
+      id: '/sermons/$slug'
+      path: '/$slug'
+      fullPath: '/sermons/$slug'
+      preLoaderRoute: typeof SermonsSlugRouteImport
+      parentRoute: typeof SermonsRoute
+    }
+    '/podcasts/$slug': {
+      id: '/podcasts/$slug'
+      path: '/$slug'
+      fullPath: '/podcasts/$slug'
+      preLoaderRoute: typeof PodcastsSlugRouteImport
+      parentRoute: typeof PodcastsRoute
     }
     '/ministries/womens-fellowship': {
       id: '/ministries/womens-fellowship'
@@ -674,11 +790,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sermons': {
+      id: '/admin/sermons'
+      path: '/sermons'
+      fullPath: '/admin/sermons'
+      preLoaderRoute: typeof AdminSermonsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/prayer': {
       id: '/admin/prayer'
       path: '/prayer'
       fullPath: '/admin/prayer'
       preLoaderRoute: typeof AdminPrayerRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/podcasts': {
+      id: '/admin/podcasts'
+      path: '/podcasts'
+      fullPath: '/admin/podcasts'
+      preLoaderRoute: typeof AdminPodcastsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/pastors': {
@@ -765,7 +895,9 @@ interface AdminRouteChildren {
   AdminMinistriesRoute: typeof AdminMinistriesRoute
   AdminPagesRoute: typeof AdminPagesRoute
   AdminPastorsRoute: typeof AdminPastorsRoute
+  AdminPodcastsRoute: typeof AdminPodcastsRoute
   AdminPrayerRoute: typeof AdminPrayerRoute
+  AdminSermonsRoute: typeof AdminSermonsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTestimoniesRoute: typeof AdminTestimoniesRoute
   AdminVisitsRoute: typeof AdminVisitsRoute
@@ -783,7 +915,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMinistriesRoute: AdminMinistriesRoute,
   AdminPagesRoute: AdminPagesRoute,
   AdminPastorsRoute: AdminPastorsRoute,
+  AdminPodcastsRoute: AdminPodcastsRoute,
   AdminPrayerRoute: AdminPrayerRoute,
+  AdminSermonsRoute: AdminSermonsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTestimoniesRoute: AdminTestimoniesRoute,
   AdminVisitsRoute: AdminVisitsRoute,
@@ -817,6 +951,33 @@ const MediaRouteChildren: MediaRouteChildren = {
 
 const MediaRouteWithChildren = MediaRoute._addFileChildren(MediaRouteChildren)
 
+interface PodcastsRouteChildren {
+  PodcastsSlugRoute: typeof PodcastsSlugRoute
+  PodcastsIndexRoute: typeof PodcastsIndexRoute
+}
+
+const PodcastsRouteChildren: PodcastsRouteChildren = {
+  PodcastsSlugRoute: PodcastsSlugRoute,
+  PodcastsIndexRoute: PodcastsIndexRoute,
+}
+
+const PodcastsRouteWithChildren = PodcastsRoute._addFileChildren(
+  PodcastsRouteChildren,
+)
+
+interface SermonsRouteChildren {
+  SermonsSlugRoute: typeof SermonsSlugRoute
+  SermonsIndexRoute: typeof SermonsIndexRoute
+}
+
+const SermonsRouteChildren: SermonsRouteChildren = {
+  SermonsSlugRoute: SermonsSlugRoute,
+  SermonsIndexRoute: SermonsIndexRoute,
+}
+
+const SermonsRouteWithChildren =
+  SermonsRoute._addFileChildren(SermonsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -827,8 +988,9 @@ const rootRouteChildren: RootRouteChildren = {
   GiveRoute: GiveRoute,
   MediaRoute: MediaRouteWithChildren,
   PlanAVisitRoute: PlanAVisitRoute,
+  PodcastsRoute: PodcastsRouteWithChildren,
   PrayerRequestRoute: PrayerRequestRoute,
-  SermonsRoute: SermonsRoute,
+  SermonsRoute: SermonsRouteWithChildren,
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimoniesRoute: TestimoniesRoute,
