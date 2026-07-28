@@ -22,6 +22,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const { text } = usePageContent("contact");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);

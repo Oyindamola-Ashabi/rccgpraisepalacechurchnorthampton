@@ -23,6 +23,7 @@ export const Route = createFileRoute("/share-testimony")({
 });
 
 function ShareTestimonyPage() {
+  const { text } = usePageContent("share-testimony");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -32,6 +32,7 @@ const SERVICES = [
 const today = () => new Date().toISOString().slice(0, 10);
 
 function PlanAVisitPage() {
+  const { text } = usePageContent("plan-a-visit");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -23,6 +23,7 @@ export const Route = createFileRoute("/prayer-request")({
 });
 
 function PrayerRequestPage() {
+  const { text } = usePageContent("prayer-request");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
