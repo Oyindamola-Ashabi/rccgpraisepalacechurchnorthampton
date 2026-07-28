@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader } from "@/components/section-ui";
+import { Section, SectionHeader } from "@/components/section-ui";
+import { CmsPageHero } from "@/components/cms-page-hero";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/community.jpg";
@@ -50,7 +51,7 @@ function ShareTestimonyPage() {
 
   return (
     <>
-      <PageHero
+      <CmsPageHero page="share-testimony"
         eyebrow="Give God The Glory"
         title="Share Your Testimony"
         subtitle="Every testimony strengthens someone else's faith. Tell us what the Lord has done."

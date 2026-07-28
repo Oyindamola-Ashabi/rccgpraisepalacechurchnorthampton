@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
+import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
+import { CmsPageHero } from "@/components/cms-page-hero";
 import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <>
-      <PageHero eyebrow="Our Story" title="Who We Are" subtitle="A family church for all nations — a parish of the Redeemed Christian Church of God." image={heroImg} />
+      <CmsPageHero page="about" eyebrow="Our Story" title="Who We Are" subtitle="A family church for all nations — a parish of the Redeemed Christian Church of God." image={heroImg} />
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-2 items-center">

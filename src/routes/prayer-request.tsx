@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader } from "@/components/section-ui";
+import { Section, SectionHeader } from "@/components/section-ui";
+import { CmsPageHero } from "@/components/cms-page-hero";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/worship-team.jpg";
@@ -57,7 +58,7 @@ function PrayerRequestPage() {
 
   return (
     <>
-      <PageHero
+      <CmsPageHero page="prayer-request"
         eyebrow="We Pray With You"
         title="Prayer Request"
         subtitle="Whatever you're facing, you don't have to carry it alone. Our prayer team is here."

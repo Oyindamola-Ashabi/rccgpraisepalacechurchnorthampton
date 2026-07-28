@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
+import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
+import { CmsPageHero } from "@/components/cms-page-hero";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,7 +44,7 @@ function ContactPage() {
 
   return (
     <>
-      <PageHero eyebrow="Get In Touch" title="We'd Love To Hear From You" subtitle="Prayer requests, visits, questions — we're here." image={heroImg} />
+      <CmsPageHero page="contact" eyebrow="Get In Touch" title="We'd Love To Hear From You" subtitle="Prayer requests, visits, questions — we're here." image={heroImg} />
 
       <Section>
         <div className="grid gap-10 lg:grid-cols-2">

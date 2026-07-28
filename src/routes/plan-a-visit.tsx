@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader } from "@/components/section-ui";
+import { Section, SectionHeader } from "@/components/section-ui";
+import { CmsPageHero } from "@/components/cms-page-hero";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/community.jpg";
@@ -67,7 +68,7 @@ function PlanAVisitPage() {
 
   return (
     <>
-      <PageHero
+      <CmsPageHero page="plan-a-visit"
         eyebrow="You're Welcome Here"
         title="Plan a Visit"
         subtitle="Tell us when you're coming and we'll be looking out for you at Briar Hill Community Centre."
