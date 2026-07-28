@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestimoniesRouteImport } from './routes/testimonies'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShareTestimonyRouteImport } from './routes/share-testimony'
 import { Route as SermonsRouteImport } from './routes/sermons'
@@ -44,6 +45,11 @@ import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
 
+const TestimoniesRoute = TestimoniesRouteImport.update({
+  id: '/testimonies',
+  path: '/testimonies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/events': typeof AdminEventsRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByTo {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/events': typeof AdminEventsRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/sermons': typeof SermonsRoute
   '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/testimonies': typeof TestimoniesRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/events': typeof AdminEventsRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/events'
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/events'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/sermons'
     | '/share-testimony'
     | '/sitemap.xml'
+    | '/testimonies'
     | '/admin/appointments'
     | '/admin/contact'
     | '/admin/events'
@@ -447,12 +459,20 @@ export interface RootRouteChildren {
   SermonsRoute: typeof SermonsRoute
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TestimoniesRoute: typeof TestimoniesRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/testimonies': {
+      id: '/testimonies'
+      path: '/testimonies'
+      fullPath: '/testimonies'
+      preLoaderRoute: typeof TestimoniesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -771,6 +791,7 @@ const rootRouteChildren: RootRouteChildren = {
   SermonsRoute: SermonsRoute,
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TestimoniesRoute: TestimoniesRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
 }
