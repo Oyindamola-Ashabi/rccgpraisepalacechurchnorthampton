@@ -239,9 +239,15 @@ export function useCmsList<T>(
   return { rows, loading };
 }
 
+/** Published events that have not happened yet, soonest first. */
 export function usePublishedEvents() {
   return useCmsList<ChurchEvent>(() =>
-    supabase.from("events").select("*").eq("is_published", true).order("start_at", { ascending: true }),
+    supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .gte("start_at", new Date().toISOString())
+      .order("start_at", { ascending: true }),
   );
 }
 
@@ -250,6 +256,7 @@ export function useActiveMinistries() {
     supabase.from("ministries").select("*").eq("is_active", true).order("sort_order").order("name"),
   );
 }
+
 
 export function usePublishedTestimonies(limit?: number) {
   return useCmsList<PublishedTestimony>(() => {
