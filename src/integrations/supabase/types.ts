@@ -14,16 +14,359 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointment_requests: {
+        Row: {
+          admin_notes: string | null
+          appointment_date: string
+          appointment_time: string
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          name: string
+          notes: string | null
+          pastor_id: string
+          pastor_name: string | null
+          phone: string | null
+          reason: string | null
+          status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          appointment_date: string
+          appointment_time: string
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          name: string
+          notes?: string | null
+          pastor_id: string
+          pastor_name?: string | null
+          phone?: string | null
+          reason?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          name?: string
+          notes?: string | null
+          pastor_id?: string
+          pastor_name?: string | null
+          phone?: string | null
+          reason?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_requests_pastor_id_fkey"
+            columns: ["pastor_id"]
+            isOneToOne: false
+            referencedRelation: "pastors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_messages: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_read: boolean
+          last_name: string
+          message: string
+          status: Database["public"]["Enums"]["submission_status"]
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          is_read?: boolean
+          last_name: string
+          message: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          is_read?: boolean
+          last_name?: string
+          message?: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pastors: {
+        Row: {
+          bio: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          photo_url: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          photo_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          photo_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      prayer_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          is_anonymous: boolean
+          is_read: boolean
+          is_urgent: boolean
+          phone: string | null
+          request: string
+          status: Database["public"]["Enums"]["submission_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          is_read?: boolean
+          is_urgent?: boolean
+          phone?: string | null
+          request: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          is_read?: boolean
+          is_urgent?: boolean
+          phone?: string | null
+          request?: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimony_submissions: {
+        Row: {
+          admin_notes: string | null
+          allow_publish: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_published: boolean
+          is_read: boolean
+          review_status: Database["public"]["Enums"]["review_status"]
+          testimony: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          allow_publish?: boolean
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_published?: boolean
+          is_read?: boolean
+          review_status?: Database["public"]["Enums"]["review_status"]
+          testimony: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          allow_publish?: boolean
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_published?: boolean
+          is_read?: boolean
+          review_status?: Database["public"]["Enums"]["review_status"]
+          testimony?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      visit_plans: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_read: boolean
+          notes: string | null
+          number_of_adults: number
+          number_of_children: number
+          phone: string | null
+          service: string | null
+          status: Database["public"]["Enums"]["submission_status"]
+          updated_at: string
+          visit_date: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_read?: boolean
+          notes?: string | null
+          number_of_adults?: number
+          number_of_children?: number
+          phone?: string | null
+          service?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+          visit_date?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_read?: boolean
+          notes?: string | null
+          number_of_adults?: number
+          number_of_children?: number
+          phone?: string | null
+          service?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+          visit_date?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      published_testimonies: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string | null
+          testimony: string | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          testimony?: string | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          testimony?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "admin" | "editor"
+      appointment_status:
+        | "pending"
+        | "confirmed"
+        | "declined"
+        | "completed"
+        | "cancelled"
+        | "archived"
+      review_status: "pending" | "approved" | "rejected" | "archived"
+      submission_status: "new" | "in_progress" | "resolved" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +493,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "admin", "editor"],
+      appointment_status: [
+        "pending",
+        "confirmed",
+        "declined",
+        "completed",
+        "cancelled",
+        "archived",
+      ],
+      review_status: ["pending", "approved", "rejected", "archived"],
+      submission_status: ["new", "in_progress", "resolved", "archived"],
+    },
   },
 } as const
