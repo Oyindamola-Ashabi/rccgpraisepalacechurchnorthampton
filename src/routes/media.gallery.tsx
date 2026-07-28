@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { galleryPhotos, type GalleryPhoto } from "@/lib/gallery-images";
+import { CmsAlbums } from "@/components/cms-albums";
 
 export const Route = createFileRoute("/media/gallery")({
   head: () => ({
@@ -86,6 +87,8 @@ function GalleryPage() {
           ))}
         </div>
       </Section>
+
+      <CmsAlbums />
 
       {/* CTA */}
       <section className="bg-secondary/40 border-y">
