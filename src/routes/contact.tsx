@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/community.jpg";
 
 export const Route = createFileRoute("/contact")({
@@ -20,6 +21,25 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    setSending(true);
+    setError(null);
+    const { error } = await supabase.from("contact_messages").insert({
+      first_name: String(fd.get("firstName") ?? "").trim(),
+      last_name: String(fd.get("lastName") ?? "").trim(),
+      email: String(fd.get("email") ?? "").trim(),
+      subject: (String(fd.get("subject") ?? "").trim() || null) as string | null,
+      message: String(fd.get("message") ?? "").trim(),
+    });
+    setSending(false);
+    if (error) { setError("Sorry, your message could not be sent. Please try again or email us directly."); return; }
+    setSent(true);
+  }
 
   return (
     <>
@@ -63,7 +83,7 @@ function ContactPage() {
               </div>
             ) : (
               <form
-                onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+                onSubmit={handleSubmit}
                 className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 space-y-4"
               >
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -76,7 +96,8 @@ function ContactPage() {
                   <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Message</label>
                   <textarea required rows={5} name="message" className="mt-1 w-full rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]" />
                 </div>
-                <button type="submit" className="inline-flex items-center justify-center rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">Send message</button>
+                {error && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+                <button type="submit" disabled={sending} className="inline-flex items-center justify-center rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition disabled:opacity-60">{sending ? "Sending…" : "Send message"}</button>
               </form>
             )}
           </div>
