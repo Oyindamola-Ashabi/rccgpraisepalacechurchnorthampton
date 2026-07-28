@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { useState } from "react";
@@ -101,6 +101,22 @@ function ContactPage() {
               </form>
             )}
           </div>
+        </div>
+      </Section>
+
+      <Section className="!pt-0">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            { to: "/plan-a-visit", title: "Plan a Visit", desc: "Tell us you're coming and we'll be ready to welcome you." },
+            { to: "/prayer-request", title: "Prayer Request", desc: "Share a confidential prayer need with our prayer team." },
+            { to: "/share-testimony", title: "Share a Testimony", desc: "Tell us what God has done — it shall end in praise." },
+          ].map((c) => (
+            <Link key={c.to} to={c.to} className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition block">
+              <div className="font-display font-bold text-lg">{c.title}</div>
+              <p className="mt-2 text-sm text-muted-foreground">{c.desc}</p>
+              <span className="mt-3 inline-block text-sm font-semibold text-[#E13495]">Open →</span>
+            </Link>
+          ))}
         </div>
       </Section>
 

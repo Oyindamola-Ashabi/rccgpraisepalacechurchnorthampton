@@ -119,7 +119,7 @@ function AboutPage() {
           <h2 className="font-display font-bold text-3xl md:text-4xl">Come and Belong.</h2>
           <p className="mt-3 text-white/90 max-w-2xl mx-auto">Whether you're seeking, believing, or just curious — there's a seat waiting for you.</p>
           <div className="mt-6 flex justify-center gap-3 flex-wrap">
-            <BrandButton to="/contact" variant="gold">Plan a Visit</BrandButton>
+            <BrandButton to="/plan-a-visit" variant="gold">Plan a Visit</BrandButton>
             <BrandButton to="/events" variant="outline">See Events</BrandButton>
           </div>
         </div>
