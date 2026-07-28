@@ -281,8 +281,13 @@ function ServiceTime({ day, time, label }: { day: string; time: string; label: s
 }
 
 function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; title: string; desc: string; href: string; image: string }) {
+  const internal = href.startsWith("/");
+  const Wrapper: any = internal ? Link : "a";
+  const wrapperProps: any = internal
+    ? { to: href }
+    : { href, target: "_blank", rel: "noopener noreferrer" };
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5 bg-card">
+    <Wrapper {...wrapperProps} className="group relative overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5 bg-card block">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -294,10 +299,10 @@ function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; tit
         <h3 className="font-display font-bold text-xl">{title}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
-          Visit site <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+          {internal ? "Learn more" : "Visit site"} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
       </div>
-    </a>
+    </Wrapper>
   );
 }
 
