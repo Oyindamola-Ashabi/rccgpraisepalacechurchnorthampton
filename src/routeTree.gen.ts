@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ShareTestimonyRouteImport } from './routes/share-testimony'
 import { Route as SermonsRouteImport } from './routes/sermons'
+import { Route as PrayerRequestRouteImport } from './routes/prayer-request'
+import { Route as PlanAVisitRouteImport } from './routes/plan-a-visit'
 import { Route as MediaRouteImport } from './routes/media'
 import { Route as GiveRouteImport } from './routes/give'
 import { Route as EventsRouteImport } from './routes/events'
@@ -39,9 +42,24 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShareTestimonyRoute = ShareTestimonyRouteImport.update({
+  id: '/share-testimony',
+  path: '/share-testimony',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SermonsRoute = SermonsRouteImport.update({
   id: '/sermons',
   path: '/sermons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrayerRequestRoute = PrayerRequestRouteImport.update({
+  id: '/prayer-request',
+  path: '/prayer-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanAVisitRoute = PlanAVisitRouteImport.update({
+  id: '/plan-a-visit',
+  path: '/plan-a-visit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediaRoute = MediaRouteImport.update({
@@ -166,7 +184,10 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
+  '/plan-a-visit': typeof PlanAVisitRoute
+  '/prayer-request': typeof PrayerRequestRoute
   '/sermons': typeof SermonsRoute
+  '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
@@ -190,7 +211,10 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
+  '/plan-a-visit': typeof PlanAVisitRoute
+  '/prayer-request': typeof PrayerRequestRoute
   '/sermons': typeof SermonsRoute
+  '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
@@ -217,7 +241,10 @@ export interface FileRoutesById {
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
+  '/plan-a-visit': typeof PlanAVisitRoute
+  '/prayer-request': typeof PrayerRequestRoute
   '/sermons': typeof SermonsRoute
+  '/share-testimony': typeof ShareTestimonyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/contact': typeof AdminContactRoute
@@ -245,7 +272,10 @@ export interface FileRouteTypes {
     | '/events'
     | '/give'
     | '/media'
+    | '/plan-a-visit'
+    | '/prayer-request'
     | '/sermons'
+    | '/share-testimony'
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
@@ -269,7 +299,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/events'
     | '/give'
+    | '/plan-a-visit'
+    | '/prayer-request'
     | '/sermons'
+    | '/share-testimony'
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
@@ -295,7 +328,10 @@ export interface FileRouteTypes {
     | '/events'
     | '/give'
     | '/media'
+    | '/plan-a-visit'
+    | '/prayer-request'
     | '/sermons'
+    | '/share-testimony'
     | '/sitemap.xml'
     | '/admin/appointments'
     | '/admin/contact'
@@ -322,7 +358,10 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRouteWithChildren
   GiveRoute: typeof GiveRoute
   MediaRoute: typeof MediaRouteWithChildren
+  PlanAVisitRoute: typeof PlanAVisitRoute
+  PrayerRequestRoute: typeof PrayerRequestRoute
   SermonsRoute: typeof SermonsRoute
+  ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
@@ -337,11 +376,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share-testimony': {
+      id: '/share-testimony'
+      path: '/share-testimony'
+      fullPath: '/share-testimony'
+      preLoaderRoute: typeof ShareTestimonyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sermons': {
       id: '/sermons'
       path: '/sermons'
       fullPath: '/sermons'
       preLoaderRoute: typeof SermonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prayer-request': {
+      id: '/prayer-request'
+      path: '/prayer-request'
+      fullPath: '/prayer-request'
+      preLoaderRoute: typeof PrayerRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan-a-visit': {
+      id: '/plan-a-visit'
+      path: '/plan-a-visit'
+      fullPath: '/plan-a-visit'
+      preLoaderRoute: typeof PlanAVisitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media': {
@@ -559,7 +619,10 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRouteWithChildren,
   GiveRoute: GiveRoute,
   MediaRoute: MediaRouteWithChildren,
+  PlanAVisitRoute: PlanAVisitRoute,
+  PrayerRequestRoute: PrayerRequestRoute,
   SermonsRoute: SermonsRoute,
+  ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
@@ -567,13 +630,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

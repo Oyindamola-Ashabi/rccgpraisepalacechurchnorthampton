@@ -39,7 +39,16 @@ const NAV: NavItem[] = [
   },
   { label: "Sermons", to: "/sermons" },
   { label: "Book Appointment", to: "/book-appointment" },
-  { label: "Contact", to: "/contact" },
+  {
+    label: "Connect",
+    to: "/contact",
+    children: [
+      { label: "Contact Us", to: "/contact" },
+      { label: "Plan a Visit", to: "/plan-a-visit" },
+      { label: "Prayer Request", to: "/prayer-request" },
+      { label: "Share a Testimony", to: "/share-testimony" },
+    ],
+  },
 ];
 
 export function SiteHeader() {

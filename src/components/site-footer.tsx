@@ -38,6 +38,9 @@ export function SiteFooter() {
             <li><Link to="/media" className="hover:text-[#F0DE51]">Media</Link></li>
             <li><Link to="/sermons" className="hover:text-[#F0DE51]">Sermons</Link></li>
             <li><Link to="/contact" className="hover:text-[#F0DE51]">Contact</Link></li>
+            <li><Link to="/plan-a-visit" className="hover:text-[#F0DE51]">Plan a Visit</Link></li>
+            <li><Link to="/prayer-request" className="hover:text-[#F0DE51]">Prayer Request</Link></li>
+            <li><Link to="/share-testimony" className="hover:text-[#F0DE51]">Share a Testimony</Link></li>
           </ul>
         </div>
 

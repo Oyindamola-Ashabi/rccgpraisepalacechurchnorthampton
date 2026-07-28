@@ -42,7 +42,7 @@ function HomePage() {
               RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <BrandButton to="/about" variant="gold">Plan Your Visit</BrandButton>
+              <BrandButton to="/plan-a-visit" variant="gold">Plan Your Visit</BrandButton>
               <BrandButton to="/media" variant="outline">
                 <Play className="h-4 w-4 mr-2" /> Watch Live
               </BrandButton>
@@ -91,7 +91,7 @@ function HomePage() {
             </ul>
             <div className="mt-8 flex gap-3">
               <BrandButton to="/about">About Us</BrandButton>
-              <Link to="/contact" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
+              <Link to="/plan-a-visit" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
                 Visit us <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
