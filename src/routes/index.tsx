@@ -6,7 +6,8 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageSections, useSiteSettings, textOr } from "@/lib/cms";
+import { usePageContent, useSiteSettings } from "@/lib/cms";
+import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,40 +24,51 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const sections = usePageSections("home");
+  const { text, image } = usePageContent("home");
   const settings = useSiteSettings();
-  const hero = sections.hero ?? null;
+  const watchLiveHref = text("hero_watch_live", "cta_href", "/media");
+  const watchLiveExternal = /^https?:/.test(watchLiveHref);
+  const heroHref = text("hero", "cta_href", "/plan-a-visit");
+  const heroExternal = /^https?:/.test(heroHref);
 
   return (
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <HeroSlider images={[heroImg, heroSlides[0].url, heroSlides[1].url]} />
+        <HeroSlider
+          images={[
+            image("hero_slide_1", heroImg),
+            image("hero_slide_2", heroSlides[0].url),
+            image("hero_slide_3", heroSlides[1].url),
+          ]}
+        />
 
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-4 py-1.5 text-xs uppercase tracking-[0.25em]">
-              <Sparkles className="h-3.5 w-3.5 text-[#F0DE51]" /> {textOr(hero?.subheading, "Welcome Home")}
+              <Sparkles className="h-3.5 w-3.5 text-[#F0DE51]" /> {text("hero", "subheading", "Welcome Home")}
             </div>
             <h1 className="font-display font-black text-5xl md:text-7xl leading-[1.05]">
-              {hero?.headline ? (
-                hero.headline
-              ) : (
-                <>
-                  It Shall End
-                  <br />
-                  In <span className="text-[#F0DE51]">Praise</span>.
-                </>
-              )}
+              <HighlightGold text={text("hero", "headline", "It Shall End In *Praise*.")} />
             </h1>
             <p className="mt-6 max-w-xl text-white/90 text-lg">
-              {textOr(hero?.body, settings.short_description ?? "RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.")}
+              {text("hero", "body", settings.short_description ?? "RCCG Praise Palace Northampton is a family — a house of worship where every heart finds a home. Join us for Sunday service, midweek study, and life-changing encounters.")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <BrandButton to="/plan-a-visit" variant="gold">Plan Your Visit</BrandButton>
-              <BrandButton to="/media" variant="outline">
-                <Play className="h-4 w-4 mr-2" /> Watch Live
-              </BrandButton>
+              {heroExternal ? (
+                <BrandButton href={heroHref} external variant="gold">{text("hero", "cta_label", "Plan Your Visit")}</BrandButton>
+              ) : (
+                <BrandButton to={heroHref} variant="gold">{text("hero", "cta_label", "Plan Your Visit")}</BrandButton>
+              )}
+              {watchLiveExternal ? (
+                <BrandButton href={watchLiveHref} external variant="outline">
+                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                </BrandButton>
+              ) : (
+                <BrandButton to={watchLiveHref} variant="outline">
+                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                </BrandButton>
+              )}
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-xl">
               <ServiceTime day="Sundays" time="10:00 AM" label="Worship" />
@@ -71,23 +83,20 @@ function HomePage() {
       <section className="bg-gradient-to-b from-background to-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
           <div className="relative">
-            <img src={eventPhotos.fathers.url} alt="RCCG Praise Palace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
+            <img src={image("welcome", eventPhotos.fathers.url)} alt="RCCG Praise Palace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
             <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[240px]">
               <div className="font-display font-bold text-2xl text-[#3a2b00] leading-tight">A Family for All Nations</div>
               <div className="mt-1 text-xs uppercase tracking-widest text-[#3a2b00]/70">One House. One Praise.</div>
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">Welcome Home</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">{text("welcome", "subheading", "Welcome Home")}</div>
             <h2 className="font-display font-bold text-3xl md:text-5xl leading-tight">
-              We Have Been Waiting <span className="text-gradient-brand">For You.</span>
+              <Highlight text={text("welcome", "headline", "We Have Been Waiting *For You.*")} />
             </h2>
-            <p className="mt-5 text-muted-foreground leading-relaxed">
-              RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.
-            </p>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              You are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.
-            </p>
+            <div className="mt-5 text-muted-foreground leading-relaxed">
+              <Paragraphs text={text("welcome", "body", "RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.\n\nYou are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.")} />
+            </div>
             <ul className="mt-6 space-y-3">
               {[
                 "Join us every Sunday by 10AM",
@@ -101,7 +110,7 @@ function HomePage() {
               ))}
             </ul>
             <div className="mt-8 flex gap-3">
-              <BrandButton to="/about">About Us</BrandButton>
+              <BrandButton to={text("welcome", "cta_href", "/about")}>{text("welcome", "cta_label", "About Us")}</BrandButton>
               <Link to="/plan-a-visit" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
                 Visit us <ArrowRight className="h-4 w-4" />
               </Link>
@@ -113,9 +122,9 @@ function HomePage() {
       {/* PROGRAMS */}
       <Section>
         <SectionHeader
-          eyebrow="Our Programs"
-          title="Weekly Rhythms of Grace"
-          subtitle="A steady heartbeat of prayer, worship and word — come as you are."
+          eyebrow={text("programs", "subheading", "Our Programs")}
+          title={text("programs", "headline", "Weekly Rhythms of Grace")}
+          subtitle={text("programs", "body", "A steady heartbeat of prayer, worship and word — come as you are.")}
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
@@ -143,9 +152,9 @@ function HomePage() {
       <section className="bg-secondary/40 border-y">
         <Section className="!py-20">
           <SectionHeader
-            eyebrow="Our Ministries"
-            title="Grow. Serve. Belong."
-            subtitle="Extensions of Praise Palace touching every area of life — radio, business, family and youth."
+            eyebrow={text("ministries", "subheading", "Our Ministries")}
+            title={text("ministries", "headline", "Grow. Serve. Belong.")}
+            subtitle={text("ministries", "body", "Extensions of Praise Palace touching every area of life — radio, business, family and youth.")}
           />
           <div className="grid gap-6 md:grid-cols-3">
             <MinistryCard
@@ -177,13 +186,13 @@ function HomePage() {
       <Section>
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">Our Leader</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">{text("pastor", "subheading", "Our Leader")}</div>
             <h2 className="font-display font-bold text-3xl md:text-5xl leading-tight">
-              Passionate About <span className="text-gradient-brand">the Gospel.</span>
+              <Highlight text={text("pastor", "headline", "Passionate About *the Gospel.*")} />
             </h2>
-            <p className="mt-5 text-muted-foreground leading-relaxed">
-              Pastor Abiodun Bamgbala leads RCCG Praise Palace Northampton with grace, wisdom and an unwavering conviction that it shall all end in praise. He is dedicated to the cause of Jesus Christ, spreading the gospel — evidenced by signs, wonders and lives transformed.
-            </p>
+            <div className="mt-5 text-muted-foreground leading-relaxed">
+              <Paragraphs text={text("pastor", "body", "Pastor Abiodun Bamgbala leads RCCG Praise Palace Northampton with grace, wisdom and an unwavering conviction that it shall all end in praise. He is dedicated to the cause of Jesus Christ, spreading the gospel — evidenced by signs, wonders and lives transformed.")} />
+            </div>
             <div className="mt-6 flex gap-3">
               <BrandButton to="/about">Meet Our Pastor</BrandButton>
               <BrandButton to="/book-appointment" variant="outline">Book Appointment</BrandButton>
@@ -207,8 +216,8 @@ function HomePage() {
         <Section>
           <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
             <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">Upcoming</div>
-              <h2 className="font-display font-bold text-3xl md:text-4xl">Events You'll Love</h2>
+              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">{text("events", "subheading", "Upcoming")}</div>
+              <h2 className="font-display font-bold text-3xl md:text-4xl">{text("events", "headline", "Events You'll Love")}</h2>
             </div>
             <Link to="/events" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
               View all events <ArrowRight className="h-4 w-4" />
@@ -228,13 +237,13 @@ function HomePage() {
         <div className="relative mx-auto max-w-5xl px-6 py-20 text-center text-white">
           <HandHeart className="h-12 w-12 mx-auto mb-4 text-[#F0DE51]" />
           <h2 className="font-display font-bold text-3xl md:text-5xl">
-            Don't wait for the right moment — <span className="text-[#F0DE51]">discover God now.</span>
+            <HighlightGold text={text("giving_cta", "headline", "Don't wait for the right moment — *discover God now.*")} />
           </h2>
           <p className="mt-4 text-white/90 max-w-2xl mx-auto">
-            Bring your tithes into the storehouse. Give cheerfully, sow generously — and see the windows of heaven open over your life.
+            {text("giving_cta", "body", "Bring your tithes into the storehouse. Give cheerfully, sow generously — and see the windows of heaven open over your life.")}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <BrandButton to="/give" variant="gold">Give Now</BrandButton>
+            <BrandButton to={text("giving_cta", "cta_href", "/give")} variant="gold">{text("giving_cta", "cta_label", "Give Now")}</BrandButton>
             <BrandButton to="/contact" variant="outline">Contact Us</BrandButton>
           </div>
         </div>
