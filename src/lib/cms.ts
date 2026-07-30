@@ -308,7 +308,13 @@ export type Podcast = {
   sort_order: number;
 };
 
-export const PODCAST_BUCKET = "podcasts";
+/**
+ * Podcast audio lives in the same public media store as images, inside a
+ * "podcasts/" folder, so uploads work without a second storage area.
+ */
+export const PODCAST_BUCKET = MEDIA_BUCKET;
+export const PODCAST_FOLDER = "podcasts";
+
 
 /** Pull the 11-character video id out of any common YouTube URL form. */
 export function youTubeId(input: string | null | undefined): string | null {
