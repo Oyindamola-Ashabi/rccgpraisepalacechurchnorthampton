@@ -130,11 +130,23 @@ export function AdminHeading({ title, description }: { title: string; descriptio
   );
 }
 
-/** Image field with preview, manual URL entry and a media-library picker. */
+/** Image field with preview, direct upload, manual URL entry and a library picker. */
 export function ImageField({
   label = "Image", value, onChange, disabled,
 }: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   const [picking, setPicking] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFile(file: File) {
+    setUploading(true);
+    setUploadError(null);
+    const { asset, error } = await uploadMedia(file);
+    setUploading(false);
+    if (error || !asset) { setUploadError(error ?? "Upload failed."); return; }
+    onChange(asset.public_url);
+  }
+
   return (
     <div>
       <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
@@ -149,17 +161,28 @@ export function ImageField({
         <input
           value={value}
           disabled={disabled}
-          placeholder="Image URL or pick from library"
+          placeholder="Image URL, upload a new picture or pick from the library"
           onChange={(e) => onChange(e.target.value)}
           className="min-w-[180px] flex-1 rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
         />
+        <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60 ${disabled || uploading ? "pointer-events-none opacity-60" : ""}`}>
+          {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+          {uploading ? "Uploading…" : "Upload new"}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            disabled={disabled || uploading}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+          />
+        </label>
         <button
           type="button"
           disabled={disabled}
           onClick={() => setPicking(true)}
           className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60 disabled:opacity-60"
         >
-          Library
+          Select from library
         </button>
         {value && !disabled && (
           <button type="button" onClick={() => onChange("")} className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60">
@@ -167,10 +190,13 @@ export function ImageField({
           </button>
         )}
       </div>
+      {uploadError && <p className="mt-2 text-xs text-destructive">{uploadError}</p>}
+      <p className="mt-1 text-[11px] text-muted-foreground">Uploading saves the picture to the Media Library, then fills this field automatically. Remember to press Save.</p>
       {picking && <MediaPicker onClose={() => setPicking(false)} onSelect={(a) => { onChange(a.public_url); setPicking(false); }} />}
     </div>
   );
 }
+
 
 export function MediaPicker({ onClose, onSelect }: { onClose: () => void; onSelect: (a: MediaAsset) => void }) {
   const { assets, loading, error, reload, upload, uploading, uploadError } = useMediaLibrary();
