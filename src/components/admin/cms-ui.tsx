@@ -320,3 +320,142 @@ export function useMediaLibrary() {
 
   return { assets, loading, error, uploadError, uploading, reload, upload, remove, formatBytes };
 }
+
+/* =====================================================================
+ * Unsaved-work protection and clear save feedback
+ * ===================================================================== */
+
+export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error";
+
+/**
+ * Keeps an admin form's values in the browser until they are saved, so moving
+ * between pages never loses unfinished work. Every record gets its own key.
+ */
+export function useDraftForm<T extends Record<string, any>>(draftKey: string, record: T) {
+  const [form, setForm] = useState<T>(record);
+  const [status, setStatus] = useState<SaveStatus>("idle");
+  const [message, setMessage] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const storageKey = `ppc-admin-draft:${draftKey}`;
+
+  // Restore any unfinished work for this exact record.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        setForm((f) => ({ ...f, ...saved }));
+        setStatus("dirty");
+        setRestored(true);
+      }
+    } catch {
+      /* a corrupt draft is simply ignored */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  // Warn before leaving with unsaved changes.
+  useEffect(() => {
+    if (status !== "dirty") return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [status]);
+
+  function set<K extends keyof T>(key: K, value: T[K]) {
+    setForm((f) => {
+      const next = { ...f, [key]: value };
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {
+        /* storage full or unavailable — editing still works */
+      }
+      return next;
+    });
+    setStatus("dirty");
+    setMessage(null);
+  }
+
+  function clearDraft() {
+    try {
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      /* ignore */
+    }
+    setRestored(false);
+  }
+
+  function discardDraft() {
+    clearDraft();
+    setForm(record);
+    setStatus("idle");
+    setMessage(null);
+  }
+
+  /** Runs the save, only reporting success once the database confirms it. */
+  async function save(run: () => Promise<{ error: { message: string } | null }>) {
+    setStatus("saving");
+    setMessage(null);
+    const { error } = await run();
+    if (error) {
+      setStatus("error");
+      setMessage(error.message);
+      return false;
+    }
+    clearDraft();
+    setStatus("saved");
+    setLastSaved(new Date().toLocaleTimeString());
+    setMessage(null);
+    return true;
+  }
+
+  return { form, setForm, set, status, message, restored, lastSaved, save, discardDraft, clearDraft };
+}
+
+/** The Save button plus its live status wording. */
+export function SaveRow({
+  status, message, lastSaved, restored, onSave, onDiscard, label = "Save changes", disabled,
+}: {
+  status: SaveStatus;
+  message?: string | null;
+  lastSaved?: string | null;
+  restored?: boolean;
+  onSave: () => void;
+  onDiscard?: () => void;
+  label?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <SaveButton
+        saving={status === "saving"}
+        saved={status === "saved"}
+        onClick={onSave}
+        label={label}
+        disabled={disabled}
+      />
+      {restored && status === "dirty" && (
+        <span className="inline-flex items-center gap-2 text-xs text-amber-700">
+          Draft restored
+          {onDiscard && (
+            <button type="button" onClick={onDiscard} className="underline hover:no-underline">
+              Discard draft
+            </button>
+          )}
+        </span>
+      )}
+      {status === "dirty" && !restored && <StatusBadge tone="warn">Unsaved changes</StatusBadge>}
+      {status === "saving" && <span className="text-xs text-muted-foreground">Saving…</span>}
+      {status === "saved" && (
+        <span className="text-xs text-emerald-700">
+          Changes saved successfully{lastSaved ? ` · Last saved ${lastSaved}` : ""}
+        </span>
+      )}
+      {status === "error" && <span className="text-xs text-destructive">Save failed — {message}</span>}
+    </div>
+  );
+}
