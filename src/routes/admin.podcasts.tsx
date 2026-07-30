@@ -6,6 +6,13 @@ import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
 import { PODCAST_BUCKET, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
 
+/** Pulls the video id out of any common YouTube URL shape. */
+function youtubeId(url?: string | null) {
+  if (!url) return "";
+  const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{6,})/);
+  return m?.[1] ?? "";
+}
+
 export const Route = createFileRoute("/admin/podcasts")({ ssr: false, component: AdminPodcastsPage });
 
 function AdminPodcastsPage() {
