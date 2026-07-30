@@ -125,19 +125,46 @@ export function Alert({ error, success }: { error?: string | null; success?: str
   );
 }
 
-export function AdminHeading({ title, description }: { title: string; description: string }) {
+export function AdminHeading({
+  title, description, breadcrumb,
+}: { title: string; description: string; breadcrumb?: string[] }) {
   return (
     <div>
+      {breadcrumb && breadcrumb.length > 0 && (
+        <nav aria-label="Breadcrumb" className="mb-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+          {breadcrumb.map((crumb, i) => (
+            <span key={`${crumb}-${i}`}>
+              {i > 0 && <span className="mx-1.5 opacity-50">/</span>}
+              <span className={i === breadcrumb.length - 1 ? "text-[#E13495]" : ""}>{crumb}</span>
+            </span>
+          ))}
+        </nav>
+      )}
       <h1 className="font-display text-2xl font-bold">{title}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{description}</p>
     </div>
+  );
+}
+
+/** Small coloured status pill, e.g. Visible / Hidden / Published. */
+export function StatusBadge({ tone = "neutral", children }: { tone?: "on" | "off" | "neutral" | "warn"; children: React.ReactNode }) {
+  const tones = {
+    on: "bg-emerald-500/10 text-emerald-700",
+    off: "bg-muted text-muted-foreground",
+    warn: "bg-amber-500/10 text-amber-700",
+    neutral: "bg-[#E13495]/10 text-[#E13495]",
+  } as const;
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${tones[tone]}`}>
+      {children}
+    </span>
   );
 }
 
 /** Image field with preview, direct upload, manual URL entry and a library picker. */
 export function ImageField({
-  label = "Image", value, onChange, disabled,
-}: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
+  label = "Image", value, onChange, disabled, hint,
+}: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean; hint?: string }) {
   const [picking, setPicking] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
