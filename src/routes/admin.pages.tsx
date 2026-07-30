@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import { CMS_PAGES, DEFAULT_SECTION_KEYS, type PageSection } from "@/lib/cms";
+import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, type PageSection } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/pages")({ ssr: false, component: AdminPagesPage });
 
