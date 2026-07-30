@@ -255,13 +255,8 @@ function HomePage() {
           subtitle={text("programs", "body", "A steady heartbeat of prayer, worship and word — come as you are.")}
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: Heart, title: text("program_card_1", "headline", "Sunday Service"), time: text("program_card_1", "subheading", "10:00 AM"), desc: text("program_card_1", "body", "Worship, word and community for the whole family.") },
-            { icon: BookOpen, title: text("program_card_2", "headline", "Bible Study"), time: text("program_card_2", "subheading", "Wed · 7:00 PM"), desc: text("program_card_2", "body", "Go deep into the scriptures every Wednesday.") },
-            { icon: Music, title: text("program_card_3", "headline", "Night Vigil"), time: text("program_card_3", "subheading", "Last Fri · 11:00 PM"), desc: text("program_card_3", "body", "A monthly night of prayer, worship and breakthrough.") },
-            { icon: Users, title: text("program_card_4", "headline", "Prayer Connect"), time: text("program_card_4", "subheading", "Last Day · 11:30 PM"), desc: text("program_card_4", "body", "Closing every month in agreement and intercession.") },
-          ].map((p) => (
-            <div key={p.title} className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
+          {programs.map((p) => (
+            <div key={p.key} className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full gradient-brand opacity-10 group-hover:opacity-20 transition" />
               <div className="relative">
                 <div className="grid h-12 w-12 place-items-center rounded-xl gradient-brand text-white shadow-elegant">
