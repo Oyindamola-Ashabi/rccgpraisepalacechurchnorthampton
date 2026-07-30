@@ -630,13 +630,25 @@ export const SECTION_TEMPLATES = [
   { value: "custom", label: "Custom" },
 ] as const;
 
+/**
+ * Remembers the cards already loaded for a section so navigating back to a page
+ * never flashes the built-in wording before the saved content arrives.
+ */
+const itemCache = new Map<string, SectionItem[]>();
+
 /** Visible items for one section of one page, ordered as the administrator arranged them. */
 export function useSectionItems(pageSlug: string, sectionKey: string) {
-  const [rows, setRows] = useState<SectionItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = `${pageSlug}::${sectionKey}`;
+  const [rows, setRows] = useState<SectionItem[]>(() => itemCache.get(cacheKey) ?? []);
+  const [loading, setLoading] = useState(!itemCache.has(cacheKey));
 
   useEffect(() => {
     let active = true;
+    const cached = itemCache.get(cacheKey);
+    if (cached) {
+      setRows(cached);
+      setLoading(false);
+    }
     (async () => {
       const { data: section } = await supabase
         .from("page_sections")
@@ -646,7 +658,6 @@ export function useSectionItems(pageSlug: string, sectionKey: string) {
         .maybeSingle();
       if (!active) return;
       if (!section) {
-        setRows([]);
         setLoading(false);
         return;
       }
@@ -656,17 +667,64 @@ export function useSectionItems(pageSlug: string, sectionKey: string) {
         .eq("section_id", (section as any).id)
         .eq("is_visible", true)
         .order("sort_order");
-      if (!active) return;
-      setRows(((data as any[]) ?? []) as SectionItem[]);
+      if (!active || !data) {
+        if (active) setLoading(false);
+        return;
+      }
+      const list = (data as any[]) as SectionItem[];
+      itemCache.set(cacheKey, list);
+      setRows(list);
       setLoading(false);
     })();
     return () => {
       active = false;
     };
-  }, [pageSlug, sectionKey]);
+  }, [pageSlug, sectionKey, cacheKey]);
 
   return { rows, loading };
 }
+
+/** Clears the remembered copy of a section's cards after an administrator saves. */
+export function invalidateSectionItems(pageSlug?: string, sectionKey?: string) {
+  if (pageSlug && sectionKey) itemCache.delete(`${pageSlug}::${sectionKey}`);
+  else itemCache.clear();
+}
+
+/** Clears the remembered copy of a page's sections after an administrator saves. */
+export function invalidatePageSections(pageSlug?: string) {
+  if (pageSlug) sectionCache.delete(pageSlug);
+  else sectionCache.clear();
+}
+
+/* =====================================================================
+ * Event videos — separate from Sermons and the Watch Live video
+ * ===================================================================== */
+
+export type EventVideo = {
+  id: string;
+  event_id: string | null;
+  event_slug: string | null;
+  title: string;
+  description: string | null;
+  youtube_url: string | null;
+  youtube_video_id: string | null;
+  thumbnail_url: string | null;
+  is_visible: boolean;
+  sort_order: number;
+};
+
+export function useEventVideos(eventSlug?: string) {
+  return useCmsList<EventVideo>(() => {
+    let q = supabase
+      .from("event_videos" as any)
+      .select("*")
+      .eq("is_visible", true)
+      .order("sort_order");
+    if (eventSlug) q = q.eq("event_slug", eventSlug);
+    return q;
+  }, [eventSlug ?? ""]);
+}
+
 
 /* =====================================================================
  * Navigation
