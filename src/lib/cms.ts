@@ -134,7 +134,8 @@ export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: strin
   media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
 };
 
-export function usePageSections(pageSlug: string) {
+/** All sections for a page, including hidden ones (visibility is applied by the caller). */
+export function usePageSectionsAll(pageSlug: string) {
   const [sections, setSections] = useState<Record<string, PageSection>>({});
 
   useEffect(() => {
@@ -143,7 +144,6 @@ export function usePageSections(pageSlug: string) {
       .from("page_sections")
       .select("*")
       .eq("page_slug", pageSlug)
-      .eq("is_visible", true)
       .order("sort_order")
       .then(({ data }) => {
         if (!active || !data) return;
@@ -157,6 +157,11 @@ export function usePageSections(pageSlug: string) {
   return sections;
 }
 
+export function usePageSections(pageSlug: string) {
+  const all = usePageSectionsAll(pageSlug);
+  return Object.fromEntries(Object.entries(all).filter(([, s]) => s.is_visible));
+}
+
 /** Returns the CMS section if one exists and is visible, otherwise null (page keeps its built-in content). */
 export function usePageSection(pageSlug: string, sectionKey: string): PageSection | null {
   const sections = usePageSections(pageSlug);
@@ -168,7 +173,8 @@ export function usePageSection(pageSlug: string, sectionKey: string): PageSectio
  * already designed into the page, so nothing ever goes blank or disappears.
  */
 export function usePageContent(pageSlug: string) {
-  const sections = usePageSections(pageSlug);
+  const all = usePageSectionsAll(pageSlug);
+  const sections = Object.fromEntries(Object.entries(all).filter(([, s]) => s.is_visible));
 
   function text(key: string, field: "headline" | "subheading" | "body" | "cta_label" | "cta_href" | "page_title", fallback: string) {
     const value = sections[key]?.[field];
@@ -179,7 +185,12 @@ export function usePageContent(pageSlug: string) {
     return mediaUrl(sections[key]?.image_url) || fallback;
   }
 
-  return { sections, text, image };
+  /** A card is shown unless an administrator has explicitly hidden its record. */
+  function visible(key: string) {
+    return all[key] ? all[key].is_visible : true;
+  }
+
+  return { sections, all, text, image, visible };
 }
 
 
