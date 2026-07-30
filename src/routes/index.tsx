@@ -111,18 +111,63 @@ function HomePage() {
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
   const heroHref = text("hero", "cta_href", "/plan-a-visit");
   const heroExternal = /^https?:/.test(heroHref);
+  const showWatchLive = visible("hero_watch_live");
+
+  /** Hero background photographs — administrator slides first, built-in ones otherwise. */
+  const slideDefaults = [image("hero_slide_1", heroImg), heroSlides[0].url, heroSlides[1].url];
+  const heroImages = heroSlideItems.length
+    ? heroSlideItems.map((it: SectionItem, i: number) => imageOr(it.image_url, slideDefaults[i] ?? heroImg))
+    : slideDefaults;
+
+  /** Service-time boxes inside the hero. */
+  const serviceDefaults = [
+    { label: "Worship", day: "Sundays", time: "10:00 AM" },
+    { label: "Bible Study", day: "Wednesdays", time: "7:00 PM" },
+    { label: "Night Vigil", day: "Last Friday", time: "11:00 PM" },
+  ];
+  const services = serviceItems.length
+    ? serviceItems.map((it: SectionItem, i: number) => ({
+        key: it.id,
+        label: it.title ?? serviceDefaults[i]?.label ?? "",
+        day: it.subtitle ?? serviceDefaults[i]?.day ?? "",
+        time: it.body ?? serviceDefaults[i]?.time ?? "",
+      }))
+    : serviceDefaults.map((d, i) => ({
+        key: `hero_service_${i + 1}`,
+        label: text(`hero_service_${i + 1}`, "headline", d.label),
+        day: text(`hero_service_${i + 1}`, "subheading", d.day),
+        time: text(`hero_service_${i + 1}`, "body", d.time),
+      }));
+
+  /** Weekly Rhythms of Grace cards. */
+  const programDefaults = [
+    { icon: Heart, title: "Sunday Service", time: "10:00 AM", desc: "Worship, word and community for the whole family." },
+    { icon: BookOpen, title: "Bible Study", time: "Wed · 7:00 PM", desc: "Go deep into the scriptures every Wednesday." },
+    { icon: Music, title: "Night Vigil", time: "Last Fri · 11:00 PM", desc: "A monthly night of prayer, worship and breakthrough." },
+    { icon: Users, title: "Prayer Connect", time: "Last Day · 11:30 PM", desc: "Closing every month in agreement and intercession." },
+  ];
+  const programs = programItems.length
+    ? programItems.map((it: SectionItem, i: number) => ({
+        key: it.id,
+        icon: cardIcon(it.icon_key) ?? programDefaults[i]?.icon ?? Heart,
+        title: it.title ?? programDefaults[i]?.title ?? "",
+        time: it.subtitle ?? programDefaults[i]?.time ?? "",
+        desc: it.body ?? programDefaults[i]?.desc ?? "",
+      }))
+    : programDefaults.map((d, i) => ({
+        key: `program_card_${i + 1}`,
+        icon: d.icon,
+        title: text(`program_card_${i + 1}`, "headline", d.title),
+        time: text(`program_card_${i + 1}`, "subheading", d.time),
+        desc: text(`program_card_${i + 1}`, "body", d.desc),
+      }));
 
   return (
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <HeroSlider
-          images={[
-            image("hero_slide_1", heroImg),
-            image("hero_slide_2", heroSlides[0].url),
-            image("hero_slide_3", heroSlides[1].url),
-          ]}
-        />
+        <HeroSlider images={heroImages} />
+
 
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
