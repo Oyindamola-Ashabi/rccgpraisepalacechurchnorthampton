@@ -358,13 +358,28 @@ export function podcastAudioUrl(pathOrUrl: string | null | undefined): string | 
   return supabase.storage.from(PODCAST_BUCKET).getPublicUrl(pathOrUrl).data.publicUrl;
 }
 
+/** True when a link points straight at an audio file the browser can play in-page. */
+export function isDirectAudio(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return /\.(mp3|m4a|mp4|wav|ogg|oga|opus|webm|aac|flac)(\?.*)?$/i.test(url.split("#")[0]);
+}
+
+/** Playback source for an episode: uploaded file first, then a direct audio link. */
+export function episodeAudioSource(ep: Podcast): { src: string | null; external: string | null } {
+  const uploaded = podcastAudioUrl(ep.audio_file_url);
+  if (uploaded) return { src: uploaded, external: ep.external_audio_url ?? null };
+  if (isDirectAudio(ep.external_audio_url)) return { src: ep.external_audio_url!, external: null };
+  return { src: null, external: ep.external_audio_url ?? null };
+}
+
 /** Generic read hook with a safe fallback so the public site never renders blank. */
 export function useCmsList<T>(
   loader: () => PromiseLike<{ data: any; error: any }>,
   deps: unknown[] = [],
-): { rows: T[]; loading: boolean } {
+): { rows: T[]; loading: boolean; reload: () => void } {
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -377,9 +392,9 @@ export function useCmsList<T>(
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [...deps, tick]);
 
-  return { rows, loading };
+  return { rows, loading, reload: () => setTick((t) => t + 1) };
 }
 
 /** Published events that have not happened yet, soonest first. */
