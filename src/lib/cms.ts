@@ -309,9 +309,34 @@ export function usePublishedSermons() {
       .from("sermons" as any)
       .select("*")
       .eq("is_published", true)
+      .order("is_featured", { ascending: false })
       .order("sort_order")
-      .order("sermon_date", { ascending: false }),
+      .order("sermon_date", { ascending: false, nullsFirst: false }),
   );
+}
+
+/** The standard YouTube poster for a video id. */
+export function youTubePoster(videoId: string | null | undefined): string | null {
+  return videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : null;
+}
+
+/**
+ * The large poster image for a sermon: the administrator's thumbnail first,
+ * then the YouTube image, then the page's built-in image.
+ */
+export function sermonPoster(sermon: Sermon | null | undefined, fallback: string): string {
+  if (!sermon) return fallback;
+  const id = sermon.youtube_video_id || youTubeId(sermon.youtube_url);
+  return mediaUrl(sermon.thumbnail_url) || youTubePoster(id) || fallback;
+}
+
+/** Featured published sermon, otherwise the newest published sermon. */
+export function pickFeaturedSermon(rows: Sermon[]): Sermon | null {
+  if (rows.length === 0) return null;
+  const featured = rows.find((s) => s.is_featured);
+  if (featured) return featured;
+  const dated = [...rows].sort((a, b) => (b.sermon_date ?? "").localeCompare(a.sermon_date ?? ""));
+  return dated[0] ?? null;
 }
 
 export function usePublishedPodcasts() {
@@ -320,8 +345,9 @@ export function usePublishedPodcasts() {
       .from("podcasts" as any)
       .select("*")
       .eq("is_published", true)
+      .order("is_featured", { ascending: false })
       .order("sort_order")
-      .order("publication_date", { ascending: false }),
+      .order("publication_date", { ascending: false, nullsFirst: false }),
   );
 }
 
