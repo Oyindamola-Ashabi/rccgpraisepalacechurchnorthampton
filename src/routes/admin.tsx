@@ -10,25 +10,26 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
+/** Website content first, then the people-facing inboxes, then settings. */
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/contact", label: "Contact Messages", icon: Mail },
-  { to: "/admin/appointments", label: "Appointments", icon: CalendarCheck },
-  { to: "/admin/prayer", label: "Prayer Requests", icon: HeartHandshake },
-  { to: "/admin/testimonies", label: "Testimonies", icon: Quote },
-  { to: "/admin/visits", label: "Plan a Visit", icon: Users },
-  { to: "/admin/registrations", label: "Event Registrations", icon: ClipboardList },
-  { to: "/admin/pastors", label: "Pastors", icon: UserCog },
-  { to: "/admin/settings", label: "Site Settings", icon: Settings },
   { to: "/admin/pages", label: "Page Content", icon: FileText },
-  { to: "/admin/navigation", label: "Navigation", icon: MenuIcon },
+  { to: "/admin/navigation", label: "Navigation Menu", icon: MenuIcon },
   { to: "/admin/media", label: "Media Library", icon: ImageIcon },
-  { to: "/admin/gallery", label: "Gallery", icon: Images },
-  { to: "/admin/ministries", label: "Ministries", icon: Church },
+  { to: "/admin/gallery", label: "Gallery Albums", icon: Images },
   { to: "/admin/events", label: "Events", icon: CalendarDays },
+  { to: "/admin/ministries", label: "Ministries", icon: Church },
   { to: "/admin/sermons", label: "Sermons", icon: Mic },
   { to: "/admin/podcasts", label: "Podcasts", icon: Headphones },
+  { to: "/admin/pastors", label: "Pastors", icon: UserCog },
   { to: "/admin/giving", label: "Giving Page", icon: HandCoins },
+  { to: "/admin/registrations", label: "Event Registrations", icon: ClipboardList },
+  { to: "/admin/appointments", label: "Appointments", icon: CalendarCheck },
+  { to: "/admin/contact", label: "Contact Messages", icon: Mail },
+  { to: "/admin/prayer", label: "Prayer Requests", icon: HeartHandshake },
+  { to: "/admin/testimonies", label: "Testimonies", icon: Quote },
+  { to: "/admin/visits", label: "Plan a Visit Requests", icon: Users },
+  { to: "/admin/settings", label: "Site Settings", icon: Settings },
 ];
 
 
