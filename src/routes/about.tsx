@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { CmsPageHero } from "@/components/cms-page-hero";
-import { usePageContent } from "@/lib/cms";
+import { usePageContent, useSectionItems, imageOr } from "@/lib/cms";
 import { Highlight, Paragraphs } from "@/components/rich-text";
 import { Heart, Target, Eye, Users, Images, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
@@ -36,6 +36,16 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { text, image } = usePageContent("about");
+  const { rows: lifeItems } = useSectionItems("about", "life_gallery");
+
+  /** Administrators can replace these photos card-by-card in Admin → Page Content → About. */
+  const lifeImages = lifeItems.length
+    ? lifeItems.map((it, i) => ({
+        url: imageOr(it.image_url, lifePhotos[i % lifePhotos.length].url),
+        title: it.title ?? lifePhotos[i % lifePhotos.length].title,
+      }))
+    : lifePhotos.map((p) => ({ url: p.url, title: p.title }));
+
 
   return (
     <>
