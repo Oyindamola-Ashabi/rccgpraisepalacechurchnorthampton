@@ -118,16 +118,74 @@ export type Database = {
         }
         Relationships: []
       }
+      event_registrations: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          event_id: string | null
+          event_slug: string
+          full_name: string
+          id: string
+          is_read: boolean
+          message: string | null
+          number_of_attendees: number
+          phone: string | null
+          status: Database["public"]["Enums"]["submission_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          event_id?: string | null
+          event_slug?: string
+          full_name: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          number_of_attendees?: number
+          phone?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          event_id?: string | null
+          event_slug?: string
+          full_name?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          number_of_attendees?: number
+          phone?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
           description: string | null
+          detail_page: string | null
           end_at: string | null
           id: string
           image_url: string | null
           is_featured: boolean
           is_published: boolean
           registration_url: string | null
+          slug: string | null
           sort_order: number
           start_at: string
           title: string
@@ -137,12 +195,14 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          detail_page?: string | null
           end_at?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean
           is_published?: boolean
           registration_url?: string | null
+          slug?: string | null
           sort_order?: number
           start_at: string
           title: string
@@ -152,12 +212,14 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          detail_page?: string | null
           end_at?: string | null
           id?: string
           image_url?: string | null
           is_featured?: boolean
           is_published?: boolean
           registration_url?: string | null
+          slug?: string | null
           sort_order?: number
           start_at?: string
           title?: string
@@ -168,33 +230,48 @@ export type Database = {
       }
       gallery_albums: {
         Row: {
+          album_date: string | null
+          album_year: number | null
+          category: string
           cover_image_url: string | null
           created_at: string
           description: string | null
+          event_slug: string | null
           id: string
           is_published: boolean
+          location: string | null
           slug: string
           sort_order: number
           title: string
           updated_at: string
         }
         Insert: {
+          album_date?: string | null
+          album_year?: number | null
+          category?: string
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          event_slug?: string | null
           id?: string
           is_published?: boolean
+          location?: string | null
           slug: string
           sort_order?: number
           title: string
           updated_at?: string
         }
         Update: {
+          album_date?: string | null
+          album_year?: number | null
+          category?: string
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          event_slug?: string | null
           id?: string
           is_published?: boolean
+          location?: string | null
           slug?: string
           sort_order?: number
           title?: string
@@ -369,6 +446,121 @@ export type Database = {
         }
         Relationships: []
       }
+      nav_items: {
+        Row: {
+          created_at: string
+          href: string
+          id: string
+          is_external: boolean
+          is_visible: boolean
+          label: string
+          link_type: string
+          location: string
+          parent_id: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          href?: string
+          id?: string
+          is_external?: boolean
+          is_visible?: boolean
+          label: string
+          link_type?: string
+          location?: string
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          href?: string
+          id?: string
+          is_external?: boolean
+          is_visible?: boolean
+          label?: string
+          link_type?: string
+          location?: string
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nav_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "nav_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      page_section_items: {
+        Row: {
+          body: string | null
+          created_at: string
+          cta_href: string | null
+          cta_label: string | null
+          icon_key: string | null
+          id: string
+          image_url: string | null
+          is_visible: boolean
+          item_key: string
+          link_target: string
+          link_type: string
+          section_id: string
+          sort_order: number
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          icon_key?: string | null
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean
+          item_key: string
+          link_target?: string
+          link_type?: string
+          section_id: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          icon_key?: string | null
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean
+          item_key?: string
+          link_target?: string
+          link_type?: string
+          section_id?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_section_items_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "page_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       page_sections: {
         Row: {
           body: string | null
@@ -382,6 +574,7 @@ export type Database = {
           page_slug: string
           page_title: string | null
           section_key: string
+          section_template: string
           seo_description: string | null
           seo_title: string | null
           sort_order: number
@@ -400,6 +593,7 @@ export type Database = {
           page_slug: string
           page_title?: string | null
           section_key: string
+          section_template?: string
           seo_description?: string | null
           seo_title?: string | null
           sort_order?: number
@@ -418,6 +612,7 @@ export type Database = {
           page_slug?: string
           page_title?: string | null
           section_key?: string
+          section_template?: string
           seo_description?: string | null
           seo_title?: string | null
           sort_order?: number
@@ -476,12 +671,15 @@ export type Database = {
           id: string
           is_featured: boolean
           is_published: boolean
+          playback_type: string
           publication_date: string | null
           slug: string
           sort_order: number
           speaker_or_host: string | null
           title: string
           updated_at: string
+          youtube_url: string | null
+          youtube_video_id: string | null
         }
         Insert: {
           audio_file_url?: string | null
@@ -493,12 +691,15 @@ export type Database = {
           id?: string
           is_featured?: boolean
           is_published?: boolean
+          playback_type?: string
           publication_date?: string | null
           slug: string
           sort_order?: number
           speaker_or_host?: string | null
           title: string
           updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
         }
         Update: {
           audio_file_url?: string | null
@@ -510,12 +711,15 @@ export type Database = {
           id?: string
           is_featured?: boolean
           is_published?: boolean
+          playback_type?: string
           publication_date?: string | null
           slug?: string
           sort_order?: number
           speaker_or_host?: string | null
           title?: string
           updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
         }
         Relationships: []
       }
