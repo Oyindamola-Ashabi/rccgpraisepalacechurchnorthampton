@@ -43,6 +43,10 @@ function HomePage() {
   const { text, image, visible } = usePageContent("home");
   const settings = useSiteSettings();
   const { rows: ministryItems } = useSectionItems("home", "ministries");
+  const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
+  const { rows: serviceItems } = useSectionItems("home", "hero_services");
+  const { rows: programItems } = useSectionItems("home", "programs");
+
 
   /**
    * The "Grow. Serve. Belong." cards are individual CMS records, so each keeps
