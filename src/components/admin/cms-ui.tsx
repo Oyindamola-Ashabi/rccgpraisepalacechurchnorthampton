@@ -222,7 +222,9 @@ export function ImageField({
         )}
       </div>
       {uploadError && <p className="mt-2 text-xs text-destructive">{uploadError}</p>}
-      <p className="mt-1 text-[11px] text-muted-foreground">Uploading saves the picture to the Media Library, then fills this field automatically. Remember to press Save.</p>
+      <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+        {hint ?? "Upload a new picture or pick one from the Media Library, then press Save."}
+      </p>
       {picking && <MediaPicker onClose={() => setPicking(false)} onSelect={(a) => { onChange(a.public_url); setPicking(false); }} />}
     </div>
   );
