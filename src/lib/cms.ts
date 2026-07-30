@@ -87,54 +87,81 @@ export type PageSection = {
 };
 
 export const CMS_PAGES = [
-  { slug: "home", label: "Homepage" },
-  { slug: "about", label: "About" },
-  { slug: "media", label: "Media" },
-  { slug: "contact", label: "Contact" },
-  { slug: "plan-a-visit", label: "Plan a Visit" },
-  { slug: "prayer-request", label: "Prayer Request" },
-  { slug: "share-testimony", label: "Share a Testimony" },
-  { slug: "give", label: "Giving" },
+  { slug: "home", label: "Homepage", blurb: "Manage the hero images, service times, programmes, ministry cards and community content shown on the homepage." },
+  { slug: "about", label: "About", blurb: "Edit the About page content and manage the photographs displayed in Life at Praise Palace." },
+  { slug: "media", label: "Media", blurb: "Manage the Media page heading, Watch Live video, poster image and supporting content." },
+  { slug: "couples-retreat", label: "Couples Retreat", blurb: "Edit the Couples Retreat page, upcoming retreat information, registration section and previous retreat albums." },
+  { slug: "contact", label: "Contact", blurb: "Edit the Contact page heading, introduction and contact details block." },
+  { slug: "plan-a-visit", label: "Plan a Visit", blurb: "Edit the Plan a Visit page wording and form introduction." },
+  { slug: "prayer-request", label: "Prayer Request", blurb: "Edit the Prayer Request page wording and reassurance text." },
+  { slug: "share-testimony", label: "Share a Testimony", blurb: "Edit the Share a Testimony page wording." },
+  { slug: "give", label: "Giving", blurb: "Edit the Giving page heading, ways to give and bank details." },
+  { slug: "events", label: "Events", blurb: "Edit the Events page banner and introduction." },
+  { slug: "gallery", label: "Gallery", blurb: "Edit the Gallery page banner and introduction." },
 ] as const;
 
 /** Sections the website looks for on each page. Admins can also add their own keys. */
 export const DEFAULT_SECTION_KEYS = ["hero", "intro", "cta"];
 
 /**
- * Every section key the website reads, per page. Each entry is a separate
- * record so repeated cards and images can be edited independently.
+ * The editable blocks the website actually reads, per page. Each entry carries a
+ * plain-English name, a short explanation and the layout the website uses — the
+ * layout is assigned automatically so administrators never choose a template.
  */
-export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: string }[]> = {
-  home: [
-    { key: "hero", label: "Hero text and buttons" },
-    { key: "hero_slide_1", label: "Hero slider image 1" },
-    { key: "hero_slide_2", label: "Hero slider image 2" },
-    { key: "hero_slide_3", label: "Hero slider image 3" },
-    { key: "hero_watch_live", label: "Watch Live button" },
-    { key: "hero_service_1", label: "Service card 1 (Worship)" },
-    { key: "hero_service_2", label: "Service card 2 (Bible Study)" },
-    { key: "hero_service_3", label: "Service card 3 (Night Vigil)" },
-    { key: "welcome", label: "Welcome section + image" },
-    { key: "programs", label: "Weekly Rhythms heading" },
-    { key: "program_card_1", label: "Weekly Rhythms card 1" },
-    { key: "program_card_2", label: "Weekly Rhythms card 2" },
-    { key: "program_card_3", label: "Weekly Rhythms card 3" },
-    { key: "program_card_4", label: "Weekly Rhythms card 4" },
-    { key: "ministries", label: "Grow. Serve. Belong. heading" },
-    { key: "ministry_card_1", label: "Grow/Serve/Belong card 1" },
-    { key: "ministry_card_2", label: "Grow/Serve/Belong card 2" },
-    { key: "ministry_card_3", label: "Grow/Serve/Belong card 3" },
-    { key: "pastor", label: "Pastor section + photo" },
-    { key: "events", label: "Events heading" },
-    { key: "event_card_1", label: "Event preview card 1" },
-    { key: "event_card_2", label: "Event preview card 2" },
-    { key: "event_card_3", label: "Event preview card 3" },
-    { key: "giving_cta", label: "Giving call to action" },
-  ],
-  media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
+export type SectionSpec = {
+  key: string;
+  label: string;
+  hint: string;
+  template: string;
+  /** Friendly wording for the button that opens the child cards/images. */
+  itemsLabel?: string;
+  /** Word used for one child record, e.g. "card", "slide", "photo". */
+  itemNoun?: string;
 };
 
-/** Plain-English names for the common section keys used across the site. */
+export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
+  home: [
+    { key: "hero", label: "Homepage Hero", hint: "The large welcome heading, text and buttons at the very top of the homepage.", template: "hero" },
+    { key: "hero_slides", label: "Hero Background Slides", hint: "The photographs that fade behind the homepage hero.", template: "image_grid", itemsLabel: "Manage hero slides", itemNoun: "slide" },
+    { key: "hero_services", label: "Hero Service Times", hint: "The Sunday, Wednesday and Last Friday boxes shown inside the hero.", template: "card_grid", itemsLabel: "Manage service-time cards", itemNoun: "service card" },
+    { key: "hero_watch_live", label: "Watch Live button", hint: "The wording and destination of the Watch Live button in the hero.", template: "cta" },
+    { key: "welcome", label: "Welcome Section", hint: "The 'We have been waiting for you' block and its picture.", template: "image_and_text" },
+    { key: "programs", label: "Weekly Rhythms of Grace", hint: "The four weekly programme cards.", template: "card_grid", itemsLabel: "Manage programme cards", itemNoun: "programme card" },
+    { key: "ministries", label: "Grow. Serve. Belong.", hint: "The six ministry cards — radio, business, youth, men, women and the Couples Retreat.", template: "card_grid", itemsLabel: "Manage cards and images", itemNoun: "card" },
+    { key: "pastor", label: "Pastor’s Message", hint: "The pastor introduction and photograph.", template: "image_and_text" },
+    { key: "community", label: "Community Spotlight", hint: "The community section including the UK SME Growth Summit card.", template: "image_and_text", itemsLabel: "Manage community cards", itemNoun: "community card" },
+    { key: "events", label: "Events heading", hint: "The heading above the events preview on the homepage.", template: "event_list" },
+    { key: "event_card_1", label: "Event preview card 1", hint: "First event shown on the homepage.", template: "card_grid" },
+    { key: "event_card_2", label: "Event preview card 2", hint: "Second event shown on the homepage.", template: "card_grid" },
+    { key: "event_card_3", label: "Event preview card 3", hint: "Third event shown on the homepage.", template: "card_grid" },
+    { key: "giving_cta", label: "Giving call to action", hint: "The pink giving banner near the bottom of the homepage.", template: "cta" },
+  ],
+  about: [
+    { key: "hero", label: "Page banner", hint: "Heading, text and background image at the top of the About page.", template: "hero" },
+    { key: "welcome", label: "Welcome block", hint: "The opening picture and paragraphs.", template: "image_and_text" },
+    { key: "vision", label: "Our Vision card", hint: "", template: "card_grid" },
+    { key: "mission", label: "Our Mission card", hint: "", template: "card_grid" },
+    { key: "values", label: "Our Values card", hint: "", template: "card_grid" },
+    { key: "pastor", label: "Pastor section", hint: "The pastor photograph and introduction.", template: "image_and_text" },
+    { key: "life_gallery", label: "Life at Praise Palace", hint: "Upload, replace and arrange the photographs displayed in the Life at Praise Palace section of the About page.", template: "image_grid", itemsLabel: "Manage photos", itemNoun: "photo" },
+    { key: "cta", label: "Closing call to action", hint: "", template: "cta" },
+  ],
+  media: [
+    { key: "hero", label: "Media Page Hero", hint: "Heading, text and background image at the top of the Media page.", template: "hero" },
+    { key: "live_video", label: "Watch Live Video", hint: "Change the YouTube video and large poster image displayed in the Watch Live area of the Media page.", template: "video" },
+  ],
+  "couples-retreat": [
+    { key: "hero", label: "Hero", hint: "Heading, introduction and background image at the top of the page.", template: "hero" },
+    { key: "intro", label: "Introduction", hint: "The opening explanation of the retreat.", template: "rich_text" },
+    { key: "details", label: "Introduction picture", hint: "The photograph beside the introduction.", template: "image_and_text" },
+    { key: "upcoming", label: "Upcoming Retreat", hint: "Shown when no retreat is published. Real dates come from Admin → Events.", template: "custom" },
+    { key: "register", label: "Registration Section", hint: "The heading and wording above the application form.", template: "form_section" },
+    { key: "albums", label: "Albums", hint: "The heading above previous retreat photo albums.", template: "album_list" },
+    { key: "contact", label: "Contact", hint: "The contact banner at the bottom of the page.", template: "cta" },
+  ],
+};
+
+/** Plain-English names for common section keys used across the remaining pages. */
 const GENERIC_SECTION_LABELS: Record<string, string> = {
   hero: "Page banner (heading, text and background image)",
   intro: "Introduction block",
@@ -147,6 +174,9 @@ const GENERIC_SECTION_LABELS: Record<string, string> = {
   cta: "Closing call to action",
   contact_info: "Contact details block",
   form: "Form section",
+  what_to_expect: "What to expect",
+  confidential: "Reassurance block",
+  why_share: "Why share your story",
   ways_to_give: "Ways to give",
   bank_details: "Bank details",
   details: "Details block",
@@ -160,13 +190,37 @@ const GENERIC_SECTION_LABELS: Record<string, string> = {
   giving_cta: "Giving call to action",
 };
 
+/** The blocks the website reads on a page (used to offer any that are missing). */
+export function sectionSpecs(pageSlug: string): SectionSpec[] {
+  return SECTION_LIBRARY[pageSlug] ?? [];
+}
+
+export function sectionSpec(pageSlug: string, key: string): SectionSpec | undefined {
+  return sectionSpecs(pageSlug).find((s) => s.key === key);
+}
+
 /** Friendly, non-technical name for a section so administrators know what they are editing. */
 export function sectionLabel(pageSlug: string, key: string): string {
-  const suggested = (SECTION_KEY_SUGGESTIONS[pageSlug] ?? []).find((s) => s.key === key);
-  if (suggested) return suggested.label;
+  const spec = sectionSpec(pageSlug, key);
+  if (spec) return spec.label;
   if (GENERIC_SECTION_LABELS[key]) return GENERIC_SECTION_LABELS[key];
   return key.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
+
+export function sectionHint(pageSlug: string, key: string): string {
+  return sectionSpec(pageSlug, key)?.hint ?? "";
+}
+
+/** The layout the website uses for a section — assigned automatically, never chosen by hand. */
+export function autoTemplate(pageSlug: string, key: string): string {
+  return sectionSpec(pageSlug, key)?.template ?? "custom";
+}
+
+/** Older one-card-per-record blocks that were merged into grouped sections. */
+export function isRetiredSection(row: { section_template?: string | null }): boolean {
+  return row.section_template === "retired";
+}
+
 
 
 /**
