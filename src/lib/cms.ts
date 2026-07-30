@@ -134,6 +134,41 @@ export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: strin
   media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
 };
 
+/** Plain-English names for the common section keys used across the site. */
+const GENERIC_SECTION_LABELS: Record<string, string> = {
+  hero: "Page banner (heading, text and background image)",
+  intro: "Introduction block",
+  welcome: "Welcome section",
+  vision: "Our Vision card",
+  mission: "Our Mission card",
+  values: "Our Values card",
+  pastor: "Pastor section",
+  life_gallery: "Life at Praise Palace photos",
+  cta: "Closing call to action",
+  contact_info: "Contact details block",
+  form: "Form section",
+  ways_to_give: "Ways to give",
+  bank_details: "Bank details",
+  details: "Details block",
+  register: "Registration block",
+  albums: "Photo albums block",
+  contact: "Contact block",
+  community: "Community section",
+  events: "Events heading",
+  programs: "Weekly Rhythms heading",
+  ministries: "Grow. Serve. Belong. heading",
+  giving_cta: "Giving call to action",
+};
+
+/** Friendly, non-technical name for a section so administrators know what they are editing. */
+export function sectionLabel(pageSlug: string, key: string): string {
+  const suggested = (SECTION_KEY_SUGGESTIONS[pageSlug] ?? []).find((s) => s.key === key);
+  if (suggested) return suggested.label;
+  if (GENERIC_SECTION_LABELS[key]) return GENERIC_SECTION_LABELS[key];
+  return key.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+
 /**
  * Remembers the last content loaded for each page so moving between pages
  * never shows the built-in wording again once the real content is known.

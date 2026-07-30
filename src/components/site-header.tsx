@@ -198,10 +198,10 @@ export function SiteHeader() {
           scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-background/70 backdrop-blur"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3 gap-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-3">
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <img src={rccgLogoAsset} alt="RCCG" className="h-11 w-11 shrink-0 object-contain" />
-            <img src={logoAsset} alt="Praise Palace" className="h-11 w-11 shrink-0 object-contain" />
+            <img src={rccgLogoAsset} alt="RCCG" className="h-14 w-14 shrink-0 object-contain" />
+            <img src={logoAsset} alt="Praise Palace" className="h-14 w-14 shrink-0 object-contain" />
             <div className="min-w-0 leading-tight">
               <div className="font-display font-extrabold text-sm sm:text-base truncate">
                 <span className="text-[#E13495]">RCCG</span> <span className="text-[#996DB5]">Praise Palace</span>
