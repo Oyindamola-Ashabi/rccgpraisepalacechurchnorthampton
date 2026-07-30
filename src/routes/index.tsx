@@ -186,33 +186,23 @@ function HomePage() {
               ) : (
                 <BrandButton to={heroHref} variant="gold">{text("hero", "cta_label", "Plan Your Visit")}</BrandButton>
               )}
-              {watchLiveExternal ? (
-                <BrandButton href={watchLiveHref} external variant="outline">
-                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
-                </BrandButton>
-              ) : (
-                <BrandButton to={watchLiveHref} variant="outline">
-                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
-                </BrandButton>
-              )}
+              {showWatchLive &&
+                (watchLiveExternal ? (
+                  <BrandButton href={watchLiveHref} external variant="outline">
+                    <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                  </BrandButton>
+                ) : (
+                  <BrandButton to={watchLiveHref} variant="outline">
+                    <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                  </BrandButton>
+                ))}
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-xl">
-              <ServiceTime
-                label={text("hero_service_1", "headline", "Worship")}
-                day={text("hero_service_1", "subheading", "Sundays")}
-                time={text("hero_service_1", "body", "10:00 AM")}
-              />
-              <ServiceTime
-                label={text("hero_service_2", "headline", "Bible Study")}
-                day={text("hero_service_2", "subheading", "Wednesdays")}
-                time={text("hero_service_2", "body", "7:00 PM")}
-              />
-              <ServiceTime
-                label={text("hero_service_3", "headline", "Night Vigil")}
-                day={text("hero_service_3", "subheading", "Last Friday")}
-                time={text("hero_service_3", "body", "11:00 PM")}
-              />
+              {services.map((s) => (
+                <ServiceTime key={s.key} label={s.label} day={s.day} time={s.time} />
+              ))}
             </div>
+
           </div>
         </div>
       </section>
