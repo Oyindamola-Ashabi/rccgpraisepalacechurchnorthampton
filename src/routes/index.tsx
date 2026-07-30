@@ -273,9 +273,9 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="Praise Palace Auditorium" to="/events/couples" />
-            <EventCard image={eventPhotos.celebration.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" to="/events" />
-            <EventCard image={eventPhotos.modernWorship.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" to="/events" />
+            {homeEvents.map((e) => (
+              <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} location={e.location} to={e.to} />
+            ))}
           </div>
         </Section>
       </section>
