@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useActiveMinistries, mediaUrl } from "@/lib/cms";
+import { usePageContent, useSiteSettings } from "@/lib/cms";
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/")({
@@ -24,25 +24,56 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { text, image } = usePageContent("home");
+  const { text, image, visible } = usePageContent("home");
   const settings = useSiteSettings();
-  const { rows: cmsMinistries } = useActiveMinistries();
   const ministryIcons = [Radio, GraduationCap, Tent];
-  const fallbackMinistries = [
-    { title: "PraisePalace Radio", desc: "Faith-filled broadcasts, worship and word — streaming globally.", href: "https://praisepalaceradio.com/", image: eventPhotos.students.url, icon: Radio },
-    { title: "Business School", desc: "Empowering kingdom entrepreneurs with practical wisdom.", href: "https://praisepalacebusinessschool.com/", image: eventPhotos.business.url, icon: GraduationCap },
-    { title: "Youth Camp", desc: "A powerful gathering for the next generation.", href: "https://raisingchampions.org.uk", image: eventPhotos.youth.url, icon: Tent },
+
+  /**
+   * The three "Grow. Serve. Belong." cards are their own CMS records so each
+   * one keeps its own image, wording and link. The original cards are the
+   * built-in fallback, so they never disappear.
+   */
+  const ministryCardDefaults = [
+    { title: "PraisePalace Radio", desc: "Faith-filled broadcasts, worship and word — streaming globally.", href: "https://praisepalaceradio.com/", image: eventPhotos.students.url },
+    { title: "Business School", desc: "Empowering kingdom entrepreneurs with practical wisdom.", href: "https://praisepalacebusinessschool.com/", image: eventPhotos.business.url },
+    { title: "Youth Camp", desc: "A powerful gathering for the next generation.", href: "https://raisingchampions.org.uk", image: eventPhotos.youth.url },
   ];
-  const homeMinistries =
-    cmsMinistries.length > 0
-      ? cmsMinistries.slice(0, 3).map((m, i) => ({
-          title: m.name,
-          desc: m.short_description ?? "",
-          href: m.link_url || `/ministries/${m.slug}`,
-          image: mediaUrl(m.image_url) || fallbackMinistries[i % 3].image,
-          icon: ministryIcons[i % ministryIcons.length],
-        }))
-      : fallbackMinistries;
+  const homeMinistries = ministryCardDefaults
+    .map((d, i) => {
+      const key = `ministry_card_${i + 1}`;
+      return {
+        key,
+        title: text(key, "headline", d.title),
+        desc: text(key, "body", d.desc),
+        href: text(key, "cta_href", d.href),
+        image: image(key, d.image),
+        icon: ministryIcons[i],
+        show: visible(key),
+      };
+    })
+    .filter((m) => m.show);
+
+  const eventCardDefaults = [
+    { image: eventPhotos.couples.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", location: "Praise Palace Auditorium", to: "/events/couples" },
+    { image: eventPhotos.celebration.url, tag: "Family", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", location: "Main Sanctuary", to: "/events" },
+    { image: eventPhotos.modernWorship.url, tag: "Worship", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", location: "Studio B", to: "/events" },
+  ];
+  const homeEvents = eventCardDefaults
+    .map((d, i) => {
+      const key = `event_card_${i + 1}`;
+      return {
+        key,
+        image: image(key, d.image),
+        tag: text(key, "subheading", d.tag),
+        title: text(key, "headline", d.title),
+        date: text(key, "body", d.date),
+        location: text(key, "cta_label", d.location),
+        to: text(key, "cta_href", d.to),
+        show: visible(key),
+      };
+    })
+    .filter((e) => e.show);
+
   const watchLiveHref = text("hero_watch_live", "cta_href", "/media");
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
   const heroHref = text("hero", "cta_href", "/plan-a-visit");
@@ -242,9 +273,9 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            <EventCard image={eventPhotos.couples.url} tag="Couples" title="Love & Legacy Couples Retreat" date="Sat, 15 Aug 2026" location="Praise Palace Auditorium" to="/events/couples" />
-            <EventCard image={eventPhotos.celebration.url} tag="Family" title="Fathers' Honour Sunday" date="Sun, 21 Jun 2026" location="Main Sanctuary" to="/events" />
-            <EventCard image={eventPhotos.modernWorship.url} tag="Worship" title="Praise Talks Live Recording" date="Wed, 09 Jul 2026" location="Studio B" to="/events" />
+            {homeEvents.map((e) => (
+              <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} location={e.location} to={e.to} />
+            ))}
           </div>
         </Section>
       </section>

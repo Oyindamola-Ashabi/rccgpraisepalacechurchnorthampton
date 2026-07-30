@@ -89,6 +89,7 @@ export type PageSection = {
 export const CMS_PAGES = [
   { slug: "home", label: "Homepage" },
   { slug: "about", label: "About" },
+  { slug: "media", label: "Media" },
   { slug: "contact", label: "Contact" },
   { slug: "plan-a-visit", label: "Plan a Visit" },
   { slug: "prayer-request", label: "Prayer Request" },
@@ -99,7 +100,42 @@ export const CMS_PAGES = [
 /** Sections the website looks for on each page. Admins can also add their own keys. */
 export const DEFAULT_SECTION_KEYS = ["hero", "intro", "cta"];
 
-export function usePageSections(pageSlug: string) {
+/**
+ * Every section key the website reads, per page. Each entry is a separate
+ * record so repeated cards and images can be edited independently.
+ */
+export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: string }[]> = {
+  home: [
+    { key: "hero", label: "Hero text and buttons" },
+    { key: "hero_slide_1", label: "Hero slider image 1" },
+    { key: "hero_slide_2", label: "Hero slider image 2" },
+    { key: "hero_slide_3", label: "Hero slider image 3" },
+    { key: "hero_watch_live", label: "Watch Live button" },
+    { key: "hero_service_1", label: "Service card 1 (Worship)" },
+    { key: "hero_service_2", label: "Service card 2 (Bible Study)" },
+    { key: "hero_service_3", label: "Service card 3 (Night Vigil)" },
+    { key: "welcome", label: "Welcome section + image" },
+    { key: "programs", label: "Weekly Rhythms heading" },
+    { key: "program_card_1", label: "Weekly Rhythms card 1" },
+    { key: "program_card_2", label: "Weekly Rhythms card 2" },
+    { key: "program_card_3", label: "Weekly Rhythms card 3" },
+    { key: "program_card_4", label: "Weekly Rhythms card 4" },
+    { key: "ministries", label: "Grow. Serve. Belong. heading" },
+    { key: "ministry_card_1", label: "Grow/Serve/Belong card 1" },
+    { key: "ministry_card_2", label: "Grow/Serve/Belong card 2" },
+    { key: "ministry_card_3", label: "Grow/Serve/Belong card 3" },
+    { key: "pastor", label: "Pastor section + photo" },
+    { key: "events", label: "Events heading" },
+    { key: "event_card_1", label: "Event preview card 1" },
+    { key: "event_card_2", label: "Event preview card 2" },
+    { key: "event_card_3", label: "Event preview card 3" },
+    { key: "giving_cta", label: "Giving call to action" },
+  ],
+  media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
+};
+
+/** All sections for a page, including hidden ones (visibility is applied by the caller). */
+export function usePageSectionsAll(pageSlug: string) {
   const [sections, setSections] = useState<Record<string, PageSection>>({});
 
   useEffect(() => {
@@ -108,7 +144,6 @@ export function usePageSections(pageSlug: string) {
       .from("page_sections")
       .select("*")
       .eq("page_slug", pageSlug)
-      .eq("is_visible", true)
       .order("sort_order")
       .then(({ data }) => {
         if (!active || !data) return;
@@ -122,6 +157,11 @@ export function usePageSections(pageSlug: string) {
   return sections;
 }
 
+export function usePageSections(pageSlug: string) {
+  const all = usePageSectionsAll(pageSlug);
+  return Object.fromEntries(Object.entries(all).filter(([, s]) => s.is_visible));
+}
+
 /** Returns the CMS section if one exists and is visible, otherwise null (page keeps its built-in content). */
 export function usePageSection(pageSlug: string, sectionKey: string): PageSection | null {
   const sections = usePageSections(pageSlug);
@@ -133,7 +173,8 @@ export function usePageSection(pageSlug: string, sectionKey: string): PageSectio
  * already designed into the page, so nothing ever goes blank or disappears.
  */
 export function usePageContent(pageSlug: string) {
-  const sections = usePageSections(pageSlug);
+  const all = usePageSectionsAll(pageSlug);
+  const sections = Object.fromEntries(Object.entries(all).filter(([, s]) => s.is_visible));
 
   function text(key: string, field: "headline" | "subheading" | "body" | "cta_label" | "cta_href" | "page_title", fallback: string) {
     const value = sections[key]?.[field];
@@ -144,7 +185,12 @@ export function usePageContent(pageSlug: string) {
     return mediaUrl(sections[key]?.image_url) || fallback;
   }
 
-  return { sections, text, image };
+  /** A card is shown unless an administrator has explicitly hidden its record. */
+  function visible(key: string) {
+    return all[key] ? all[key].is_visible : true;
+  }
+
+  return { sections, all, text, image, visible };
 }
 
 
@@ -274,9 +320,34 @@ export function usePublishedSermons() {
       .from("sermons" as any)
       .select("*")
       .eq("is_published", true)
+      .order("is_featured", { ascending: false })
       .order("sort_order")
-      .order("sermon_date", { ascending: false }),
+      .order("sermon_date", { ascending: false, nullsFirst: false }),
   );
+}
+
+/** The standard YouTube poster for a video id. */
+export function youTubePoster(videoId: string | null | undefined): string | null {
+  return videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : null;
+}
+
+/**
+ * The large poster image for a sermon: the administrator's thumbnail first,
+ * then the YouTube image, then the page's built-in image.
+ */
+export function sermonPoster(sermon: Sermon | null | undefined, fallback: string): string {
+  if (!sermon) return fallback;
+  const id = sermon.youtube_video_id || youTubeId(sermon.youtube_url);
+  return mediaUrl(sermon.thumbnail_url) || youTubePoster(id) || fallback;
+}
+
+/** Featured published sermon, otherwise the newest published sermon. */
+export function pickFeaturedSermon(rows: Sermon[]): Sermon | null {
+  if (rows.length === 0) return null;
+  const featured = rows.find((s) => s.is_featured);
+  if (featured) return featured;
+  const dated = [...rows].sort((a, b) => (b.sermon_date ?? "").localeCompare(a.sermon_date ?? ""));
+  return dated[0] ?? null;
 }
 
 export function usePublishedPodcasts() {
@@ -285,8 +356,9 @@ export function usePublishedPodcasts() {
       .from("podcasts" as any)
       .select("*")
       .eq("is_published", true)
+      .order("is_featured", { ascending: false })
       .order("sort_order")
-      .order("publication_date", { ascending: false }),
+      .order("publication_date", { ascending: false, nullsFirst: false }),
   );
 }
 
@@ -297,13 +369,28 @@ export function podcastAudioUrl(pathOrUrl: string | null | undefined): string | 
   return supabase.storage.from(PODCAST_BUCKET).getPublicUrl(pathOrUrl).data.publicUrl;
 }
 
+/** True when a link points straight at an audio file the browser can play in-page. */
+export function isDirectAudio(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return /\.(mp3|m4a|mp4|wav|ogg|oga|opus|webm|aac|flac)(\?.*)?$/i.test(url.split("#")[0]);
+}
+
+/** Playback source for an episode: uploaded file first, then a direct audio link. */
+export function episodeAudioSource(ep: Podcast): { src: string | null; external: string | null } {
+  const uploaded = podcastAudioUrl(ep.audio_file_url);
+  if (uploaded) return { src: uploaded, external: ep.external_audio_url ?? null };
+  if (isDirectAudio(ep.external_audio_url)) return { src: ep.external_audio_url!, external: null };
+  return { src: null, external: ep.external_audio_url ?? null };
+}
+
 /** Generic read hook with a safe fallback so the public site never renders blank. */
 export function useCmsList<T>(
   loader: () => PromiseLike<{ data: any; error: any }>,
   deps: unknown[] = [],
-): { rows: T[]; loading: boolean } {
+): { rows: T[]; loading: boolean; reload: () => void } {
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -316,9 +403,9 @@ export function useCmsList<T>(
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [...deps, tick]);
 
-  return { rows, loading };
+  return { rows, loading, reload: () => setTick((t) => t + 1) };
 }
 
 /** Published events that have not happened yet, soonest first. */

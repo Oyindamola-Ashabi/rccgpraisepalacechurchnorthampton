@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/section-ui";
-import { mediaUrl, podcastAudioUrl, type Podcast } from "@/lib/cms";
+import { episodeAudioSource, mediaUrl, type Podcast } from "@/lib/cms";
 import { Paragraphs } from "@/components/rich-text";
 import { eventPhotos } from "@/lib/gallery-images";
 
@@ -69,7 +69,7 @@ function PodcastDetail() {
     );
   }
 
-  const audio = podcastAudioUrl(episode.audio_file_url) ?? episode.external_audio_url ?? "";
+  const { src, external } = episodeAudioSource(episode);
   const cover = mediaUrl(episode.cover_image_url) || eventPhotos.modernWorship.url;
 
   return (
@@ -87,7 +87,30 @@ function PodcastDetail() {
             {episode.publication_date ? ` · ${new Date(episode.publication_date).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })}` : ""}
             {episode.duration ? ` · ${episode.duration}` : ""}
           </p>
-          {audio && <audio controls preload="metadata" src={audio} className="mt-5 w-full" />}
+
+          {src ? (
+            <audio controls preload="metadata" src={src} className="mt-5 w-full">
+              <track kind="captions" />
+            </audio>
+          ) : external ? (
+            <p className="mt-5 text-sm text-muted-foreground">
+              This episode is hosted on an external platform that cannot play inside a website.
+            </p>
+          ) : (
+            <p className="mt-5 text-sm text-muted-foreground">Audio for this episode is coming soon.</p>
+          )}
+
+          {external && (
+            <a
+              href={external}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant"
+            >
+              Open episode on the platform <ExternalLink className="h-4 w-4" />
+            </a>
+          )}
+
           {episode.description && (
             <div className="mt-6 leading-relaxed text-muted-foreground">
               <Paragraphs text={episode.description} />

@@ -1,9 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
-import { VideoEmbed } from "@/components/video-embed";
-import { Headphones, Video, ArrowRight, Image as ImageIcon } from "lucide-react";
+import { YouTubePlayer } from "@/components/video-embed";
+import { Headphones, Video, ArrowRight, Image as ImageIcon, Play } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { galleryPhotos, eventPhotos } from "@/lib/gallery-images";
+import {
+  mediaUrl,
+  pickFeaturedSermon,
+  sermonPoster,
+  usePageContent,
+  usePublishedSermons,
+  youTubeId,
+  youTubePoster,
+} from "@/lib/cms";
+import { Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/media/")({
   head: () => ({
@@ -12,6 +22,8 @@ export const Route = createFileRoute("/media/")({
       { name: "description", content: "Sermons, worship sessions, podcasts, gallery and video content from RCCG Praise Palace Northampton." },
       { property: "og:title", content: "Media — RCCG Praise Palace Northampton" },
       { property: "og:description", content: "Watch, listen and relive our moments — anywhere, anytime." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "/media" },
     ],
     links: [{ rel: "canonical", href: "/media" }],
@@ -19,44 +31,115 @@ export const Route = createFileRoute("/media/")({
   component: MediaPage,
 });
 
-const videos = [
-  { image: eventPhotos.modernWorship.url, title: "The Power of Praise", speaker: "Pastor Abiodun Bamgbala", date: "07 Jul 2026" },
-  { image: eventPhotos.dinner.url, title: "Night of Worship — Highlights", speaker: "Praise Palace Worship", date: "28 Jun 2026" },
-  { image: eventPhotos.fathers.url, title: "Fathers' Honour Service", speaker: "Pastor Abiodun Bamgbala", date: "22 Jun 2026" },
-  { image: eventPhotos.family.url, title: "It Shall End In Praise", speaker: "Pastor Abiodun Bamgbala", date: "14 Jun 2026" },
-  { image: eventPhotos.tableFellowship.url, title: "Midweek Encounter", speaker: "Guest Minister", date: "07 Jun 2026" },
-  { image: eventPhotos.familyLife.url, title: "Family Life Teaching", speaker: "Pastor (Mrs.)", date: "31 May 2026" },
-];
+function formatDate(value: string | null | undefined) {
+  if (!value) return "";
+  return new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
 
 function MediaPage() {
+  const { text, image } = usePageContent("media");
+  const { rows: sermons, loading } = usePublishedSermons();
+  const featured = pickFeaturedSermon(sermons);
+
+  const featuredPoster = sermonPoster(featured, eventPhotos.celebration.url);
+  const featuredId = featured ? featured.youtube_video_id || youTubeId(featured.youtube_url) : null;
+  const rest = featured ? sermons.filter((s) => s.id !== featured.id) : sermons;
+
   return (
     <>
-      <PageHero eyebrow="Watch. Listen. Grow." title="Media Library" subtitle="Sermons, worship, testimonies and podcasts — anywhere, anytime." image={heroImg} />
+      <PageHero
+        eyebrow={text("hero", "subheading", "Watch. Listen. Grow.")}
+        title={text("hero", "headline", "Media Library")}
+        subtitle={text("hero", "body", "Sermons, worship, testimonies and podcasts — anywhere, anytime.")}
+        image={image("hero", heroImg)}
+      />
 
       <Section>
-        <SectionHeader eyebrow="Featured" title="Latest Message" />
+        <SectionHeader eyebrow="Featured" title={featured ? "Latest Message" : "Latest Message"} />
         <div className="mx-auto max-w-4xl">
-          <VideoEmbed
-            poster={eventPhotos.celebration.url}
-            title="RCCG Praise Palace — Latest Message"
-            searchQuery="RCCG Praise Palace Northampton latest sermon"
+          <YouTubePlayer
+            videoId={featuredId}
+            youtubeUrl={featured?.youtube_url ?? null}
+            poster={featuredPoster}
+            title={featured?.title ?? "RCCG Praise Palace — Latest Message"}
           />
+          <div className="mt-6">
+            <h3 className="font-display text-2xl font-bold">
+              {featured?.title ?? "RCCG Praise Palace — Latest Message"}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {featured?.speaker ?? "RCCG Praise Palace Northampton"}
+              {featured?.sermon_date ? ` · ${formatDate(featured.sermon_date)}` : ""}
+            </p>
+            {featured?.short_description && (
+              <div className="mt-3 leading-relaxed text-muted-foreground">
+                <Paragraphs text={featured.short_description} />
+              </div>
+            )}
+            {featured && (
+              <Link
+                to="/sermons/$slug"
+                params={{ slug: featured.slug }}
+                className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline"
+              >
+                Open sermon page <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
         </div>
       </Section>
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="Explore" title="Video Sermons" />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {videos.map((s) => (
-              <article key={s.title} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5">
-                <VideoEmbed poster={s.image} title={s.title} searchQuery={`RCCG Praise Palace Northampton ${s.title}`} />
-                <div className="p-5">
-                  <h3 className="font-display font-bold text-lg leading-tight">{s.title}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{s.speaker} · {s.date}</p>
-                </div>
-              </article>
-            ))}
+          <SectionHeader eyebrow="Explore" title="Video Sermons" subtitle="Every published message from RCCG Praise Palace Northampton." />
+          {loading ? (
+            <p className="text-center text-sm text-muted-foreground">Loading sermons…</p>
+          ) : rest.length === 0 ? (
+            <p className="text-center text-sm text-muted-foreground">
+              More messages are on the way — new sermons appear here as soon as they are published.
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {rest.map((s) => {
+                const id = s.youtube_video_id || youTubeId(s.youtube_url);
+                const poster =
+                  mediaUrl(s.thumbnail_url) || youTubePoster(id) || eventPhotos.modernWorship.url;
+                return (
+                  <article key={s.id} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5">
+                    <Link
+                      to="/sermons/$slug"
+                      params={{ slug: s.slug }}
+                      className="relative block aspect-video w-full overflow-hidden"
+                      aria-label={`Watch ${s.title}`}
+                    >
+                      <img src={poster} alt={s.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+                      <span className="absolute inset-0 grid place-items-center bg-black/30 transition group-hover:bg-black/50">
+                        <span className="grid h-14 w-14 place-items-center rounded-full gradient-brand text-white shadow-elegant">
+                          <Play className="ml-0.5 h-6 w-6" fill="currentColor" />
+                        </span>
+                      </span>
+                      {s.category && (
+                        <span className="absolute left-3 top-3 rounded-full bg-black/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
+                          {s.category}
+                        </span>
+                      )}
+                    </Link>
+                    <div className="p-5">
+                      <h3 className="font-display text-lg font-bold leading-tight">{s.title}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {s.speaker ?? "RCCG Praise Palace Northampton"}
+                        {s.sermon_date ? ` · ${formatDate(s.sermon_date)}` : ""}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+          <div className="mt-8 text-center">
+            <Link to="/sermons" className="inline-flex items-center gap-1 text-sm font-semibold text-[#E13495] hover:underline">
+              Go to the sermons page <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </Section>
       </section>

@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import { CMS_PAGES, DEFAULT_SECTION_KEYS, type PageSection } from "@/lib/cms";
+import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, type PageSection } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/pages")({ ssr: false, component: AdminPagesPage });
 
@@ -34,20 +34,30 @@ function AdminPagesPage() {
 
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [page]);
 
-  async function addSection(e: React.FormEvent) {
-    e.preventDefault();
-    if (creating) return;
+  const suggestions = SECTION_KEY_SUGGESTIONS[page] ?? DEFAULT_SECTION_KEYS.map((k) => ({ key: k, label: k }));
+  const existing = new Set(rows.map((r) => r.section_key));
+  const missing = suggestions.filter((s) => !existing.has(s.key));
+
+  async function addKeys(keys: string[]) {
+    if (creating || keys.length === 0) return;
     setCreating(true);
-    const { error } = await supabase.from("page_sections").insert({
-      page_slug: page,
-      section_key: newKey.trim().toLowerCase().replace(/\s+/g, "-"),
-      ...EMPTY,
-      sort_order: rows.length,
-    } as any);
+    const { error } = await supabase.from("page_sections").insert(
+      keys.map((k, i) => ({
+        page_slug: page,
+        section_key: k.trim().toLowerCase().replace(/\s+/g, "-"),
+        ...EMPTY,
+        sort_order: rows.length + i,
+      })) as any,
+    );
     setCreating(false);
     if (error) { setError("Could not add section: " + error.message); return; }
     setError(null);
     load();
+  }
+
+  async function addSection(e: React.FormEvent) {
+    e.preventDefault();
+    await addKeys([newKey]);
   }
 
   return (
@@ -84,20 +94,53 @@ function AdminPagesPage() {
       )}
 
       {editable && (
-        <form onSubmit={addSection} className="mt-8 rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
+        <div className="mt-8 rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
           <h2 className="font-display text-lg font-bold">Add a section</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            The website reads these keys: {DEFAULT_SECTION_KEYS.join(", ")}. Use “hero” to control the page heading and main image.
+            Each section below is a separate editable block on the website — its own heading, text, button and image.
+            Anything you do not create keeps the wording and picture already designed into the page.
           </p>
-          <div className="mt-4 flex flex-wrap items-end gap-3">
+
+          {missing.length > 0 && (
+            <div className="mt-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Editable blocks not created yet
+                </span>
+                <button
+                  type="button"
+                  onClick={() => addKeys(missing.map((m) => m.key))}
+                  disabled={creating}
+                  className="rounded-full border border-[#E13495] px-4 py-1.5 text-xs font-semibold text-[#E13495] disabled:opacity-60"
+                >
+                  Add all {missing.length}
+                </button>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {missing.map((s) => (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => addKeys([s.key])}
+                    disabled={creating}
+                    className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition hover:border-[#E13495] hover:text-[#E13495] disabled:opacity-60"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={addSection} className="mt-6 flex flex-wrap items-end gap-3 border-t pt-5">
             <div className="min-w-[200px] flex-1">
-              <Field label="Section key" value={newKey} onChange={setNewKey} required />
+              <Field label="Or add your own section key" value={newKey} onChange={setNewKey} required />
             </div>
             <button type="submit" disabled={creating} className="inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant disabled:opacity-60">
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Add section
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       )}
     </div>
   );
