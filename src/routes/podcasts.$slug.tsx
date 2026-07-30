@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/section-ui";
-import { mediaUrl, podcastAudioUrl, type Podcast } from "@/lib/cms";
+import { episodeAudioSource, mediaUrl, type Podcast } from "@/lib/cms";
 import { Paragraphs } from "@/components/rich-text";
 import { eventPhotos } from "@/lib/gallery-images";
 
