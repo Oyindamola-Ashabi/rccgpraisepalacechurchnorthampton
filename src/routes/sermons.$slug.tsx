@@ -92,21 +92,13 @@ function SermonDetail() {
         <ArrowLeft className="h-4 w-4" /> All sermons
       </Link>
 
-      <div className="mt-6 overflow-hidden rounded-2xl bg-black shadow-elegant">
-        {videoId ? (
-          <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`}
-              title={sermon.title}
-              className="absolute inset-0 h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
-        ) : (
-          <img src={mediaUrl(sermon.thumbnail_url) ?? ""} alt={sermon.title} className="w-full" />
-        )}
+      <div className="mt-6">
+        <YouTubePlayer
+          videoId={videoId}
+          youtubeUrl={sermon.youtube_url}
+          poster={sermonPoster(sermon, eventPhotos.modernWorship.url)}
+          title={sermon.title}
+        />
       </div>
 
       <div className="mt-8 max-w-3xl">
@@ -125,11 +117,6 @@ function SermonDetail() {
           </div>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
-          {sermon.youtube_url && (
-            <a href={sermon.youtube_url} target="_blank" rel="noopener noreferrer" className="rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant">
-              Watch on YouTube
-            </a>
-          )}
           <button
             type="button"
             onClick={() => downloadNotes(sermon.title)}
