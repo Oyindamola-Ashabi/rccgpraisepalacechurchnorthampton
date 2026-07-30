@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useActiveMinistries, mediaUrl } from "@/lib/cms";
+import { usePageContent, useSiteSettings } from "@/lib/cms";
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/")({
