@@ -34,20 +34,30 @@ function AdminPagesPage() {
 
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [page]);
 
-  async function addSection(e: React.FormEvent) {
-    e.preventDefault();
-    if (creating) return;
+  const suggestions = SECTION_KEY_SUGGESTIONS[page] ?? DEFAULT_SECTION_KEYS.map((k) => ({ key: k, label: k }));
+  const existing = new Set(rows.map((r) => r.section_key));
+  const missing = suggestions.filter((s) => !existing.has(s.key));
+
+  async function addKeys(keys: string[]) {
+    if (creating || keys.length === 0) return;
     setCreating(true);
-    const { error } = await supabase.from("page_sections").insert({
-      page_slug: page,
-      section_key: newKey.trim().toLowerCase().replace(/\s+/g, "-"),
-      ...EMPTY,
-      sort_order: rows.length,
-    } as any);
+    const { error } = await supabase.from("page_sections").insert(
+      keys.map((k, i) => ({
+        page_slug: page,
+        section_key: k.trim().toLowerCase().replace(/\s+/g, "-"),
+        ...EMPTY,
+        sort_order: rows.length + i,
+      })) as any,
+    );
     setCreating(false);
     if (error) { setError("Could not add section: " + error.message); return; }
     setError(null);
     load();
+  }
+
+  async function addSection(e: React.FormEvent) {
+    e.preventDefault();
+    await addKeys([newKey]);
   }
 
   return (
