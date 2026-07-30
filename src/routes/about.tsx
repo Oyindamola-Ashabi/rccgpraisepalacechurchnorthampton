@@ -100,12 +100,17 @@ function AboutPage() {
 
       <section className="bg-secondary/40 border-y">
         <Section>
-          <SectionHeader eyebrow="Our Family" title="Life at Praise Palace" subtitle="Moments of fellowship, worship and joy across our community." />
+          <SectionHeader
+            eyebrow={text("life_gallery", "subheading", "Our Family")}
+            title={text("life_gallery", "headline", "Life at Praise Palace")}
+            subtitle={text("life_gallery", "body", "Moments of fellowship, worship and joy across our community.")}
+          />
           <div className="grid gap-4 md:grid-cols-3">
-            {lifePhotos.map((p) => (
+            {lifeImages.map((p) => (
               <img key={p.url} src={p.url} alt={p.title} className="rounded-2xl shadow-card object-cover w-full aspect-[4/3]" loading="lazy" />
             ))}
           </div>
+
           <div className="mt-10 text-center">
             <Link to="/media/gallery" className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition">
               <Images className="h-4 w-4" /> View Full Gallery <ArrowRight className="h-4 w-4" />

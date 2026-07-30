@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, SECTION_TEMPLATES, type PageSection, type SectionItem } from "@/lib/cms";
+import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, SECTION_TEMPLATES, sectionLabel, type PageSection, type SectionItem } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/pages")({ ssr: false, component: AdminPagesPage });
 
@@ -169,8 +169,12 @@ function SectionCard({
   return (
     <li className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider">{row.section_key}</span>
+        <div>
+          <div className="font-display text-base font-bold">{sectionLabel(row.page_slug, row.section_key)}</div>
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{row.section_key}</span>
+        </div>
         <div className="flex items-center gap-3">
+
           <Toggle label="Visible" checked={form.is_visible} onChange={(v) => set("is_visible", v)} disabled={!editable} />
           {canDelete && (
             <DeleteButton
