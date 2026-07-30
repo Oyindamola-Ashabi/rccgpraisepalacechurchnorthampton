@@ -134,12 +134,22 @@ export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: strin
   media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
 };
 
+/**
+ * Remembers the last content loaded for each page so moving between pages
+ * never shows the built-in wording again once the real content is known.
+ */
+const sectionCache = new Map<string, Record<string, PageSection>>();
+
 /** All sections for a page, including hidden ones (visibility is applied by the caller). */
 export function usePageSectionsAll(pageSlug: string) {
-  const [sections, setSections] = useState<Record<string, PageSection>>({});
+  const [sections, setSections] = useState<Record<string, PageSection>>(
+    () => sectionCache.get(pageSlug) ?? {},
+  );
 
   useEffect(() => {
     let active = true;
+    const cached = sectionCache.get(pageSlug);
+    if (cached) setSections(cached);
     supabase
       .from("page_sections")
       .select("*")
@@ -147,7 +157,11 @@ export function usePageSectionsAll(pageSlug: string) {
       .order("sort_order")
       .then(({ data }) => {
         if (!active || !data) return;
-        setSections(Object.fromEntries((data as any[]).map((s) => [s.section_key, s as PageSection])));
+        const map = Object.fromEntries(
+          (data as any[]).map((s) => [s.section_key, s as PageSection]),
+        );
+        sectionCache.set(pageSlug, map);
+        setSections(map);
       });
     return () => {
       active = false;
@@ -156,6 +170,7 @@ export function usePageSectionsAll(pageSlug: string) {
 
   return sections;
 }
+
 
 export function usePageSections(pageSlug: string) {
   const all = usePageSectionsAll(pageSlug);
