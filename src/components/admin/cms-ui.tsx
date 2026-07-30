@@ -3,7 +3,7 @@ import { Loader2, Save, Trash2, ImagePlus, Upload, X, Check } from "lucide-react
 import { deleteMedia, formatBytes, listMedia, uploadMedia, type MediaAsset } from "@/lib/media";
 
 export function Field({
-  label, value, onChange, type = "text", disabled, required, placeholder,
+  label, value, onChange, type = "text", disabled, required, placeholder, hint,
 }: {
   label: string;
   value: string;
@@ -12,6 +12,7 @@ export function Field({
   disabled?: boolean;
   required?: boolean;
   placeholder?: string;
+  hint?: string;
 }) {
   return (
     <label className="block">
@@ -25,12 +26,13 @@ export function Field({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
       />
+      {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </label>
   );
 }
 
 export function TextArea({
-  label, value, onChange, rows = 3, disabled, placeholder,
+  label, value, onChange, rows = 3, disabled, placeholder, hint,
 }: {
   label: string;
   value: string;
@@ -38,6 +40,7 @@ export function TextArea({
   rows?: number;
   disabled?: boolean;
   placeholder?: string;
+  hint?: string;
 }) {
   return (
     <label className="block">
@@ -50,6 +53,7 @@ export function TextArea({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
       />
+      {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </label>
   );
 }
