@@ -36,6 +36,7 @@ import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministrie
 import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
 import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
+import { Route as EventsCouplesRetreatRouteImport } from './routes/events.couples-retreat'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
 import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AdminTestimoniesRouteImport } from './routes/admin.testimonies'
@@ -191,6 +192,11 @@ const MediaGalleryRoute = MediaGalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => MediaRoute,
 } as any)
+const EventsCouplesRetreatRoute = EventsCouplesRetreatRouteImport.update({
+  id: '/couples-retreat',
+  path: '/couples-retreat',
+  getParentRoute: () => EventsRoute,
+} as any)
 const EventsCouplesRoute = EventsCouplesRouteImport.update({
   id: '/couples',
   path: '/couples',
@@ -310,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
@@ -352,6 +359,7 @@ export interface FileRoutesByTo {
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
@@ -399,6 +407,7 @@ export interface FileRoutesById {
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
   '/events/couples': typeof EventsCouplesRoute
+  '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
+    | '/events/couples-retreat'
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
+    | '/events/couples-retreat'
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
     | '/admin/testimonies'
     | '/admin/visits'
     | '/events/couples'
+    | '/events/couples-retreat'
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
@@ -762,6 +774,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MediaGalleryRouteImport
       parentRoute: typeof MediaRoute
     }
+    '/events/couples-retreat': {
+      id: '/events/couples-retreat'
+      path: '/couples-retreat'
+      fullPath: '/events/couples-retreat'
+      preLoaderRoute: typeof EventsCouplesRetreatRouteImport
+      parentRoute: typeof EventsRoute
+    }
     '/events/couples': {
       id: '/events/couples'
       path: '/couples'
@@ -928,10 +947,12 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface EventsRouteChildren {
   EventsCouplesRoute: typeof EventsCouplesRoute
+  EventsCouplesRetreatRoute: typeof EventsCouplesRetreatRoute
 }
 
 const EventsRouteChildren: EventsRouteChildren = {
   EventsCouplesRoute: EventsCouplesRoute,
+  EventsCouplesRetreatRoute: EventsCouplesRetreatRoute,
 }
 
 const EventsRouteWithChildren =
