@@ -202,11 +202,14 @@ export function SiteHeader() {
           <Link to="/" className="flex items-center gap-2 min-w-0">
             <img src={rccgLogoAsset} alt="RCCG" className="h-14 w-14 shrink-0 object-contain" />
             <img src={logoAsset} alt="Praise Palace" className="h-14 w-14 shrink-0 object-contain" />
-            <div className="min-w-0 leading-tight">
-              <div className="font-display font-extrabold text-sm sm:text-base truncate">
-                <span className="text-[#E13495]">RCCG</span> <span className="text-[#996DB5]">Praise Palace</span>
+            <div className="leading-tight">
+              <div className="font-display font-extrabold text-sm sm:text-base md:text-lg">
+                <span className="text-[#E13495]">RCCG</span>{" "}
+                <span className="text-[#996DB5]">Praise Palace Northampton</span>
               </div>
-              <div className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">Northampton</div>
+              <div className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+                The Redeemed Christian Church of God
+              </div>
             </div>
           </Link>
 

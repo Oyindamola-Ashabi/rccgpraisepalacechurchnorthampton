@@ -96,6 +96,18 @@ function PodcastCard({
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); setSaved(false); }
 
   async function uploadAudio(file: File) {
+    const okTypes = ["mp3", "m4a", "wav", "aac", "ogg", "mpeg", "mp4", "x-m4a", "wave", "x-wav"];
+    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+    const typeTail = (file.type.split("/").pop() ?? "").toLowerCase();
+    if (!okTypes.includes(ext) && !okTypes.includes(typeTail)) {
+      onError("Please choose an MP3, M4A, WAV, AAC or OGG audio file.");
+      return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
+      onError("That audio file is larger than 100 MB. Please upload a smaller file.");
+      return;
+    }
+
     setUploading(true);
     onError(null);
     const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
@@ -103,13 +115,28 @@ function PodcastCard({
     const { error } = await supabase.storage
       .from(PODCAST_BUCKET)
       .upload(path, file, { upsert: true, contentType: file.type || "audio/mpeg" });
+    if (error) {
+      setUploading(false);
+      onError("Audio upload failed: " + error.message);
+      return;
+    }
+
+    // Save the audio straight away so the episode is never left pointing at nothing.
+    const { error: saveError } = await supabase
+      .from("podcasts")
+      .update({ audio_file_url: path, playback_type: "upload" } as any)
+      .eq("id", episode.id);
     setUploading(false);
-    if (error) { onError("Audio upload failed: " + error.message); return; }
+    if (saveError) {
+      onError("Audio uploaded, but saving it to the episode failed: " + saveError.message);
+      return;
+    }
     set("audio_file_url", path);
     set("playback_type" as any, "upload" as any);
     onError(null);
-    window.alert("Audio uploaded. Remember to press Save to publish the change.");
+    window.alert("Audio uploaded and saved to this episode.");
   }
+
 
 
   async function save() {

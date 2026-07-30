@@ -3,7 +3,7 @@ import { Loader2, Save, Trash2, ImagePlus, Upload, X, Check } from "lucide-react
 import { deleteMedia, formatBytes, listMedia, uploadMedia, type MediaAsset } from "@/lib/media";
 
 export function Field({
-  label, value, onChange, type = "text", disabled, required, placeholder,
+  label, value, onChange, type = "text", disabled, required, placeholder, hint,
 }: {
   label: string;
   value: string;
@@ -12,6 +12,7 @@ export function Field({
   disabled?: boolean;
   required?: boolean;
   placeholder?: string;
+  hint?: string;
 }) {
   return (
     <label className="block">
@@ -25,12 +26,13 @@ export function Field({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
       />
+      {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </label>
   );
 }
 
 export function TextArea({
-  label, value, onChange, rows = 3, disabled, placeholder,
+  label, value, onChange, rows = 3, disabled, placeholder, hint,
 }: {
   label: string;
   value: string;
@@ -38,6 +40,7 @@ export function TextArea({
   rows?: number;
   disabled?: boolean;
   placeholder?: string;
+  hint?: string;
 }) {
   return (
     <label className="block">
@@ -50,6 +53,7 @@ export function TextArea({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
       />
+      {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </label>
   );
 }
@@ -121,19 +125,46 @@ export function Alert({ error, success }: { error?: string | null; success?: str
   );
 }
 
-export function AdminHeading({ title, description }: { title: string; description: string }) {
+export function AdminHeading({
+  title, description, breadcrumb,
+}: { title: string; description: string; breadcrumb?: string[] }) {
   return (
     <div>
+      {breadcrumb && breadcrumb.length > 0 && (
+        <nav aria-label="Breadcrumb" className="mb-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+          {breadcrumb.map((crumb, i) => (
+            <span key={`${crumb}-${i}`}>
+              {i > 0 && <span className="mx-1.5 opacity-50">/</span>}
+              <span className={i === breadcrumb.length - 1 ? "text-[#E13495]" : ""}>{crumb}</span>
+            </span>
+          ))}
+        </nav>
+      )}
       <h1 className="font-display text-2xl font-bold">{title}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{description}</p>
     </div>
+  );
+}
+
+/** Small coloured status pill, e.g. Visible / Hidden / Published. */
+export function StatusBadge({ tone = "neutral", children }: { tone?: "on" | "off" | "neutral" | "warn"; children: React.ReactNode }) {
+  const tones = {
+    on: "bg-emerald-500/10 text-emerald-700",
+    off: "bg-muted text-muted-foreground",
+    warn: "bg-amber-500/10 text-amber-700",
+    neutral: "bg-[#E13495]/10 text-[#E13495]",
+  } as const;
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${tones[tone]}`}>
+      {children}
+    </span>
   );
 }
 
 /** Image field with preview, direct upload, manual URL entry and a library picker. */
 export function ImageField({
-  label = "Image", value, onChange, disabled,
-}: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
+  label = "Image", value, onChange, disabled, hint,
+}: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean; hint?: string }) {
   const [picking, setPicking] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -191,7 +222,9 @@ export function ImageField({
         )}
       </div>
       {uploadError && <p className="mt-2 text-xs text-destructive">{uploadError}</p>}
-      <p className="mt-1 text-[11px] text-muted-foreground">Uploading saves the picture to the Media Library, then fills this field automatically. Remember to press Save.</p>
+      <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+        {hint ?? "Upload a new picture or pick one from the Media Library, then press Save."}
+      </p>
       {picking && <MediaPicker onClose={() => setPicking(false)} onSelect={(a) => { onChange(a.public_url); setPicking(false); }} />}
     </div>
   );
@@ -286,4 +319,143 @@ export function useMediaLibrary() {
   }
 
   return { assets, loading, error, uploadError, uploading, reload, upload, remove, formatBytes };
+}
+
+/* =====================================================================
+ * Unsaved-work protection and clear save feedback
+ * ===================================================================== */
+
+export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error";
+
+/**
+ * Keeps an admin form's values in the browser until they are saved, so moving
+ * between pages never loses unfinished work. Every record gets its own key.
+ */
+export function useDraftForm<T extends Record<string, any>>(draftKey: string, record: T) {
+  const [form, setForm] = useState<T>(record);
+  const [status, setStatus] = useState<SaveStatus>("idle");
+  const [message, setMessage] = useState<string | null>(null);
+  const [restored, setRestored] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const storageKey = `ppc-admin-draft:${draftKey}`;
+
+  // Restore any unfinished work for this exact record.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        setForm((f) => ({ ...f, ...saved }));
+        setStatus("dirty");
+        setRestored(true);
+      }
+    } catch {
+      /* a corrupt draft is simply ignored */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  // Warn before leaving with unsaved changes.
+  useEffect(() => {
+    if (status !== "dirty") return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [status]);
+
+  function set<K extends keyof T>(key: K, value: T[K]) {
+    setForm((f) => {
+      const next = { ...f, [key]: value };
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {
+        /* storage full or unavailable — editing still works */
+      }
+      return next;
+    });
+    setStatus("dirty");
+    setMessage(null);
+  }
+
+  function clearDraft() {
+    try {
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      /* ignore */
+    }
+    setRestored(false);
+  }
+
+  function discardDraft() {
+    clearDraft();
+    setForm(record);
+    setStatus("idle");
+    setMessage(null);
+  }
+
+  /** Runs the save, only reporting success once the database confirms it. */
+  async function save(run: () => Promise<{ error: { message: string } | null }>) {
+    setStatus("saving");
+    setMessage(null);
+    const { error } = await run();
+    if (error) {
+      setStatus("error");
+      setMessage(error.message);
+      return false;
+    }
+    clearDraft();
+    setStatus("saved");
+    setLastSaved(new Date().toLocaleTimeString());
+    setMessage(null);
+    return true;
+  }
+
+  return { form, setForm, set, status, message, restored, lastSaved, save, discardDraft, clearDraft };
+}
+
+/** The Save button plus its live status wording. */
+export function SaveRow({
+  status, message, lastSaved, restored, onSave, onDiscard, label = "Save changes", disabled,
+}: {
+  status: SaveStatus;
+  message?: string | null;
+  lastSaved?: string | null;
+  restored?: boolean;
+  onSave: () => void;
+  onDiscard?: () => void;
+  label?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <SaveButton
+        saving={status === "saving"}
+        saved={status === "saved"}
+        onClick={onSave}
+        label={label}
+        disabled={disabled}
+      />
+      {restored && status === "dirty" && (
+        <span className="inline-flex items-center gap-2 text-xs text-amber-700">
+          Draft restored
+          {onDiscard && (
+            <button type="button" onClick={onDiscard} className="underline hover:no-underline">
+              Discard draft
+            </button>
+          )}
+        </span>
+      )}
+      {status === "dirty" && !restored && <StatusBadge tone="warn">Unsaved changes</StatusBadge>}
+      {status === "saving" && <span className="text-xs text-muted-foreground">Saving…</span>}
+      {status === "saved" && (
+        <span className="text-xs text-emerald-700">
+          Changes saved successfully{lastSaved ? ` · Last saved ${lastSaved}` : ""}
+        </span>
+      )}
+      {status === "error" && <span className="text-xs text-destructive">Save failed — {message}</span>}
+    </div>
+  );
 }

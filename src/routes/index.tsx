@@ -43,6 +43,10 @@ function HomePage() {
   const { text, image, visible } = usePageContent("home");
   const settings = useSiteSettings();
   const { rows: ministryItems } = useSectionItems("home", "ministries");
+  const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
+  const { rows: serviceItems } = useSectionItems("home", "hero_services");
+  const { rows: programItems } = useSectionItems("home", "programs");
+
 
   /**
    * The "Grow. Serve. Belong." cards are individual CMS records, so each keeps
@@ -107,18 +111,63 @@ function HomePage() {
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
   const heroHref = text("hero", "cta_href", "/plan-a-visit");
   const heroExternal = /^https?:/.test(heroHref);
+  const showWatchLive = visible("hero_watch_live");
+
+  /** Hero background photographs — administrator slides first, built-in ones otherwise. */
+  const slideDefaults = [image("hero_slide_1", heroImg), heroSlides[0].url, heroSlides[1].url];
+  const heroImages = heroSlideItems.length
+    ? heroSlideItems.map((it: SectionItem, i: number) => imageOr(it.image_url, slideDefaults[i] ?? heroImg))
+    : slideDefaults;
+
+  /** Service-time boxes inside the hero. */
+  const serviceDefaults = [
+    { label: "Worship", day: "Sundays", time: "10:00 AM" },
+    { label: "Bible Study", day: "Wednesdays", time: "7:00 PM" },
+    { label: "Night Vigil", day: "Last Friday", time: "11:00 PM" },
+  ];
+  const services = serviceItems.length
+    ? serviceItems.map((it: SectionItem, i: number) => ({
+        key: it.id,
+        label: it.title ?? serviceDefaults[i]?.label ?? "",
+        day: it.subtitle ?? serviceDefaults[i]?.day ?? "",
+        time: it.body ?? serviceDefaults[i]?.time ?? "",
+      }))
+    : serviceDefaults.map((d, i) => ({
+        key: `hero_service_${i + 1}`,
+        label: text(`hero_service_${i + 1}`, "headline", d.label),
+        day: text(`hero_service_${i + 1}`, "subheading", d.day),
+        time: text(`hero_service_${i + 1}`, "body", d.time),
+      }));
+
+  /** Weekly Rhythms of Grace cards. */
+  const programDefaults = [
+    { icon: Heart, title: "Sunday Service", time: "10:00 AM", desc: "Worship, word and community for the whole family." },
+    { icon: BookOpen, title: "Bible Study", time: "Wed · 7:00 PM", desc: "Go deep into the scriptures every Wednesday." },
+    { icon: Music, title: "Night Vigil", time: "Last Fri · 11:00 PM", desc: "A monthly night of prayer, worship and breakthrough." },
+    { icon: Users, title: "Prayer Connect", time: "Last Day · 11:30 PM", desc: "Closing every month in agreement and intercession." },
+  ];
+  const programs = programItems.length
+    ? programItems.map((it: SectionItem, i: number) => ({
+        key: it.id,
+        icon: cardIcon(it.icon_key) ?? programDefaults[i]?.icon ?? Heart,
+        title: it.title ?? programDefaults[i]?.title ?? "",
+        time: it.subtitle ?? programDefaults[i]?.time ?? "",
+        desc: it.body ?? programDefaults[i]?.desc ?? "",
+      }))
+    : programDefaults.map((d, i) => ({
+        key: `program_card_${i + 1}`,
+        icon: d.icon,
+        title: text(`program_card_${i + 1}`, "headline", d.title),
+        time: text(`program_card_${i + 1}`, "subheading", d.time),
+        desc: text(`program_card_${i + 1}`, "body", d.desc),
+      }));
 
   return (
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <HeroSlider
-          images={[
-            image("hero_slide_1", heroImg),
-            image("hero_slide_2", heroSlides[0].url),
-            image("hero_slide_3", heroSlides[1].url),
-          ]}
-        />
+        <HeroSlider images={heroImages} />
+
 
         <div className="relative mx-auto max-w-7xl px-6 py-28 md:py-40 text-white">
           <div className="max-w-3xl">
@@ -137,33 +186,23 @@ function HomePage() {
               ) : (
                 <BrandButton to={heroHref} variant="gold">{text("hero", "cta_label", "Plan Your Visit")}</BrandButton>
               )}
-              {watchLiveExternal ? (
-                <BrandButton href={watchLiveHref} external variant="outline">
-                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
-                </BrandButton>
-              ) : (
-                <BrandButton to={watchLiveHref} variant="outline">
-                  <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
-                </BrandButton>
-              )}
+              {showWatchLive &&
+                (watchLiveExternal ? (
+                  <BrandButton href={watchLiveHref} external variant="outline">
+                    <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                  </BrandButton>
+                ) : (
+                  <BrandButton to={watchLiveHref} variant="outline">
+                    <Play className="h-4 w-4 mr-2" /> {text("hero_watch_live", "cta_label", "Watch Live")}
+                  </BrandButton>
+                ))}
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-xl">
-              <ServiceTime
-                label={text("hero_service_1", "headline", "Worship")}
-                day={text("hero_service_1", "subheading", "Sundays")}
-                time={text("hero_service_1", "body", "10:00 AM")}
-              />
-              <ServiceTime
-                label={text("hero_service_2", "headline", "Bible Study")}
-                day={text("hero_service_2", "subheading", "Wednesdays")}
-                time={text("hero_service_2", "body", "7:00 PM")}
-              />
-              <ServiceTime
-                label={text("hero_service_3", "headline", "Night Vigil")}
-                day={text("hero_service_3", "subheading", "Last Friday")}
-                time={text("hero_service_3", "body", "11:00 PM")}
-              />
+              {services.map((s) => (
+                <ServiceTime key={s.key} label={s.label} day={s.day} time={s.time} />
+              ))}
             </div>
+
           </div>
         </div>
       </section>
@@ -216,13 +255,8 @@ function HomePage() {
           subtitle={text("programs", "body", "A steady heartbeat of prayer, worship and word — come as you are.")}
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: Heart, title: text("program_card_1", "headline", "Sunday Service"), time: text("program_card_1", "subheading", "10:00 AM"), desc: text("program_card_1", "body", "Worship, word and community for the whole family.") },
-            { icon: BookOpen, title: text("program_card_2", "headline", "Bible Study"), time: text("program_card_2", "subheading", "Wed · 7:00 PM"), desc: text("program_card_2", "body", "Go deep into the scriptures every Wednesday.") },
-            { icon: Music, title: text("program_card_3", "headline", "Night Vigil"), time: text("program_card_3", "subheading", "Last Fri · 11:00 PM"), desc: text("program_card_3", "body", "A monthly night of prayer, worship and breakthrough.") },
-            { icon: Users, title: text("program_card_4", "headline", "Prayer Connect"), time: text("program_card_4", "subheading", "Last Day · 11:30 PM"), desc: text("program_card_4", "body", "Closing every month in agreement and intercession.") },
-          ].map((p) => (
-            <div key={p.title} className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
+          {programs.map((p) => (
+            <div key={p.key} className="group relative overflow-hidden rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full gradient-brand opacity-10 group-hover:opacity-20 transition" />
               <div className="relative">
                 <div className="grid h-12 w-12 place-items-center rounded-xl gradient-brand text-white shadow-elegant">
