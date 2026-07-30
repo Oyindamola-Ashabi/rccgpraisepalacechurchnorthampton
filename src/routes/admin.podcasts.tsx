@@ -100,9 +100,16 @@ function PodcastCard({
 
   async function save() {
     if (saving) return;
-    if (form.is_published && !form.audio_file_url && !form.external_audio_url) {
-      onError("Add an audio file or an external audio link before publishing this episode.");
-      return;
+    const type = (form as any).playback_type ?? "upload";
+    if (form.is_published) {
+      const ok =
+        (type === "upload" && form.audio_file_url) ||
+        (type === "external" && form.external_audio_url) ||
+        (type === "youtube" && (form as any).youtube_url);
+      if (!ok) {
+        onError("Add the matching audio source for this episode type before publishing it.");
+        return;
+      }
     }
     setSaving(true);
     const { error } = await supabase.from("podcasts" as any).update({
@@ -111,8 +118,11 @@ function PodcastCard({
       speaker_or_host: form.speaker_or_host,
       description: form.description,
       publication_date: form.publication_date || null,
+      playback_type: type,
       audio_file_url: form.audio_file_url,
       external_audio_url: form.external_audio_url,
+      youtube_url: (form as any).youtube_url || null,
+      youtube_video_id: youtubeId((form as any).youtube_url) || null,
       cover_image_url: form.cover_image_url,
       duration: form.duration,
       is_featured: form.is_featured,
@@ -151,6 +161,20 @@ function PodcastCard({
         <Field label="Publication date" type="date" value={form.publication_date ?? ""} onChange={(v) => set("publication_date", v)} disabled={!editable} />
         <Field label="Duration (e.g. 32 min)" value={form.duration ?? ""} onChange={(v) => set("duration", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Episode type</span>
+          <select
+            value={(form as any).playback_type ?? "upload"}
+            disabled={!editable}
+            onChange={(e) => set("playback_type" as any, e.target.value as any)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="upload">Uploaded audio file</option>
+            <option value="external">External link (Spotify, Apple, RSS…)</option>
+            <option value="youtube">YouTube video</option>
+          </select>
+        </label>
+        <Field label="YouTube link" value={(form as any).youtube_url ?? ""} onChange={(v) => set("youtube_url" as any, v as any)} disabled={!editable} placeholder="https://youtu.be/…" />
         <Field label="External audio link (optional)" value={form.external_audio_url ?? ""} onChange={(v) => set("external_audio_url", v)} disabled={!editable} />
         <Field label="Uploaded audio path" value={form.audio_file_url ?? ""} onChange={(v) => set("audio_file_url", v)} disabled={!editable} />
       </div>
