@@ -89,6 +89,7 @@ export type PageSection = {
 export const CMS_PAGES = [
   { slug: "home", label: "Homepage" },
   { slug: "about", label: "About" },
+  { slug: "media", label: "Media" },
   { slug: "contact", label: "Contact" },
   { slug: "plan-a-visit", label: "Plan a Visit" },
   { slug: "prayer-request", label: "Prayer Request" },
@@ -98,6 +99,40 @@ export const CMS_PAGES = [
 
 /** Sections the website looks for on each page. Admins can also add their own keys. */
 export const DEFAULT_SECTION_KEYS = ["hero", "intro", "cta"];
+
+/**
+ * Every section key the website reads, per page. Each entry is a separate
+ * record so repeated cards and images can be edited independently.
+ */
+export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: string }[]> = {
+  home: [
+    { key: "hero", label: "Hero text and buttons" },
+    { key: "hero_slide_1", label: "Hero slider image 1" },
+    { key: "hero_slide_2", label: "Hero slider image 2" },
+    { key: "hero_slide_3", label: "Hero slider image 3" },
+    { key: "hero_watch_live", label: "Watch Live button" },
+    { key: "hero_service_1", label: "Service card 1 (Worship)" },
+    { key: "hero_service_2", label: "Service card 2 (Bible Study)" },
+    { key: "hero_service_3", label: "Service card 3 (Night Vigil)" },
+    { key: "welcome", label: "Welcome section + image" },
+    { key: "programs", label: "Weekly Rhythms heading" },
+    { key: "program_card_1", label: "Weekly Rhythms card 1" },
+    { key: "program_card_2", label: "Weekly Rhythms card 2" },
+    { key: "program_card_3", label: "Weekly Rhythms card 3" },
+    { key: "program_card_4", label: "Weekly Rhythms card 4" },
+    { key: "ministries", label: "Grow. Serve. Belong. heading" },
+    { key: "ministry_card_1", label: "Grow/Serve/Belong card 1" },
+    { key: "ministry_card_2", label: "Grow/Serve/Belong card 2" },
+    { key: "ministry_card_3", label: "Grow/Serve/Belong card 3" },
+    { key: "pastor", label: "Pastor section + photo" },
+    { key: "events", label: "Events heading" },
+    { key: "event_card_1", label: "Event preview card 1" },
+    { key: "event_card_2", label: "Event preview card 2" },
+    { key: "event_card_3", label: "Event preview card 3" },
+    { key: "giving_cta", label: "Giving call to action" },
+  ],
+  media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
+};
 
 export function usePageSections(pageSlug: string) {
   const [sections, setSections] = useState<Record<string, PageSection>>({});
