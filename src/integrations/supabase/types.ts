@@ -120,8 +120,12 @@ export type Database = {
       }
       event_registrations: {
         Row: {
+          accessibility_requirements: string | null
+          accommodation_preference: string | null
           admin_notes: string | null
+          consent_given: boolean
           created_at: string
+          dietary_requirements: string | null
           email: string
           event_id: string | null
           event_slug: string
@@ -131,12 +135,17 @@ export type Database = {
           message: string | null
           number_of_attendees: number
           phone: string | null
+          spouse_name: string | null
           status: Database["public"]["Enums"]["submission_status"]
           updated_at: string
         }
         Insert: {
+          accessibility_requirements?: string | null
+          accommodation_preference?: string | null
           admin_notes?: string | null
+          consent_given?: boolean
           created_at?: string
+          dietary_requirements?: string | null
           email: string
           event_id?: string | null
           event_slug?: string
@@ -146,12 +155,17 @@ export type Database = {
           message?: string | null
           number_of_attendees?: number
           phone?: string | null
+          spouse_name?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           updated_at?: string
         }
         Update: {
+          accessibility_requirements?: string | null
+          accommodation_preference?: string | null
           admin_notes?: string | null
+          consent_given?: boolean
           created_at?: string
+          dietary_requirements?: string | null
           email?: string
           event_id?: string | null
           event_slug?: string
@@ -161,12 +175,66 @@ export type Database = {
           message?: string | null
           number_of_attendees?: number
           phone?: string | null
+          spouse_name?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string | null
+          event_slug: string | null
+          id: string
+          is_visible: boolean
+          sort_order: number
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_url: string | null
+          youtube_video_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id?: string | null
+          event_slug?: string | null
+          id?: string
+          is_visible?: boolean
+          sort_order?: number
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string | null
+          event_slug?: string | null
+          id?: string
+          is_visible?: boolean
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+          youtube_video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_videos_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
