@@ -134,12 +134,57 @@ export const SECTION_KEY_SUGGESTIONS: Record<string, { key: string; label: strin
   media: [{ key: "hero", label: "Media page hero (heading + background image)" }],
 };
 
+/** Plain-English names for the common section keys used across the site. */
+const GENERIC_SECTION_LABELS: Record<string, string> = {
+  hero: "Page banner (heading, text and background image)",
+  intro: "Introduction block",
+  welcome: "Welcome section",
+  vision: "Our Vision card",
+  mission: "Our Mission card",
+  values: "Our Values card",
+  pastor: "Pastor section",
+  life_gallery: "Life at Praise Palace photos",
+  cta: "Closing call to action",
+  contact_info: "Contact details block",
+  form: "Form section",
+  ways_to_give: "Ways to give",
+  bank_details: "Bank details",
+  details: "Details block",
+  register: "Registration block",
+  albums: "Photo albums block",
+  contact: "Contact block",
+  community: "Community section",
+  events: "Events heading",
+  programs: "Weekly Rhythms heading",
+  ministries: "Grow. Serve. Belong. heading",
+  giving_cta: "Giving call to action",
+};
+
+/** Friendly, non-technical name for a section so administrators know what they are editing. */
+export function sectionLabel(pageSlug: string, key: string): string {
+  const suggested = (SECTION_KEY_SUGGESTIONS[pageSlug] ?? []).find((s) => s.key === key);
+  if (suggested) return suggested.label;
+  if (GENERIC_SECTION_LABELS[key]) return GENERIC_SECTION_LABELS[key];
+  return key.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+
+/**
+ * Remembers the last content loaded for each page so moving between pages
+ * never shows the built-in wording again once the real content is known.
+ */
+const sectionCache = new Map<string, Record<string, PageSection>>();
+
 /** All sections for a page, including hidden ones (visibility is applied by the caller). */
 export function usePageSectionsAll(pageSlug: string) {
-  const [sections, setSections] = useState<Record<string, PageSection>>({});
+  const [sections, setSections] = useState<Record<string, PageSection>>(
+    () => sectionCache.get(pageSlug) ?? {},
+  );
 
   useEffect(() => {
     let active = true;
+    const cached = sectionCache.get(pageSlug);
+    if (cached) setSections(cached);
     supabase
       .from("page_sections")
       .select("*")
@@ -147,7 +192,11 @@ export function usePageSectionsAll(pageSlug: string) {
       .order("sort_order")
       .then(({ data }) => {
         if (!active || !data) return;
-        setSections(Object.fromEntries((data as any[]).map((s) => [s.section_key, s as PageSection])));
+        const map = Object.fromEntries(
+          (data as any[]).map((s) => [s.section_key, s as PageSection]),
+        );
+        sectionCache.set(pageSlug, map);
+        setSections(map);
       });
     return () => {
       active = false;
@@ -156,6 +205,7 @@ export function usePageSectionsAll(pageSlug: string) {
 
   return sections;
 }
+
 
 export function usePageSections(pageSlug: string) {
   const all = usePageSectionsAll(pageSlug);
@@ -293,7 +343,13 @@ export type Podcast = {
   sort_order: number;
 };
 
-export const PODCAST_BUCKET = "podcasts";
+/**
+ * Podcast audio lives in the same public media store as images, inside a
+ * "podcasts/" folder, so uploads work without a second storage area.
+ */
+export const PODCAST_BUCKET = MEDIA_BUCKET;
+export const PODCAST_FOLDER = "podcasts";
+
 
 /** Pull the 11-character video id out of any common YouTube URL form. */
 export function youTubeId(input: string | null | undefined): string | null {

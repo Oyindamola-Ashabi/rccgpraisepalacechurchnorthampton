@@ -4,7 +4,7 @@ import { Loader2, Plus, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import { PODCAST_BUCKET, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
+import { PODCAST_BUCKET, PODCAST_FOLDER, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
 
 /** Pulls the video id out of any common YouTube URL shape. */
 function youtubeId(url?: string | null) {
@@ -97,13 +97,20 @@ function PodcastCard({
 
   async function uploadAudio(file: File) {
     setUploading(true);
-    const path = `${episode.slug || episode.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-")}`;
-    const { error } = await supabase.storage.from(PODCAST_BUCKET).upload(path, file, { upsert: true, contentType: file.type });
+    onError(null);
+    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
+    const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${Date.now()}-${safe}`;
+    const { error } = await supabase.storage
+      .from(PODCAST_BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type || "audio/mpeg" });
     setUploading(false);
     if (error) { onError("Audio upload failed: " + error.message); return; }
-    onError(null);
     set("audio_file_url", path);
+    set("playback_type" as any, "upload" as any);
+    onError(null);
+    window.alert("Audio uploaded. Remember to press Save to publish the change.");
   }
+
 
   async function save() {
     if (saving) return;
