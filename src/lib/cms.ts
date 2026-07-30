@@ -485,3 +485,234 @@ export function formatEventDate(iso: string) {
 export function formatEventTime(iso: string) {
   return new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
+
+/* =====================================================================
+ * Section items — one editable record per card/image inside a section
+ * ===================================================================== */
+
+export type SectionItem = {
+  id: string;
+  section_id: string;
+  item_key: string;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  image_url: string | null;
+  icon_key: string | null;
+  cta_label: string | null;
+  cta_href: string | null;
+  link_type: "internal" | "external" | "none";
+  link_target: "self" | "blank";
+  is_visible: boolean;
+  sort_order: number;
+};
+
+export const SECTION_TEMPLATES = [
+  { value: "hero", label: "Hero (big heading + background image)" },
+  { value: "rich_text", label: "Rich text block" },
+  { value: "image_and_text", label: "Image beside text" },
+  { value: "card_grid", label: "Card grid (uses items)" },
+  { value: "image_grid", label: "Image grid / slider (uses items)" },
+  { value: "cta", label: "Call to action" },
+  { value: "event_list", label: "Event list" },
+  { value: "album_list", label: "Photo albums" },
+  { value: "form_section", label: "Form section" },
+  { value: "custom", label: "Custom" },
+] as const;
+
+/** Visible items for one section of one page, ordered as the administrator arranged them. */
+export function useSectionItems(pageSlug: string, sectionKey: string) {
+  const [rows, setRows] = useState<SectionItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data: section } = await supabase
+        .from("page_sections")
+        .select("id")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", sectionKey)
+        .maybeSingle();
+      if (!active) return;
+      if (!section) {
+        setRows([]);
+        setLoading(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("page_section_items" as any)
+        .select("*")
+        .eq("section_id", (section as any).id)
+        .eq("is_visible", true)
+        .order("sort_order");
+      if (!active) return;
+      setRows(((data as any[]) ?? []) as SectionItem[]);
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [pageSlug, sectionKey]);
+
+  return { rows, loading };
+}
+
+/* =====================================================================
+ * Navigation
+ * ===================================================================== */
+
+export type NavRecord = {
+  id: string;
+  parent_id: string | null;
+  label: string;
+  href: string;
+  link_type: "internal" | "external" | "none";
+  is_external: boolean;
+  is_visible: boolean;
+  sort_order: number;
+  location: "header" | "footer";
+};
+
+export type NavNode = NavRecord & { children: NavNode[] };
+
+function buildNavTree(rows: NavRecord[]): NavNode[] {
+  const byId = new Map<string, NavNode>();
+  rows.forEach((r) => byId.set(r.id, { ...r, children: [] }));
+  const roots: NavNode[] = [];
+  byId.forEach((node) => {
+    if (node.parent_id && byId.has(node.parent_id)) byId.get(node.parent_id)!.children.push(node);
+    else if (!node.parent_id) roots.push(node);
+  });
+  const sortRec = (list: NavNode[]) => {
+    list.sort((a, b) => a.sort_order - b.sort_order || a.label.localeCompare(b.label));
+    list.forEach((n) => sortRec(n.children));
+  };
+  sortRec(roots);
+  return roots;
+}
+
+/** Menu managed in Admin → Navigation. Empty until records exist, so callers keep their built-in menu. */
+export function useNavigation(location: "header" | "footer" = "header") {
+  const [tree, setTree] = useState<NavNode[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("nav_items" as any)
+      .select("*")
+      .eq("location", location)
+      .eq("is_visible", true)
+      .order("sort_order")
+      .then(({ data }) => {
+        if (active && data) setTree(buildNavTree(data as any as NavRecord[]));
+      });
+    return () => {
+      active = false;
+    };
+  }, [location]);
+
+  return tree;
+}
+
+/* =====================================================================
+ * Events — upcoming and past
+ * ===================================================================== */
+
+export type ChurchEventRow = ChurchEvent & { slug: string | null; detail_page: string | null };
+
+/** Published events that have already happened, most recent first. */
+export function usePastEvents(limit = 24) {
+  return useCmsList<ChurchEventRow>(() =>
+    supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .lt("start_at", new Date().toISOString())
+      .order("start_at", { ascending: false })
+      .limit(limit),
+  );
+}
+
+/** Where an event card should link: its own page, then a registration link, else nowhere. */
+export function eventLink(ev: Partial<ChurchEventRow>): { to: string | null; external: boolean } {
+  if (ev.detail_page) return { to: ev.detail_page, external: false };
+  if (ev.registration_url) return { to: ev.registration_url, external: true };
+  return { to: null, external: false };
+}
+
+/* =====================================================================
+ * Podcast playback (uploaded / external platform / YouTube)
+ * ===================================================================== */
+
+export type PodcastRow = Podcast & {
+  playback_type: "upload" | "external" | "youtube";
+  youtube_url: string | null;
+  youtube_video_id: string | null;
+};
+
+export type EpisodeSource =
+  | { kind: "audio"; src: string; external: string | null }
+  | { kind: "youtube"; videoId: string; url: string }
+  | { kind: "external"; url: string }
+  | { kind: "none" };
+
+/** How an episode should play, based on the source type chosen in the admin area. */
+export function episodeSource(ep: Partial<PodcastRow>): EpisodeSource {
+  const type = ep.playback_type ?? (ep.audio_file_url ? "upload" : ep.external_audio_url ? "external" : "upload");
+  if (type === "youtube") {
+    const id = ep.youtube_video_id || youTubeId(ep.youtube_url);
+    if (id) return { kind: "youtube", videoId: id, url: ep.youtube_url || `https://www.youtube.com/watch?v=${id}` };
+  }
+  const uploaded = podcastAudioUrl(ep.audio_file_url);
+  if (type === "upload" && uploaded) return { kind: "audio", src: uploaded, external: ep.external_audio_url ?? null };
+  if (ep.external_audio_url) {
+    if (isDirectAudio(ep.external_audio_url)) return { kind: "audio", src: ep.external_audio_url, external: null };
+    return { kind: "external", url: ep.external_audio_url };
+  }
+  if (uploaded) return { kind: "audio", src: uploaded, external: null };
+  return { kind: "none" };
+}
+
+/** Friendly platform name for an external episode link. */
+export function platformName(url: string): string {
+  const u = url.toLowerCase();
+  if (u.includes("spotify")) return "Spotify";
+  if (u.includes("apple")) return "Apple Podcasts";
+  if (u.includes("youtube") || u.includes("youtu.be")) return "YouTube";
+  if (u.includes("audiomack")) return "Audiomack";
+  if (u.includes("soundcloud")) return "SoundCloud";
+  return "Listen";
+}
+
+/* =====================================================================
+ * Gallery albums
+ * ===================================================================== */
+
+export type GalleryAlbumRow = GalleryAlbum & {
+  category: string;
+  event_slug: string | null;
+  location: string | null;
+  album_year: number | null;
+  album_date: string | null;
+};
+
+export function usePublishedAlbums(eventSlug?: string) {
+  return useCmsList<GalleryAlbumRow>(() => {
+    let q = supabase
+      .from("gallery_albums")
+      .select("*")
+      .eq("is_published", true)
+      .order("album_year", { ascending: false, nullsFirst: false })
+      .order("sort_order");
+    if (eventSlug) q = q.eq("event_slug", eventSlug);
+    return q;
+  }, [eventSlug ?? ""]);
+}
+
+export function useAlbumImages(albumId: string | null) {
+  return useCmsList<GalleryImage>(() => {
+    if (!albumId) return Promise.resolve({ data: [], error: null }) as any;
+    return supabase.from("gallery_images").select("*").eq("album_id", albumId).order("sort_order");
+  }, [albumId ?? ""]);
+}

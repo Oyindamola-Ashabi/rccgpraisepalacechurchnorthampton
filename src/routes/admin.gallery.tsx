@@ -143,6 +143,11 @@ function AlbumCard({
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
+        <Field label="Category (e.g. Couples Retreat, Main Gallery)" value={(form as any).category ?? ""} onChange={(v) => set("category" as any, v as any)} disabled={!editable} />
+        <Field label="Linked event slug (optional)" value={(form as any).event_slug ?? ""} onChange={(v) => set("event_slug" as any, v as any)} disabled={!editable} placeholder="couples-retreat" />
+        <Field label="Location" value={(form as any).location ?? ""} onChange={(v) => set("location" as any, v as any)} disabled={!editable} />
+        <Field label="Year" type="number" value={String((form as any).album_year ?? "")} onChange={(v) => set("album_year" as any, (v ? Number(v) : null) as any)} disabled={!editable} />
+        <Field label="Album date" type="date" value={(form as any).album_date ?? ""} onChange={(v) => set("album_date" as any, (v || null) as any)} disabled={!editable} />
         <div className="sm:col-span-2"><TextArea label="Description" rows={2} value={form.description ?? ""} onChange={(v) => set("description", v)} disabled={!editable} /></div>
         <div className="sm:col-span-2"><ImageField label="Album cover" value={form.cover_image_url ?? ""} onChange={(v) => set("cover_image_url", v)} disabled={!editable} /></div>
       </div>

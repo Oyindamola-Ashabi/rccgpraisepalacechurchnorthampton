@@ -4,7 +4,8 @@ import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { eventPhotos } from "@/lib/gallery-images";
-import { usePublishedEvents, formatEventDate, formatEventTime } from "@/lib/cms";
+import { usePublishedEvents, usePastEvents, formatEventDate, formatEventTime } from "@/lib/cms";
+import { useState } from "react";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/events")({
 
 /** Built-in events kept alongside anything added in the admin area. */
 const FALLBACK_EVENTS = [
-  { start: "2026-08-15T17:00:00Z", image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples" },
+  { start: "2026-08-15T17:00:00Z", image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples-retreat" },
   { start: "2026-06-20T08:00:00Z", image: eventPhotos.youth.url, tag: "Youth", title: "Raising Champions Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
   { start: "2026-07-09T18:30:00Z", image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
   { start: "2026-07-25T19:00:00Z", image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
@@ -46,12 +47,14 @@ type EventCardData = {
 
 function EventsPage() {
   const { rows } = usePublishedEvents();
+  const { rows: pastRows } = usePastEvents();
+  const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
   const now = Date.now();
 
   // Admin-managed events come first; built-in ones are kept unless the admin
   // already manages an event with the same name. Past events are never shown.
   const fromCms: EventCardData[] = rows.map((e) => {
-    const link = e.registration_url ?? undefined;
+    const link = (e as any).detail_page ?? e.registration_url ?? undefined;
     const internal = !!link && link.startsWith("/");
     return {
       start: new Date(e.start_at).getTime(),
@@ -76,14 +79,54 @@ function EventsPage() {
     .filter((e) => e.start >= now)
     .sort((a, b) => a.start - b.start);
 
+  // Past events move here automatically once their date has gone by.
+  const pastEvents: EventCardData[] = pastRows.map((e) => {
+    const link = e.detail_page ?? e.registration_url ?? undefined;
+    const internal = !!link && link.startsWith("/");
+    return {
+      start: new Date(e.start_at).getTime(),
+      image: e.image_url ?? heroImg,
+      tag: "Past",
+      title: e.title,
+      date: formatEventDate(e.start_at),
+      time: formatEventTime(e.start_at),
+      location: e.venue ?? "RCCG Praise Palace Northampton",
+      to: internal ? link : undefined,
+      href: internal ? undefined : link,
+      description: e.description ?? undefined,
+    };
+  });
+
+  const shown = tab === "upcoming" ? events : pastEvents;
+
 
   return (
     <>
       <PageHero eyebrow="Gather With Us" title="Upcoming Events" subtitle="Life-shaping moments of worship, teaching and connection." image={heroImg} />
 
       <Section>
+        <div className="mb-8 flex justify-center gap-2">
+          {(["upcoming", "past"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+                tab === t ? "gradient-brand text-white shadow-elegant" : "border text-foreground/70 hover:bg-secondary/60"
+              }`}
+            >
+              {t === "upcoming" ? `Upcoming (${events.length})` : `Past (${pastEvents.length})`}
+            </button>
+          ))}
+        </div>
+
+        {shown.length === 0 && (
+          <p className="text-center text-sm text-muted-foreground">
+            {tab === "upcoming" ? "No upcoming events right now — please check back soon." : "No past events recorded yet."}
+          </p>
+        )}
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {events.map((e) => (
+          {shown.map((e) => (
             <article key={e.title} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img src={e.image} alt={e.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />

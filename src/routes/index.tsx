@@ -6,7 +6,23 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useSectionItems, imageOr, type SectionItem } from "@/lib/cms";
+
+/** Card icons an administrator can choose per item. */
+const CARD_ICONS: Record<string, any> = {
+  radio: Radio,
+  "graduation-cap": GraduationCap,
+  tent: Tent,
+  users: Users,
+  heart: Heart,
+  sparkles: Sparkles,
+  music: Music,
+  "book-open": BookOpen,
+  "hand-heart": HandHeart,
+};
+function cardIcon(key: string | null | undefined) {
+  return (key && CARD_ICONS[key]) || Sparkles;
+}
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
 
 export const Route = createFileRoute("/")({
@@ -26,32 +42,45 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { text, image, visible } = usePageContent("home");
   const settings = useSiteSettings();
-  const ministryIcons = [Radio, GraduationCap, Tent];
+  const { rows: ministryItems } = useSectionItems("home", "ministries");
 
   /**
-   * The three "Grow. Serve. Belong." cards are their own CMS records so each
-   * one keeps its own image, wording and link. The original cards are the
-   * built-in fallback, so they never disappear.
+   * The "Grow. Serve. Belong." cards are individual CMS records, so each keeps
+   * its own image, wording, icon and destination. The original six cards are
+   * the built-in fallback, so they never disappear.
    */
   const ministryCardDefaults = [
-    { title: "PraisePalace Radio", desc: "Faith-filled broadcasts, worship and word — streaming globally.", href: "https://praisepalaceradio.com/", image: eventPhotos.students.url },
-    { title: "Business School", desc: "Empowering kingdom entrepreneurs with practical wisdom.", href: "https://praisepalacebusinessschool.com/", image: eventPhotos.business.url },
-    { title: "Youth Camp", desc: "A powerful gathering for the next generation.", href: "https://raisingchampions.org.uk", image: eventPhotos.youth.url },
+    { title: "PraisePalace Radio", desc: "Faith-filled broadcasts, worship and word — streaming globally.", href: "https://praisepalaceradio.com/", image: eventPhotos.students.url, icon: "radio" },
+    { title: "Business School", desc: "Empowering kingdom entrepreneurs with practical wisdom.", href: "https://praisepalacebusinessschool.com/", image: eventPhotos.business.url, icon: "graduation-cap" },
+    { title: "Youth Camp", desc: "A powerful gathering for the next generation.", href: "https://raisingchampions.org.uk", image: eventPhotos.youth.url, icon: "tent" },
+    { title: "Men Fellowship", desc: "Brothers building one another in faith, character and purpose.", href: "/ministries/mens-fellowship", image: eventPhotos.men.url, icon: "users" },
+    { title: "Women Fellowship", desc: "A sisterhood of prayer, encouragement and kingdom service.", href: "/ministries/womens-fellowship", image: eventPhotos.women.url, icon: "heart" },
+    { title: "Couples Retreat", desc: "A refreshing retreat for married couples — love, legacy and laughter.", href: "/events/couples-retreat", image: eventPhotos.couples.url, icon: "sparkles" },
   ];
-  const homeMinistries = ministryCardDefaults
-    .map((d, i) => {
-      const key = `ministry_card_${i + 1}`;
-      return {
-        key,
-        title: text(key, "headline", d.title),
-        desc: text(key, "body", d.desc),
-        href: text(key, "cta_href", d.href),
-        image: image(key, d.image),
-        icon: ministryIcons[i],
-        show: visible(key),
-      };
-    })
-    .filter((m) => m.show);
+
+  const homeMinistries = (ministryItems.length
+    ? ministryItems.map((it: SectionItem, i: number) => ({
+        key: it.id,
+        title: it.title ?? ministryCardDefaults[i]?.title ?? "",
+        desc: it.body ?? "",
+        href: it.cta_href ?? "#",
+        image: imageOr(it.image_url, ministryCardDefaults[i]?.image ?? eventPhotos.students.url),
+        icon: cardIcon(it.icon_key),
+      }))
+    : ministryCardDefaults.map((d, i) => {
+        const key = `ministry_card_${i + 1}`;
+        return {
+          key,
+          title: text(key, "headline", d.title),
+          desc: text(key, "body", d.desc),
+          href: text(key, "cta_href", d.href),
+          image: image(key, d.image),
+          icon: cardIcon(d.icon),
+          show: visible(key),
+        };
+      })
+  ).filter((m: any) => m.show !== false) as any[];
+
 
   const eventCardDefaults = [
     { image: eventPhotos.couples.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", location: "Praise Palace Auditorium", to: "/events/couples" },
@@ -217,7 +246,7 @@ function HomePage() {
             subtitle={text("ministries", "body", "Extensions of Praise Palace touching every area of life — radio, business, family and youth.")}
           />
           <div className="grid gap-6 md:grid-cols-3">
-            {homeMinistries.map((m) => (
+            {homeMinistries.map((m: any) => (
               <MinistryCard
                 key={m.title}
                 icon={m.icon}

@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog, Settings, FileText, Image as ImageIcon, Images, Church, CalendarDays, HandCoins, Mic, Headphones } from "lucide-react";
+import { Loader2, LayoutDashboard, Mail, CalendarCheck, HeartHandshake, Quote, Users, LogOut, UserCog, Settings, FileText, Image as ImageIcon, Images, Church, CalendarDays, HandCoins, Mic, Headphones, Menu as MenuIcon, ClipboardList } from "lucide-react";
 import { adminSignOut, isStaff, roleLabel, useAdminSession } from "@/lib/admin-auth";
 import { cn } from "@/lib/utils";
 
@@ -17,9 +17,11 @@ const NAV = [
   { to: "/admin/prayer", label: "Prayer Requests", icon: HeartHandshake },
   { to: "/admin/testimonies", label: "Testimonies", icon: Quote },
   { to: "/admin/visits", label: "Plan a Visit", icon: Users },
+  { to: "/admin/registrations", label: "Event Registrations", icon: ClipboardList },
   { to: "/admin/pastors", label: "Pastors", icon: UserCog },
   { to: "/admin/settings", label: "Site Settings", icon: Settings },
   { to: "/admin/pages", label: "Page Content", icon: FileText },
+  { to: "/admin/navigation", label: "Navigation", icon: MenuIcon },
   { to: "/admin/media", label: "Media Library", icon: ImageIcon },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/ministries", label: "Ministries", icon: Church },

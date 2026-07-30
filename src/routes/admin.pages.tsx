@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, type PageSection } from "@/lib/cms";
+import { CMS_PAGES, DEFAULT_SECTION_KEYS, SECTION_KEY_SUGGESTIONS, SECTION_TEMPLATES, type PageSection, type SectionItem } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/pages")({ ssr: false, component: AdminPagesPage });
 
@@ -200,7 +200,174 @@ function SectionCard({
         <ImageField label="Section image" value={form.image_url ?? ""} onChange={(v) => set("image_url", v)} disabled={!editable} />
       </div>
 
-      {editable && <div className="mt-4"><SaveButton saving={saving} saved={saved} onClick={save} /></div>}
+      {editable && (
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="block">
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Section layout</span>
+            <select
+              value={(form as any).section_template ?? "custom"}
+              onChange={(e) => set("section_template" as any, e.target.value as any)}
+              className="mt-1 rounded-xl border bg-background px-3 py-2 text-sm"
+            >
+              {SECTION_TEMPLATES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          </label>
+          <SaveButton saving={saving} saved={saved} onClick={save} />
+        </div>
+      )}
+
+      <SectionItems sectionId={row.id} editable={editable} canDelete={canDelete} onError={onError} />
     </li>
+  );
+}
+
+/** The individual cards/images inside one section — each fully editable on its own. */
+function SectionItems({
+  sectionId, editable, canDelete, onError,
+}: { sectionId: string; editable: boolean; canDelete: boolean; onError: (m: string | null) => void }) {
+  const [items, setItems] = useState<SectionItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function load() {
+    const { data, error } = await supabase
+      .from("page_section_items" as any)
+      .select("*")
+      .eq("section_id", sectionId)
+      .order("sort_order");
+    if (error) onError(error.message);
+    else setItems(((data as any[]) ?? []) as SectionItem[]);
+  }
+
+  useEffect(() => { if (open) load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [open, sectionId]);
+
+  async function addItem() {
+    setBusy(true);
+    const { error } = await supabase.from("page_section_items" as any).insert({
+      section_id: sectionId,
+      item_key: `item_${Date.now().toString(36)}`,
+      sort_order: items.length,
+    } as any);
+    setBusy(false);
+    if (error) onError("Could not add item: " + error.message);
+    else { onError(null); load(); }
+  }
+
+  return (
+    <div className="mt-5 border-t pt-4">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="text-xs font-semibold uppercase tracking-wider text-[#E13495] hover:underline"
+      >
+        {open ? "Hide" : "Show"} cards &amp; images in this section
+      </button>
+
+      {open && (
+        <div className="mt-4 space-y-4">
+          {items.length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              No individual cards yet. Add one to give this section its own editable image, title, text, icon and button.
+            </p>
+          )}
+          {items.map((it) => (
+            <ItemCard key={it.id} item={it} editable={editable} canDelete={canDelete} onChanged={load} onError={onError} />
+          ))}
+          {editable && (
+            <button
+              type="button"
+              onClick={addItem}
+              disabled={busy}
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold hover:border-[#E13495] hover:text-[#E13495] disabled:opacity-60"
+            >
+              {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />} Add card
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ICON_CHOICES = ["", "radio", "graduation-cap", "tent", "users", "heart", "sparkles", "music", "book-open", "hand-heart"];
+
+function ItemCard({
+  item, editable, canDelete, onChanged, onError,
+}: { item: SectionItem; editable: boolean; canDelete: boolean; onChanged: () => void; onError: (m: string | null) => void }) {
+  const [form, setForm] = useState(item);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  function set<K extends keyof SectionItem>(k: K, v: SectionItem[K]) { setForm((f) => ({ ...f, [k]: v })); setSaved(false); }
+
+  async function save() {
+    setSaving(true);
+    const { id, section_id, ...values } = form as any;
+    const { error } = await supabase.from("page_section_items" as any).update(values).eq("id", item.id);
+    setSaving(false);
+    if (error) { onError("Could not save card: " + error.message); return; }
+    onError(null);
+    setSaved(true);
+  }
+
+  return (
+    <div className="rounded-xl bg-secondary/40 p-4 ring-1 ring-black/5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="rounded-full bg-background px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">{form.item_key}</span>
+        <div className="flex items-center gap-3">
+          <Toggle label="Visible" checked={form.is_visible} onChange={(v) => set("is_visible", v)} disabled={!editable} />
+          {canDelete && (
+            <DeleteButton
+              label="Remove card"
+              confirmText="Remove this card from the section?"
+              onConfirm={async () => {
+                const { error } = await supabase.from("page_section_items" as any).delete().eq("id", item.id);
+                if (error) onError(error.message); else onChanged();
+              }}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <Field label="Title" value={form.title ?? ""} onChange={(v) => set("title", v)} disabled={!editable} />
+        <Field label="Subtitle" value={form.subtitle ?? ""} onChange={(v) => set("subtitle", v)} disabled={!editable} />
+        <Field label="Button label" value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
+        <Field label="Destination" value={form.cta_href ?? ""} onChange={(v) => set("cta_href", v)} disabled={!editable} placeholder="/ministries or https://…" />
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Icon</span>
+          <select
+            value={form.icon_key ?? ""}
+            disabled={!editable}
+            onChange={(e) => set("icon_key", e.target.value)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            {ICON_CHOICES.map((c) => <option key={c} value={c}>{c || "No icon"}</option>)}
+          </select>
+        </label>
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Opens in</span>
+          <select
+            value={form.link_target}
+            disabled={!editable}
+            onChange={(e) => set("link_target", e.target.value as any)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="self">Same tab</option>
+            <option value="blank">New tab</option>
+          </select>
+        </label>
+        <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
+      </div>
+
+      <div className="mt-3 space-y-3">
+        <TextArea label="Description" rows={2} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
+        <ImageField label="Card image" value={form.image_url ?? ""} onChange={(v) => set("image_url", v)} disabled={!editable} />
+      </div>
+
+      {editable && <div className="mt-3"><SaveButton saving={saving} saved={saved} onClick={save} label="Save card" /></div>}
+    </div>
   );
 }
