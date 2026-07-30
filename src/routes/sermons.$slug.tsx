@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Download, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/section-ui";
-import { mediaUrl, youTubeId, type Sermon } from "@/lib/cms";
+import { mediaUrl, sermonPoster, youTubeId, type Sermon } from "@/lib/cms";
 import { Paragraphs } from "@/components/rich-text";
+import { YouTubePlayer } from "@/components/video-embed";
+import { eventPhotos } from "@/lib/gallery-images";
 
 export const Route = createFileRoute("/sermons/$slug")({
   head: ({ params }) => ({
