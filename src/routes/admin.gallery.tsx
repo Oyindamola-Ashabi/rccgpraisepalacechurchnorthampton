@@ -112,7 +112,12 @@ function AlbumCard({
   }
 
   async function attach(url: string) {
-    const { error } = await supabase.from("gallery_images").insert({ album_id: album.id, image_url: url, sort_order: images.length } as any);
+    const { error } = await supabase.from("gallery_images").insert({
+      album_id: album.id,
+      image_url: url,
+      sort_order: images.length,
+      is_visible: true,
+    } as any);
     if (error) onError(error.message); else { onError(null); loadImages(); }
   }
 
