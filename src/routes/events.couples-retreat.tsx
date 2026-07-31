@@ -7,7 +7,7 @@ import { eventPhotos } from "@/lib/gallery-images";
 import { supabase } from "@/integrations/supabase/client";
 import {
   usePageContent,
-  usePublishedAlbums,
+  useCouplesRetreatAlbums,
   useSiteSettings,
   formatEventDate,
   formatEventTime,
@@ -55,7 +55,7 @@ function CouplesRetreatPage() {
   const { text, image } = usePageContent("couples-retreat");
   const settings = useSiteSettings();
   const event = useRetreatEvent();
-  const { rows: albums } = usePublishedAlbums("couples-retreat");
+  const { rows: albums } = useCouplesRetreatAlbums();
 
   // A date is only shown once an administrator publishes the real event details.
   const hasDate = Boolean(event?.is_published && event?.start_at);

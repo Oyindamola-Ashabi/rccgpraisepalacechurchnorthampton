@@ -17,6 +17,7 @@ import {
 } from "@/components/admin/cms-ui";
 import {
   autoTemplate,
+  BADGE_SUGGESTIONS,
   CMS_PAGES,
   invalidatePageSections,
   invalidateSectionItems,
@@ -513,6 +514,15 @@ function ItemCard({
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <Field label="Title" value={form.title ?? ""} onChange={(v) => set("title", v)} disabled={!editable} />
             <Field label="Day or subtitle" value={form.subtitle ?? ""} onChange={(v) => set("subtitle", v)} disabled={!editable} hint="For service times and programmes this is the day, e.g. Sundays." />
+            <Field
+              label="Card badge"
+              value={form.badge_label ?? ""}
+              onChange={(v) => set("badge_label", v)}
+              disabled={!editable}
+              placeholder="e.g. Couples, Worship, Event"
+              suggestions={BADGE_SUGGESTIONS}
+              hint="This short label appears at the top-left of the card image. Leave it empty to hide the label."
+            />
             <Field label="Button wording" value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
             <Field
               label="Link"

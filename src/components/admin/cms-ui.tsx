@@ -3,7 +3,7 @@ import { Loader2, Save, Trash2, ImagePlus, Upload, X, Check } from "lucide-react
 import { deleteMedia, formatBytes, listMedia, uploadMedia, type MediaAsset } from "@/lib/media";
 
 export function Field({
-  label, value, onChange, type = "text", disabled, required, placeholder, hint,
+  label, value, onChange, type = "text", disabled, required, placeholder, hint, suggestions,
 }: {
   label: string;
   value: string;
@@ -13,7 +13,10 @@ export function Field({
   required?: boolean;
   placeholder?: string;
   hint?: string;
+  /** Optional suggested values — the administrator can still type anything. */
+  suggestions?: string[];
 }) {
+  const listId = suggestions ? `sugg-${label.replace(/\W+/g, "-").toLowerCase()}` : undefined;
   return (
     <label className="block">
       <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
@@ -23,9 +26,17 @@ export function Field({
         required={required}
         disabled={disabled}
         placeholder={placeholder}
+        list={listId}
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495] disabled:opacity-70"
       />
+      {suggestions && (
+        <datalist id={listId}>
+          {suggestions.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
+      )}
       {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </label>
   );

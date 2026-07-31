@@ -1,94 +1,183 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, X, Images } from "lucide-react";
-import { useAlbumImages, mediaUrl, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { ChevronLeft, ChevronRight, X, Images, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from "lucide-react";
+import { albumBadge, mediaUrl, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 
 /**
- * A flipbook-style album viewer: photos are shown as book pages that turn,
- * with arrows, keyboard support and a full-screen overlay.
+ * A polished interactive photo-book viewer with arrows, keyboard support,
+ * mobile swipe, zoom in/out/reset, full-screen mode, page counter, captions
+ * and optional thumbnail strip — zero third-party branding.
  */
 export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onClose: () => void }) {
   const { rows: images, loading } = useAlbumImages(album.id);
   const [page, setPage] = useState(0);
   const [turning, setTurning] = useState<"next" | "prev" | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   const total = images.length;
+  const current: GalleryImage | undefined = images[page];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (fullscreen) setFullscreen(false);
+        else onClose();
+      }
       if (e.key === "ArrowRight") go("next");
       if (e.key === "ArrowLeft") go("prev");
+      if (e.key === "+" || e.key === "=") setZoom((z) => Math.min(3, z + 0.5));
+      if (e.key === "-" || e.key === "_") setZoom((z) => Math.max(1, z - 0.5));
+      if (e.key === "0") setZoom(1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  function go(dir: "next" | "prev") {
+  function go(dir: "next" | "prev", toPage?: number) {
+    setZoom(1);
     setPage((p) => {
-      const next = dir === "next" ? p + 1 : p - 1;
-      if (next < 0 || next >= total) return p;
-      setTurning(dir);
-      window.setTimeout(() => setTurning(null), 420);
+      const next = typeof toPage === "number" ? toPage : dir === "next" ? p + 1 : p - 1;
+      if (next < 0 || next >= total || next === p) return p;
+      setTurning(next > p ? "next" : "prev");
+      window.setTimeout(() => setTurning(null), 360);
       return next;
     });
   }
 
-  const current: GalleryImage | undefined = images[page];
+  function handleTouchStart(e: React.TouchEvent) {
+    if (zoom === 1) setTouchStart(e.touches[0].clientX);
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStart === null) return;
+    const diff = e.changedTouches[0].clientX - touchStart;
+    if (diff > 50) go("prev");
+    if (diff < -50) go("next");
+    setTouchStart(null);
+  }
+
+  const badge = albumBadge(album);
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/85 p-4" role="dialog" aria-modal="true" aria-label={`${album.title} album`}>
-      <button
-        onClick={onClose}
-        aria-label="Close album"
-        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-      >
-        <X className="h-5 w-5" />
-      </button>
+    <div
+      className={`fixed inset-0 z-[100] grid place-items-center bg-black/90 p-3 sm:p-6 ${fullscreen ? "!p-0" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${album.title} album`}
+    >
+      <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+        <button
+          type="button"
+          onClick={() => setZoom((z) => Math.max(1, z - 0.5))}
+          disabled={zoom <= 1}
+          aria-label="Zoom out"
+          className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 disabled:opacity-30"
+        >
+          <ZoomOut className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setZoom(1)}
+          disabled={zoom === 1}
+          aria-label="Reset zoom"
+          className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 disabled:opacity-30"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setZoom((z) => Math.min(3, z + 0.5))}
+          disabled={zoom >= 3}
+          aria-label="Zoom in"
+          className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 disabled:opacity-30"
+        >
+          <ZoomIn className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setFullscreen((f) => !f)}
+          aria-label="Toggle fullscreen"
+          className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        >
+          {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close album"
+          className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-      <div className="w-full max-w-4xl">
-        <div className="mb-3 text-center text-white">
-          <div className="font-display text-xl font-bold">{album.title}</div>
+      <div className={`w-full max-w-5xl flex flex-col items-center ${fullscreen ? "h-full justify-center" : ""}`}>
+        <div className="mb-3 text-center text-white px-10">
+          {badge && (
+            <span className="mb-1 inline-block rounded-full bg-white/15 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#F0DE51]">
+              {badge}
+            </span>
+          )}
+          <h3 className="font-display text-lg sm:text-2xl font-bold">{album.title}</h3>
           <div className="text-xs text-white/70">
             {[album.location, album.album_year].filter(Boolean).join(" · ")}
             {total > 0 && ` · Page ${page + 1} of ${total}`}
           </div>
         </div>
 
-        <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-2xl bg-neutral-900 shadow-elegant [perspective:1600px]">
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className={`relative mx-auto w-full overflow-hidden rounded-2xl bg-neutral-900 shadow-elegant ${
+            fullscreen ? "flex-1 max-h-[80vh] aspect-auto" : "aspect-[16/10]"
+          }`}
+        >
           {loading ? (
-            <div className="grid h-full place-items-center text-white/70 text-sm">Loading photos…</div>
+            <div className="grid h-full place-items-center text-white/70 text-sm">Loading photographs…</div>
           ) : total === 0 ? (
             <div className="grid h-full place-items-center gap-2 text-white/70 text-sm">
               <Images className="h-6 w-6" />
-              No photos in this album yet.
+              No photographs in this album yet.
             </div>
           ) : (
-            <img
-              key={current?.id}
-              src={mediaUrl(current?.image_url) ?? ""}
-              alt={current?.alt_text ?? current?.caption ?? album.title}
-              className={`h-full w-full object-contain transition-transform duration-[420ms] ease-out ${
-                turning === "next" ? "[transform:rotateY(-12deg)]" : turning === "prev" ? "[transform:rotateY(12deg)]" : ""
-              }`}
-              style={{ transformOrigin: turning === "next" ? "left center" : "right center" }}
-            />
+            <div className="h-full w-full overflow-auto grid place-items-center">
+              <img
+                key={current?.id}
+                src={mediaUrl(current?.image_url) ?? ""}
+                alt={current?.alt_text ?? current?.caption ?? album.title}
+                style={{
+                  transform: `scale(${zoom})`,
+                  transformOrigin: "center center",
+                }}
+                className={`max-h-full max-w-full object-contain transition-transform duration-300 ease-out ${
+                  turning === "next"
+                    ? "animate-fade-in"
+                    : turning === "prev"
+                    ? "animate-fade-in"
+                    : ""
+                }`}
+              />
+            </div>
           )}
 
           {total > 1 && (
             <>
               <button
+                type="button"
                 onClick={() => go("prev")}
                 disabled={page === 0}
-                aria-label="Previous page"
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2 text-white hover:bg-white/30 disabled:opacity-30"
+                aria-label="Previous photograph"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2.5 text-white hover:bg-white/30 disabled:opacity-25"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
+                type="button"
                 onClick={() => go("next")}
                 disabled={page >= total - 1}
-                aria-label="Next page"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2 text-white hover:bg-white/30 disabled:opacity-30"
+                aria-label="Next photograph"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2.5 text-white hover:bg-white/30 disabled:opacity-25"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
@@ -96,7 +185,25 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
           )}
         </div>
 
-        {current?.caption && <p className="mt-3 text-center text-sm text-white/80">{current.caption}</p>}
+        {current?.caption && <p className="mt-3 text-center text-sm text-white/90 max-w-2xl px-4">{current.caption}</p>}
+
+        {/* Thumbnail strip */}
+        {total > 1 && !fullscreen && (
+          <div className="mt-4 flex max-w-full items-center gap-2 overflow-x-auto px-2 py-1">
+            {images.map((img, idx) => (
+              <button
+                key={img.id}
+                type="button"
+                onClick={() => go(idx > page ? "next" : "prev", idx)}
+                className={`h-12 w-16 shrink-0 overflow-hidden rounded-lg transition ${
+                  idx === page ? "ring-2 ring-[#E13495] opacity-100 scale-105" : "opacity-50 hover:opacity-80"
+                }`}
+              >
+                <img src={mediaUrl(img.image_url) ?? ""} alt="" className="h-full w-full object-cover" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -126,7 +233,7 @@ export function AlbumGrid({ albums }: { albums: GalleryAlbumRow[] }) {
                 onClick={() => setOpen(a)}
                 className="group overflow-hidden rounded-2xl bg-card text-left shadow-card ring-1 ring-black/5 transition hover:shadow-elegant"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-secondary">
+                <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
                   {a.cover_image_url ? (
                     <img
                       src={mediaUrl(a.cover_image_url) ?? ""}
@@ -136,6 +243,11 @@ export function AlbumGrid({ albums }: { albums: GalleryAlbumRow[] }) {
                     />
                   ) : (
                     <div className="grid h-full place-items-center text-muted-foreground"><Images className="h-6 w-6" /></div>
+                  )}
+                  {albumBadge(a) && (
+                    <span className="absolute left-3 top-3 rounded-full gradient-brand px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+                      {albumBadge(a)}
+                    </span>
                   )}
                 </div>
                 <div className="p-4">

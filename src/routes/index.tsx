@@ -46,6 +46,8 @@ function HomePage() {
   const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
   const { rows: serviceItems } = useSectionItems("home", "hero_services");
   const { rows: programItems } = useSectionItems("home", "programs");
+  const { rows: communityItems } = useSectionItems("home", "community");
+  const showCommunity = visible("community") && communityItems.length > 0;
 
 
   /**
@@ -70,6 +72,7 @@ function HomePage() {
         href: it.cta_href ?? "#",
         image: imageOr(it.image_url, ministryCardDefaults[i]?.image ?? eventPhotos.students.url),
         icon: cardIcon(it.icon_key),
+        badge: it.badge_label || null,
       }))
     : ministryCardDefaults.map((d, i) => {
         const key = `ministry_card_${i + 1}`;
@@ -80,6 +83,7 @@ function HomePage() {
           href: text(key, "cta_href", d.href),
           image: image(key, d.image),
           icon: cardIcon(d.icon),
+          badge: null,
           show: visible(key),
         };
       })
@@ -288,11 +292,29 @@ function HomePage() {
                 desc={m.desc}
                 href={m.href}
                 image={m.image}
+                badge={m.badge}
               />
             ))}
           </div>
         </Section>
       </section>
+
+      {/* COMMUNITY SPOTLIGHT */}
+      {showCommunity && (
+        <Section>
+          <SectionHeader
+            eyebrow={text("community", "subheading", "Community")}
+            title={text("community", "headline", "Community Spotlight")}
+            subtitle={text("community", "body", "Initiatives and partnerships our church family is part of.")}
+          />
+          <div className={`grid gap-6 ${communityItems.length > 1 ? "md:grid-cols-2 lg:grid-cols-3" : "mx-auto max-w-2xl"}`}>
+            {communityItems.map((it: SectionItem) => (
+              <CommunityCard key={it.id} item={it} />
+            ))}
+          </div>
+        </Section>
+      )}
+
 
       {/* PASTORS */}
       <Section>
@@ -374,12 +396,14 @@ function ServiceTime({ day, time, label }: { day: string; time: string; label: s
   );
 }
 
-function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; title: string; desc: string; href: string; image: string }) {
+function MinistryCard({ icon: Icon, title, desc, href, image, badge }: { icon: any; title: string; desc: string; href: string; image: string; badge?: string | null }) {
   const internal = href.startsWith("/");
   const Wrapper: any = internal ? Link : "a";
   const wrapperProps: any = internal
     ? { to: href }
     : { href, target: "_blank", rel: "noopener noreferrer" };
+  // The Couples Retreat card is opened by clicking the card itself.
+  const showAction = !href.includes("couples-retreat");
   return (
     <Wrapper {...wrapperProps} className="group relative overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5 bg-card block">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -388,15 +412,68 @@ function MinistryCard({ icon: Icon, title, desc, href, image }: { icon: any; tit
         <div className="absolute top-4 left-4 grid h-11 w-11 place-items-center rounded-xl gradient-brand text-white shadow-elegant">
           <Icon className="h-5 w-5" />
         </div>
+        {badge && (
+          <span className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#E13495]">
+            {badge}
+          </span>
+        )}
       </div>
       <div className="p-6">
         <h3 className="font-display font-bold text-xl">{title}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-        <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
-          {internal ? "Learn more" : "Visit site"} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-        </span>
+        {showAction && (
+          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#E13495]">
+            {internal ? "Learn more" : "Visit site"} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+          </span>
+        )}
       </div>
     </Wrapper>
+  );
+}
+
+/** A community card — the whole card is the link and no button is shown. */
+function CommunityCard({ item }: { item: SectionItem }) {
+  const href = item.cta_href ?? "";
+  const internal = href.startsWith("/");
+  const badge = item.badge_label?.trim();
+  const inner = (
+    <>
+      {item.image_url && (
+        <div className="relative aspect-[16/9] overflow-hidden">
+          <img
+            src={imageOr(item.image_url, "")}
+            alt={item.title ?? "Community"}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          />
+          {badge && (
+            <span className="absolute left-4 top-4 rounded-full gradient-brand px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+              {badge}
+            </span>
+          )}
+        </div>
+      )}
+      <div className="p-6">
+        <h3 className="font-display text-xl font-bold">{item.title}</h3>
+        {item.body && <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>}
+      </div>
+    </>
+  );
+
+  const className =
+    "group block overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 transition hover:shadow-elegant";
+
+  if (!href) return <div className={className}>{inner}</div>;
+  if (internal)
+    return (
+      <Link to={href} className={className}>
+        {inner}
+      </Link>
+    );
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+      {inner}
+    </a>
   );
 }
 
