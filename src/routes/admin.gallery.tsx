@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, MediaUploader, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
-import type { GalleryAlbum, GalleryImage } from "@/lib/cms";
+import { BADGE_SUGGESTIONS, type GalleryAlbum, type GalleryImage } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/gallery")({ ssr: false, component: AdminGalleryPage });
 
@@ -144,10 +144,29 @@ function AlbumCard({
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
         <Field label="Category (e.g. Couples Retreat, Main Gallery)" value={(form as any).category ?? ""} onChange={(v) => set("category" as any, v as any)} disabled={!editable} />
+        <Field
+          label="Album badge"
+          value={(form as any).badge_label ?? ""}
+          onChange={(v) => set("badge_label" as any, v as any)}
+          disabled={!editable}
+          suggestions={BADGE_SUGGESTIONS}
+          hint="A short label shown on the album cover, e.g. Couples Retreat 2024."
+        />
         <Field label="Linked event slug (optional)" value={(form as any).event_slug ?? ""} onChange={(v) => set("event_slug" as any, v as any)} disabled={!editable} placeholder="couples-retreat" />
         <Field label="Location" value={(form as any).location ?? ""} onChange={(v) => set("location" as any, v as any)} disabled={!editable} />
         <Field label="Year" type="number" value={String((form as any).album_year ?? "")} onChange={(v) => set("album_year" as any, (v ? Number(v) : null) as any)} disabled={!editable} />
         <Field label="Album date" type="date" value={(form as any).album_date ?? ""} onChange={(v) => set("album_date" as any, (v || null) as any)} disabled={!editable} />
+        <div className="sm:col-span-2">
+          <Toggle
+            label="Also show this album in the main Gallery page"
+            checked={Boolean((form as any).show_in_main_gallery)}
+            onChange={(v) => set("show_in_main_gallery" as any, v as any)}
+            disabled={!editable}
+          />
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Couples Retreat albums stay on the Couples Retreat page unless you switch this on.
+          </p>
+        </div>
         <div className="sm:col-span-2"><TextArea label="Description" rows={2} value={form.description ?? ""} onChange={(v) => set("description", v)} disabled={!editable} /></div>
         <div className="sm:col-span-2"><ImageField label="Album cover" value={form.cover_image_url ?? ""} onChange={(v) => set("cover_image_url", v)} disabled={!editable} /></div>
       </div>
