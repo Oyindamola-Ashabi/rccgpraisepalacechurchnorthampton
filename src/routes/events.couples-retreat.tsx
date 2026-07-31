@@ -181,13 +181,46 @@ function CouplesRetreatPage() {
   );
 }
 
+const EMPTY_FORM = {
+  full_name: "",
+  spouse_name: "",
+  email: "",
+  phone: "",
+  number_of_attendees: "2",
+  accommodation_preference: "",
+  dietary_requirements: "",
+  accessibility_requirements: "",
+  message: "",
+};
+
+const DRAFT_KEY = "couples-retreat-registration";
+
 function RegistrationForm({ eventId }: { eventId: string | null }) {
-  const [form, setForm] = useState({ full_name: "", email: "", phone: "", number_of_attendees: "2", message: "" });
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  // Keep a local draft so a half-finished application is not lost on refresh.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(DRAFT_KEY);
+      if (saved) setForm({ ...EMPTY_FORM, ...JSON.parse(saved) });
+    } catch {
+      /* ignore unreadable drafts */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+    } catch {
+      /* storage may be unavailable */
+    }
+  }, [form]);
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function submit(e: React.FormEvent) {
@@ -202,16 +235,23 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setError("Please enter a valid email address.");
     if (!Number.isFinite(attendees) || attendees < 1 || attendees > 50) return setError("Please enter between 1 and 50 attendees.");
     if (form.message.length > 1000) return setError("Please keep your message under 1000 characters.");
+    if (!consent) return setError("Please confirm you are happy for us to contact you about the retreat.");
 
     setBusy(true);
     const { error: err } = await supabase.from("event_registrations" as any).insert({
       event_id: eventId,
       event_slug: "couples-retreat",
       full_name: name,
+      spouse_name: form.spouse_name.trim() || null,
       email,
       phone: form.phone.trim() || null,
       number_of_attendees: attendees,
+      accommodation_preference: form.accommodation_preference || null,
+      dietary_requirements: form.dietary_requirements.trim() || null,
+      accessibility_requirements: form.accessibility_requirements.trim() || null,
       message: form.message.trim() || null,
+      consent_given: true,
+      status: "new",
     });
     setBusy(false);
 
@@ -220,35 +260,77 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
       return;
     }
     setDone(true);
-    setForm({ full_name: "", email: "", phone: "", number_of_attendees: "2", message: "" });
+    setForm(EMPTY_FORM);
+    setConsent(false);
+    try {
+      window.localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
   }
 
   const input = "mt-1 w-full rounded-xl border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]";
+  const labelText = "text-xs font-semibold uppercase tracking-widest text-muted-foreground";
 
   return (
     <>
       <form onSubmit={submit} className="mx-auto max-w-2xl rounded-3xl bg-card p-6 shadow-card ring-1 ring-black/5 md:p-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Full name</span>
+            <span className={labelText}>Full name</span>
             <input required maxLength={100} value={form.full_name} onChange={set("full_name")} className={input} />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Email</span>
+            <span className={labelText}>Spouse's name</span>
+            <input maxLength={100} value={form.spouse_name} onChange={set("spouse_name")} className={input} />
+          </label>
+          <label className="block">
+            <span className={labelText}>Email</span>
             <input required type="email" maxLength={255} value={form.email} onChange={set("email")} className={input} />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Phone (optional)</span>
+            <span className={labelText}>Phone (optional)</span>
             <input maxLength={40} value={form.phone} onChange={set("phone")} className={input} />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Number attending</span>
+            <span className={labelText}>Number attending</span>
             <input type="number" min={1} max={50} value={form.number_of_attendees} onChange={set("number_of_attendees")} className={input} />
           </label>
+          <label className="block">
+            <span className={labelText}>Accommodation preference</span>
+            <select value={form.accommodation_preference} onChange={set("accommodation_preference")} className={input}>
+              <option value="">No preference</option>
+              <option value="Twin room">Twin room</option>
+              <option value="Double room">Double room</option>
+              <option value="Family room">Family room</option>
+              <option value="Not staying overnight">Not staying overnight</option>
+            </select>
+          </label>
         </div>
+
         <label className="mt-4 block">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Anything we should know? (optional)</span>
+          <span className={labelText}>Dietary requirements (optional)</span>
+          <input maxLength={300} value={form.dietary_requirements} onChange={set("dietary_requirements")} className={input} />
+        </label>
+        <label className="mt-4 block">
+          <span className={labelText}>Accessibility requirements (optional)</span>
+          <input maxLength={300} value={form.accessibility_requirements} onChange={set("accessibility_requirements")} className={input} />
+        </label>
+        <label className="mt-4 block">
+          <span className={labelText}>Anything else we should know? (optional)</span>
           <textarea rows={4} maxLength={1000} value={form.message} onChange={set("message")} className={input} />
+        </label>
+
+        <label className="mt-5 flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-1 h-4 w-4 accent-[#E13495]"
+          />
+          <span className="text-muted-foreground">
+            I am happy for the church to contact me about the Couples Retreat and to hold these details for the purpose of this event.
+          </span>
         </label>
 
         {error && <p className="mt-4 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
@@ -259,7 +341,7 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
           className="mt-6 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 disabled:opacity-60"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          {busy ? "Sending…" : "Register"}
+          {busy ? "Sending…" : "Submit application"}
         </button>
       </form>
 
