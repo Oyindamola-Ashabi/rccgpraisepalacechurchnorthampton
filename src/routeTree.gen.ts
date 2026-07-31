@@ -18,6 +18,7 @@ import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PlanAVisitRouteImport } from './routes/plan-a-visit'
 import { Route as MediaRouteImport } from './routes/media'
 import { Route as GiveRouteImport } from './routes/give'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookAppointmentRouteImport } from './routes/book-appointment'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -102,6 +103,11 @@ const GiveRoute = GiveRouteImport.update({
   path: '/give',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -148,9 +154,9 @@ const MediaIndexRoute = MediaIndexRouteImport.update({
   getParentRoute: () => MediaRoute,
 } as any)
 const EventsIndexRoute = EventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => EventsRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -195,14 +201,14 @@ const MediaGalleryRoute = MediaGalleryRouteImport.update({
   getParentRoute: () => MediaRoute,
 } as any)
 const EventsCouplesRetreatRoute = EventsCouplesRetreatRouteImport.update({
-  id: '/events/couples-retreat',
-  path: '/events/couples-retreat',
-  getParentRoute: () => rootRouteImport,
+  id: '/couples-retreat',
+  path: '/couples-retreat',
+  getParentRoute: () => EventsRoute,
 } as any)
 const EventsCouplesRoute = EventsCouplesRouteImport.update({
-  id: '/events/couples',
-  path: '/events/couples',
-  getParentRoute: () => rootRouteImport,
+  id: '/couples',
+  path: '/couples',
+  getParentRoute: () => EventsRoute,
 } as any)
 const AdminVisitsRoute = AdminVisitsRouteImport.update({
   id: '/visits',
@@ -301,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
+  '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
@@ -396,6 +403,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
+  '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
@@ -447,6 +455,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/book-appointment'
     | '/contact'
+    | '/events'
     | '/give'
     | '/media'
     | '/plan-a-visit'
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/book-appointment'
     | '/contact'
+    | '/events'
     | '/give'
     | '/media'
     | '/plan-a-visit'
@@ -591,6 +601,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   BookAppointmentRoute: typeof BookAppointmentRoute
   ContactRoute: typeof ContactRoute
+  EventsRoute: typeof EventsRouteWithChildren
   GiveRoute: typeof GiveRoute
   MediaRoute: typeof MediaRouteWithChildren
   PlanAVisitRoute: typeof PlanAVisitRoute
@@ -600,12 +611,9 @@ export interface RootRouteChildren {
   ShareTestimonyRoute: typeof ShareTestimonyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimoniesRoute: typeof TestimoniesRoute
-  EventsCouplesRoute: typeof EventsCouplesRoute
-  EventsCouplesRetreatRoute: typeof EventsCouplesRetreatRoute
   MinistriesSlugRoute: typeof MinistriesSlugRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
-  EventsIndexRoute: typeof EventsIndexRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
 }
 
@@ -674,6 +682,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -739,10 +754,10 @@ declare module '@tanstack/react-router' {
     }
     '/events/': {
       id: '/events/'
-      path: '/events'
+      path: '/'
       fullPath: '/events/'
       preLoaderRoute: typeof EventsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EventsRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -802,17 +817,17 @@ declare module '@tanstack/react-router' {
     }
     '/events/couples-retreat': {
       id: '/events/couples-retreat'
-      path: '/events/couples-retreat'
+      path: '/couples-retreat'
       fullPath: '/events/couples-retreat'
       preLoaderRoute: typeof EventsCouplesRetreatRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EventsRoute
     }
     '/events/couples': {
       id: '/events/couples'
-      path: '/events/couples'
+      path: '/couples'
       fullPath: '/events/couples'
       preLoaderRoute: typeof EventsCouplesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof EventsRoute
     }
     '/admin/visits': {
       id: '/admin/visits'
@@ -989,6 +1004,21 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface EventsRouteChildren {
+  EventsCouplesRoute: typeof EventsCouplesRoute
+  EventsCouplesRetreatRoute: typeof EventsCouplesRetreatRoute
+  EventsIndexRoute: typeof EventsIndexRoute
+}
+
+const EventsRouteChildren: EventsRouteChildren = {
+  EventsCouplesRoute: EventsCouplesRoute,
+  EventsCouplesRetreatRoute: EventsCouplesRetreatRoute,
+  EventsIndexRoute: EventsIndexRoute,
+}
+
+const EventsRouteWithChildren =
+  EventsRoute._addFileChildren(EventsRouteChildren)
+
 interface MediaRouteChildren {
   MediaGalleryRoute: typeof MediaGalleryRoute
   MediaPodcastRoute: typeof MediaPodcastRoute
@@ -1036,6 +1066,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   BookAppointmentRoute: BookAppointmentRoute,
   ContactRoute: ContactRoute,
+  EventsRoute: EventsRouteWithChildren,
   GiveRoute: GiveRoute,
   MediaRoute: MediaRouteWithChildren,
   PlanAVisitRoute: PlanAVisitRoute,
@@ -1045,12 +1076,9 @@ const rootRouteChildren: RootRouteChildren = {
   ShareTestimonyRoute: ShareTestimonyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimoniesRoute: TestimoniesRoute,
-  EventsCouplesRoute: EventsCouplesRoute,
-  EventsCouplesRetreatRoute: EventsCouplesRetreatRoute,
   MinistriesSlugRoute: MinistriesSlugRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
-  EventsIndexRoute: EventsIndexRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
 }
 export const routeTree = rootRouteImport
