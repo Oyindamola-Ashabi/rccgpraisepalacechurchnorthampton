@@ -300,6 +300,7 @@ export type Database = {
         Row: {
           album_date: string | null
           album_year: number | null
+          badge_label: string | null
           category: string
           cover_image_url: string | null
           created_at: string
@@ -308,6 +309,7 @@ export type Database = {
           id: string
           is_published: boolean
           location: string | null
+          show_in_main_gallery: boolean
           slug: string
           sort_order: number
           title: string
@@ -316,6 +318,7 @@ export type Database = {
         Insert: {
           album_date?: string | null
           album_year?: number | null
+          badge_label?: string | null
           category?: string
           cover_image_url?: string | null
           created_at?: string
@@ -324,6 +327,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           location?: string | null
+          show_in_main_gallery?: boolean
           slug: string
           sort_order?: number
           title: string
@@ -332,6 +336,7 @@ export type Database = {
         Update: {
           album_date?: string | null
           album_year?: number | null
+          badge_label?: string | null
           category?: string
           cover_image_url?: string | null
           created_at?: string
@@ -340,6 +345,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           location?: string | null
+          show_in_main_gallery?: boolean
           slug?: string
           sort_order?: number
           title?: string
@@ -355,6 +361,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          is_visible: boolean
           sort_order: number
           updated_at: string
         }
@@ -365,6 +372,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          is_visible?: boolean
           sort_order?: number
           updated_at?: string
         }
@@ -375,6 +383,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          is_visible?: boolean
           sort_order?: number
           updated_at?: string
         }
@@ -566,6 +575,7 @@ export type Database = {
       }
       page_section_items: {
         Row: {
+          badge_label: string | null
           body: string | null
           created_at: string
           cta_href: string | null
@@ -584,6 +594,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          badge_label?: string | null
           body?: string | null
           created_at?: string
           cta_href?: string | null
@@ -602,6 +613,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          badge_label?: string | null
           body?: string | null
           created_at?: string
           cta_href?: string | null

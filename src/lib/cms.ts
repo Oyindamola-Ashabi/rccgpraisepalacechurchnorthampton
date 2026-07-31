@@ -129,7 +129,7 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     { key: "programs", label: "Weekly Rhythms of Grace", hint: "The four weekly programme cards.", template: "card_grid", itemsLabel: "Manage programme cards", itemNoun: "programme card" },
     { key: "ministries", label: "Grow. Serve. Belong.", hint: "The six ministry cards — radio, business, youth, men, women and the Couples Retreat.", template: "card_grid", itemsLabel: "Manage cards and images", itemNoun: "card" },
     { key: "pastor", label: "Pastor’s Message", hint: "The pastor introduction and photograph.", template: "image_and_text" },
-    { key: "community", label: "Community Spotlight", hint: "The community section including the UK SME Growth Summit card.", template: "image_and_text", itemsLabel: "Manage community cards", itemNoun: "community card" },
+    { key: "community", label: "Community Spotlight", hint: "Manage the community card displayed on the homepage, including its image, title, description and external destination.", template: "card_grid", itemsLabel: "Manage community cards", itemNoun: "community card" },
     { key: "events", label: "Events heading", hint: "The heading above the events preview on the homepage.", template: "event_list" },
     { key: "event_card_1", label: "Event preview card 1", hint: "First event shown on the homepage.", template: "card_grid" },
     { key: "event_card_2", label: "Event preview card 2", hint: "Second event shown on the homepage.", template: "card_grid" },
@@ -615,7 +615,25 @@ export type SectionItem = {
   link_target: "self" | "blank";
   is_visible: boolean;
   sort_order: number;
+  /** Optional short label shown at the top-left of the card image. */
+  badge_label: string | null;
 };
+
+/** Suggested card badges — administrators may also type their own wording. */
+export const BADGE_SUGGESTIONS = [
+  "Couples",
+  "Family",
+  "Worship",
+  "Community",
+  "Business",
+  "Conference",
+  "Celebration",
+  "Outreach",
+  "Youth",
+  "Men",
+  "Women",
+  "Event",
+];
 
 export const SECTION_TEMPLATES = [
   { value: "hero", label: "Hero (big heading + background image)" },
@@ -863,7 +881,23 @@ export type GalleryAlbumRow = GalleryAlbum & {
   location: string | null;
   album_year: number | null;
   album_date: string | null;
+  badge_label: string | null;
+  show_in_main_gallery: boolean;
 };
+
+/** Short label shown at the top-left of an album cover — blank means no label. */
+export function albumBadge(album: Partial<GalleryAlbumRow>): string | null {
+  const value = (album.badge_label ?? "").trim();
+  if (value) return value;
+  const category = (album.category ?? "").trim();
+  if (!category || category.toLowerCase() === "couples-retreat") return null;
+  return category;
+}
+
+/** True when an album belongs to the Couples Retreat series. */
+export function isCouplesAlbum(a: Partial<GalleryAlbumRow>): boolean {
+  return a.event_slug === "couples-retreat" || (a.category ?? "").toLowerCase() === "couples-retreat";
+}
 
 export function usePublishedAlbums(eventSlug?: string) {
   return useCmsList<GalleryAlbumRow>(() => {
@@ -878,9 +912,30 @@ export function usePublishedAlbums(eventSlug?: string) {
   }, [eventSlug ?? ""]);
 }
 
+/**
+ * Couples Retreat albums, identified by their linked event or category so
+ * albums created either way are found.
+ */
+export function useCouplesRetreatAlbums() {
+  const { rows, loading } = usePublishedAlbums();
+  return { rows: rows.filter(isCouplesAlbum), loading };
+}
+
+/** Ordinary church albums — Couples Retreat albums stay out unless explicitly included. */
+export function useMainGalleryAlbums() {
+  const { rows, loading } = usePublishedAlbums();
+  return { rows: rows.filter((a) => !isCouplesAlbum(a) || a.show_in_main_gallery), loading };
+}
+
 export function useAlbumImages(albumId: string | null) {
   return useCmsList<GalleryImage>(() => {
     if (!albumId) return Promise.resolve({ data: [], error: null }) as any;
-    return supabase.from("gallery_images").select("*").eq("album_id", albumId).order("sort_order");
+    return supabase
+      .from("gallery_images")
+      .select("*")
+      .eq("album_id", albumId)
+      .eq("is_visible", true)
+      .order("sort_order");
   }, [albumId ?? ""]);
 }
+

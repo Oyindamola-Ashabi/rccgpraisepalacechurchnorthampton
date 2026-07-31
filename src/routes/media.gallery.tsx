@@ -3,7 +3,8 @@ import { useState } from "react";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { galleryPhotos, type GalleryPhoto } from "@/lib/gallery-images";
-import { CmsAlbums } from "@/components/cms-albums";
+import { useMainGalleryAlbums } from "@/lib/cms";
+import { AlbumGrid } from "@/components/album-flipbook";
 
 export const Route = createFileRoute("/media/gallery")({
   head: () => ({
@@ -25,6 +26,7 @@ const CATEGORIES = ["All", "Celebration", "Fellowship", "Worship", "Couples", "C
 function GalleryPage() {
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("All");
   const [active, setActive] = useState<GalleryPhoto | null>(null);
+  const { rows: mainAlbums } = useMainGalleryAlbums();
 
   const shown = filter === "All" ? galleryPhotos : galleryPhotos.filter((p) => p.category === filter);
 
@@ -88,7 +90,18 @@ function GalleryPage() {
         </div>
       </Section>
 
-      <CmsAlbums />
+      {mainAlbums.length > 0 && (
+        <section className="bg-secondary/40 border-y">
+          <Section>
+            <SectionHeader
+              eyebrow="Photo Albums"
+              title="Browse our albums"
+              subtitle="Open an album to page through the photographs in our high-quality photo-book viewer."
+            />
+            <AlbumGrid albums={mainAlbums} />
+          </Section>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="bg-secondary/40 border-y">
