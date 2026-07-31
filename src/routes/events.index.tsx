@@ -7,7 +7,7 @@ import { eventPhotos } from "@/lib/gallery-images";
 import { usePublishedEvents, usePastEvents, formatEventDate, formatEventTime } from "@/lib/cms";
 import { useState } from "react";
 
-export const Route = createFileRoute("/events")({
+export const Route = createFileRoute("/events/")({
   head: () => ({
     meta: [
       { title: "Events — RCCG Praise Palace Northampton" },
