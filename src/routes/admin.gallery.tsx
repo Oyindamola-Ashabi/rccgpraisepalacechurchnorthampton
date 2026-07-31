@@ -216,7 +216,11 @@ function AlbumImageRow({
     if (saving) return;
     setSaving(true);
     const { error } = await supabase.from("gallery_images").update({
-      caption: form.caption, alt_text: form.alt_text, sort_order: Number(form.sort_order) || 0, image_url: form.image_url,
+      caption: form.caption,
+      alt_text: form.alt_text,
+      sort_order: Number(form.sort_order) || 0,
+      image_url: form.image_url,
+      is_visible: Boolean((form as any).is_visible ?? true),
     }).eq("id", image.id);
     setSaving(false);
     if (error) onError(error.message); else { onError(null); setSaved(true); }
@@ -225,10 +229,18 @@ function AlbumImageRow({
   return (
     <li className="flex flex-wrap items-center gap-4 rounded-xl bg-secondary/30 p-3">
       <img src={form.image_url} alt={form.alt_text ?? ""} className="h-16 w-24 rounded-lg object-cover" loading="lazy" />
-      <div className="grid min-w-[220px] flex-1 gap-2 sm:grid-cols-3">
+      <div className="grid min-w-[220px] flex-1 gap-2 sm:grid-cols-4">
         <Field label="Caption" value={form.caption ?? ""} onChange={(v) => { setForm({ ...form, caption: v }); setSaved(false); }} disabled={!editable} />
         <Field label="Alt text" value={form.alt_text ?? ""} onChange={(v) => { setForm({ ...form, alt_text: v }); setSaved(false); }} disabled={!editable} />
         <Field label="Order" type="number" value={String(form.sort_order)} onChange={(v) => { setForm({ ...form, sort_order: Number(v) || 0 }); setSaved(false); }} disabled={!editable} />
+        <div className="flex items-end pb-1">
+          <Toggle
+            label="Visible in album"
+            checked={Boolean((form as any).is_visible ?? true)}
+            onChange={(v) => { setForm({ ...form, is_visible: v } as any); setSaved(false); }}
+            disabled={!editable}
+          />
+        </div>
       </div>
       <div className="flex items-center gap-2">
         {editable && <SaveButton saving={saving} saved={saved} onClick={save} label="Save" />}
