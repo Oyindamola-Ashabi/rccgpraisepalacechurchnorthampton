@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { HeroSlider } from "@/components/hero-slider";
-import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart, ExternalLink } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
