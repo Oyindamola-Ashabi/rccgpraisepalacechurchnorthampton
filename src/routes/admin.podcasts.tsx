@@ -216,6 +216,9 @@ function PodcastCard({
   }
 
   const preview = podcastAudioUrl(form.audio_file_url) ?? form.external_audio_url ?? "";
+  const sourceType: "upload" | "external" | "youtube" =
+    ((form as any).playback_type as any) ||
+    ((form as any).youtube_url ? "youtube" : form.external_audio_url && !form.audio_file_url ? "external" : "upload");
 
   return (
     <li className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
