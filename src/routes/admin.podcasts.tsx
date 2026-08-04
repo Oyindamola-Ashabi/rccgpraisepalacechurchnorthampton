@@ -182,7 +182,7 @@ function PodcastCard({
 
   async function save() {
     if (saving) return;
-    const type = (form as any).playback_type ?? "upload";
+    const type = sourceType;
     if (form.is_published) {
       const ok =
         (type === "upload" && form.audio_file_url) ||
