@@ -6,12 +6,51 @@ import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
 import { PODCAST_BUCKET, PODCAST_FOLDER, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
 
+/** File extensions and MIME types accepted for podcast audio uploads. */
+const AUDIO_EXTENSIONS = ["mp3", "mpeg", "m4a", "aac", "wav", "ogg", "oga", "opus", "webm", "flac", "mp4"];
+const AUDIO_MIME_TYPES = [
+  "audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/x-aac",
+  "audio/wav", "audio/x-wav", "audio/wave", "audio/vnd.wave", "audio/ogg", "application/ogg",
+  "audio/webm", "audio/flac", "audio/x-flac", "video/mp4", "application/octet-stream",
+];
+export const AUDIO_ACCEPT = AUDIO_EXTENSIONS.map((e) => `.${e}`).join(",") + ",audio/*";
+const MAX_AUDIO_BYTES = 100 * 1024 * 1024;
+
+/** Returns a friendly message when the file cannot be accepted, otherwise null. */
+function validateAudioFile(file: File): string | null {
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  const type = (file.type || "").toLowerCase();
+  const okExt = AUDIO_EXTENSIONS.includes(ext);
+  const okType = !type || type.startsWith("audio/") || AUDIO_MIME_TYPES.includes(type);
+  if (!okExt && !okType) {
+    return "That file does not look like an audio file. Please choose an MP3, M4A, AAC, WAV, OGG, WebM or FLAC file.";
+  }
+  if (file.size > MAX_AUDIO_BYTES) return "This audio file is larger than the 100 MB upload limit.";
+  return null;
+}
+
+/** A content type the storage area always accepts, based on the file extension. */
+function uploadContentType(file: File): string {
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  const byExt: Record<string, string> = {
+    mp3: "audio/mpeg", mpeg: "audio/mpeg", m4a: "audio/mp4", mp4: "audio/mp4", aac: "audio/aac",
+    wav: "audio/wav", ogg: "audio/ogg", oga: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac",
+  };
+  return byExt[ext] || (file.type && file.type.startsWith("audio/") ? file.type : "audio/mpeg");
+}
+
+function prettySize(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 /** Pulls the video id out of any common YouTube URL shape. */
 function youtubeId(url?: string | null) {
   if (!url) return "";
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{6,})/);
   return m?.[1] ?? "";
 }
+
 
 export const Route = createFileRoute("/admin/podcasts")({ ssr: false, component: AdminPodcastsPage });
 
