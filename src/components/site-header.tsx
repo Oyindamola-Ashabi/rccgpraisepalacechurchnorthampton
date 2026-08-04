@@ -203,7 +203,7 @@ export function SiteHeader() {
             <img src={rccgLogoAsset} alt="RCCG" className="h-14 w-14 shrink-0 object-contain" />
             <img src={logoAsset} alt="Praise Palace" className="h-14 w-14 shrink-0 object-contain" />
             <div className="leading-tight">
-              <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base sm:text-base md:text-lg">
+              <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base md:text-lg">
                 <span className="text-[#E13495]">RCCG</span>{" "}
                 <span className="text-[#996DB5]">Praise Palace</span>
               </div>
