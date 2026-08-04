@@ -203,12 +203,12 @@ export function SiteHeader() {
             <img src={rccgLogoAsset} alt="RCCG" className="h-14 w-14 shrink-0 object-contain" />
             <img src={logoAsset} alt="Praise Palace" className="h-14 w-14 shrink-0 object-contain" />
             <div className="leading-tight">
-              <div className="font-display font-extrabold text-sm sm:text-base md:text-lg">
+              <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base md:text-lg">
                 <span className="text-[#E13495]">RCCG</span>{" "}
-                <span className="text-[#996DB5]">Praise Palace Northampton</span>
+                <span className="text-[#996DB5]">Praise Palace</span>
               </div>
-              <div className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-                The Redeemed Christian Church of God
+              <div className="text-[9px] sm:text-[10px] tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
+                Northampton
               </div>
             </div>
           </Link>

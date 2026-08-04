@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { HeroSlider } from "@/components/hero-slider";
-import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight, Play, Heart, BookOpen, Users, Music, Radio, GraduationCap, Tent, Sparkles, HandHeart, ExternalLink } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
@@ -431,11 +431,12 @@ function MinistryCard({ icon: Icon, title, desc, href, image, badge }: { icon: a
   );
 }
 
-/** A community card — the whole card is the link and no button is shown. */
+/** A community card — the whole card is the link, with an optional action button. */
 function CommunityCard({ item }: { item: SectionItem }) {
   const href = item.cta_href ?? "";
   const internal = href.startsWith("/");
   const badge = item.badge_label?.trim();
+  const buttonLabel = item.cta_label?.trim();
   const inner = (
     <>
       {item.image_url && (
@@ -456,6 +457,11 @@ function CommunityCard({ item }: { item: SectionItem }) {
       <div className="p-6">
         <h3 className="font-display text-xl font-bold">{item.title}</h3>
         {item.body && <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>}
+        {href && buttonLabel && (
+          <span className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant">
+            {buttonLabel} {!internal && <ExternalLink className="h-4 w-4" />}
+          </span>
+        )}
       </div>
     </>
   );
@@ -476,6 +482,7 @@ function CommunityCard({ item }: { item: SectionItem }) {
     </a>
   );
 }
+
 
 function EventCard({ image, tag, title, date, location, to }: { image: string; tag: string; title: string; date: string; location: string; to: string }) {
   return (

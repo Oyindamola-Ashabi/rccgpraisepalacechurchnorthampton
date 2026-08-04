@@ -6,12 +6,51 @@ import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
 import { PODCAST_BUCKET, PODCAST_FOLDER, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
 
+/** File extensions and MIME types accepted for podcast audio uploads. */
+const AUDIO_EXTENSIONS = ["mp3", "mpeg", "m4a", "aac", "wav", "ogg", "oga", "opus", "webm", "flac", "mp4"];
+const AUDIO_MIME_TYPES = [
+  "audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/x-aac",
+  "audio/wav", "audio/x-wav", "audio/wave", "audio/vnd.wave", "audio/ogg", "application/ogg",
+  "audio/webm", "audio/flac", "audio/x-flac", "video/mp4", "application/octet-stream",
+];
+export const AUDIO_ACCEPT = AUDIO_EXTENSIONS.map((e) => `.${e}`).join(",") + ",audio/*";
+const MAX_AUDIO_BYTES = 100 * 1024 * 1024;
+
+/** Returns a friendly message when the file cannot be accepted, otherwise null. */
+function validateAudioFile(file: File): string | null {
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  const type = (file.type || "").toLowerCase();
+  const okExt = AUDIO_EXTENSIONS.includes(ext);
+  const okType = !type || type.startsWith("audio/") || AUDIO_MIME_TYPES.includes(type);
+  if (!okExt && !okType) {
+    return "That file does not look like an audio file. Please choose an MP3, M4A, AAC, WAV, OGG, WebM or FLAC file.";
+  }
+  if (file.size > MAX_AUDIO_BYTES) return "This audio file is larger than the 100 MB upload limit.";
+  return null;
+}
+
+/** A content type the storage area always accepts, based on the file extension. */
+function uploadContentType(file: File): string {
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  const byExt: Record<string, string> = {
+    mp3: "audio/mpeg", mpeg: "audio/mpeg", m4a: "audio/mp4", mp4: "audio/mp4", aac: "audio/aac",
+    wav: "audio/wav", ogg: "audio/ogg", oga: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac",
+  };
+  return byExt[ext] || (file.type && file.type.startsWith("audio/") ? file.type : "audio/mpeg");
+}
+
+function prettySize(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 /** Pulls the video id out of any common YouTube URL shape. */
 function youtubeId(url?: string | null) {
   if (!url) return "";
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{6,})/);
   return m?.[1] ?? "";
 }
+
 
 export const Route = createFileRoute("/admin/podcasts")({ ssr: false, component: AdminPodcastsPage });
 
@@ -91,33 +130,33 @@ function PodcastCard({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadNote, setUploadNote] = useState<string | null>(null);
+  const [fileInfo, setFileInfo] = useState<string | null>(null);
+  const [techDetail, setTechDetail] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); setSaved(false); }
 
   async function uploadAudio(file: File) {
-    const okTypes = ["mp3", "m4a", "wav", "aac", "ogg", "mpeg", "mp4", "x-m4a", "wave", "x-wav"];
-    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
-    const typeTail = (file.type.split("/").pop() ?? "").toLowerCase();
-    if (!okTypes.includes(ext) && !okTypes.includes(typeTail)) {
-      onError("Please choose an MP3, M4A, WAV, AAC or OGG audio file.");
-      return;
-    }
-    if (file.size > 100 * 1024 * 1024) {
-      onError("That audio file is larger than 100 MB. Please upload a smaller file.");
-      return;
-    }
+    if (uploading) return;
+    const check = validateAudioFile(file);
+    setTechDetail(null);
+    if (check) { setUploadNote(null); onError(check); return; }
 
     setUploading(true);
     onError(null);
+    setUploadNote(null);
+    setFileInfo(`${file.name} · ${prettySize(file.size)} · ${file.type || "audio file"}`);
+
     const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
     const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${Date.now()}-${safe}`;
     const { error } = await supabase.storage
       .from(PODCAST_BUCKET)
-      .upload(path, file, { upsert: true, contentType: file.type || "audio/mpeg" });
+      .upload(path, file, { upsert: true, contentType: uploadContentType(file) });
     if (error) {
       setUploading(false);
-      onError("Audio upload failed: " + error.message);
+      onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+      setTechDetail(error.message);
       return;
     }
 
@@ -127,21 +166,23 @@ function PodcastCard({
       .update({ audio_file_url: path, playback_type: "upload" } as any)
       .eq("id", episode.id);
     setUploading(false);
+    setForm((f) => ({ ...f, audio_file_url: path, playback_type: "upload" } as any));
     if (saveError) {
-      onError("Audio uploaded, but saving it to the episode failed: " + saveError.message);
+      onError("The audio uploaded successfully, but the podcast episode could not be saved. Your uploaded file has not been removed.");
+      setTechDetail(saveError.message);
       return;
     }
-    set("audio_file_url", path);
-    set("playback_type" as any, "upload" as any);
     onError(null);
-    window.alert("Audio uploaded and saved to this episode.");
+    setUploadNote("Audio uploaded and saved successfully.");
   }
+
+
 
 
 
   async function save() {
     if (saving) return;
-    const type = (form as any).playback_type ?? "upload";
+    const type = sourceType;
     if (form.is_published) {
       const ok =
         (type === "upload" && form.audio_file_url) ||
@@ -175,6 +216,9 @@ function PodcastCard({
   }
 
   const preview = podcastAudioUrl(form.audio_file_url) ?? form.external_audio_url ?? "";
+  const sourceType: "upload" | "external" | "youtube" =
+    ((form as any).playback_type as any) ||
+    ((form as any).youtube_url ? "youtube" : form.external_audio_url && !form.audio_file_url ? "external" : "upload");
 
   return (
     <li className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
@@ -195,6 +239,99 @@ function PodcastCard({
         </div>
       </div>
 
+      <div className="mt-5 rounded-2xl bg-secondary/40 p-4">
+        <label className="block max-w-md">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Episode source</span>
+          <select
+            value={sourceType}
+            disabled={!editable}
+            onChange={(e) => set("playback_type" as any, e.target.value as any)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="upload">Upload audio file</option>
+            <option value="external">External audio or podcast link</option>
+            <option value="youtube">YouTube video</option>
+          </select>
+          <span className="mt-1 block text-[11px] text-muted-foreground">
+            Choose how this episode plays on the website. Only the matching fields are shown below.
+          </span>
+        </label>
+
+        {sourceType === "upload" && (
+          <div className="mt-4">
+            {editable && (
+              <>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={AUDIO_ACCEPT}
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudio(f); e.target.value = ""; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-2 rounded-full border bg-background px-5 py-2 text-sm font-semibold hover:bg-secondary/60 disabled:opacity-60"
+                >
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? "Uploading…" : form.audio_file_url ? "Replace audio file" : "Upload audio file"}
+                </button>
+                {form.audio_file_url && !uploading && (
+                  <button
+                    type="button"
+                    onClick={() => { set("audio_file_url", ""); setUploadNote(null); setFileInfo(null); }}
+                    className="ml-2 rounded-full border px-4 py-2 text-sm font-semibold hover:bg-secondary/60"
+                  >
+                    Remove audio
+                  </button>
+                )}
+              </>
+            )}
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 100 MB. Files are stored in the media library under “podcasts”.
+            </p>
+            {fileInfo && <p className="mt-1 text-[11px] text-muted-foreground">{fileInfo}</p>}
+            {uploadNote && <p className="mt-1 text-xs font-semibold text-emerald-600">{uploadNote}</p>}
+            {techDetail && (
+              <details className="mt-1 text-[11px] text-muted-foreground">
+                <summary className="cursor-pointer">Technical details</summary>
+                <span>{techDetail}</span>
+              </details>
+            )}
+            <div className="mt-3">
+              <Field label="Uploaded audio file" value={form.audio_file_url ?? ""} onChange={(v) => set("audio_file_url", v)} disabled={!editable} hint="Filled in automatically when you upload a file." />
+            </div>
+          </div>
+        )}
+
+        {sourceType === "external" && (
+          <div className="mt-4">
+            <Field
+              label="External audio or podcast link"
+              value={form.external_audio_url ?? ""}
+              onChange={(v) => set("external_audio_url", v)}
+              disabled={!editable}
+              placeholder="https://open.spotify.com/episode/…"
+              hint="Paste the Spotify, Apple Podcasts, RSS or direct audio link for this episode."
+            />
+          </div>
+        )}
+
+        {sourceType === "youtube" && (
+          <div className="mt-4">
+            <Field
+              label="YouTube link"
+              value={(form as any).youtube_url ?? ""}
+              onChange={(v) => set("youtube_url" as any, v as any)}
+              disabled={!editable}
+              placeholder="https://youtu.be/…"
+              hint="The episode will play in a YouTube video player on the website."
+            />
+          </div>
+        )}
+      </div>
+
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Web address (slug)" value={form.slug} onChange={(v) => set("slug", v)} disabled={!editable} />
@@ -202,45 +339,10 @@ function PodcastCard({
         <Field label="Publication date" type="date" value={form.publication_date ?? ""} onChange={(v) => set("publication_date", v)} disabled={!editable} />
         <Field label="Duration (e.g. 32 min)" value={form.duration ?? ""} onChange={(v) => set("duration", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
-        <label className="block">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Episode type</span>
-          <select
-            value={(form as any).playback_type ?? "upload"}
-            disabled={!editable}
-            onChange={(e) => set("playback_type" as any, e.target.value as any)}
-            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
-          >
-            <option value="upload">Uploaded audio file</option>
-            <option value="external">External link (Spotify, Apple, RSS…)</option>
-            <option value="youtube">YouTube video</option>
-          </select>
-        </label>
-        <Field label="YouTube link" value={(form as any).youtube_url ?? ""} onChange={(v) => set("youtube_url" as any, v as any)} disabled={!editable} placeholder="https://youtu.be/…" />
-        <Field label="External audio link (optional)" value={form.external_audio_url ?? ""} onChange={(v) => set("external_audio_url", v)} disabled={!editable} />
-        <Field label="Uploaded audio path" value={form.audio_file_url ?? ""} onChange={(v) => set("audio_file_url", v)} disabled={!editable} />
       </div>
 
-      {editable && (
-        <div className="mt-4">
-          <input
-            ref={fileRef}
-            type="file"
-            accept="audio/*"
-            className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudio(f); e.target.value = ""; }}
-          />
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold hover:bg-secondary/60 disabled:opacity-60"
-          >
-            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload audio file
-          </button>
-        </div>
-      )}
+      {sourceType !== "youtube" && preview && <audio controls preload="none" src={preview} className="mt-4 w-full" />}
 
-      {preview && <audio controls preload="none" src={preview} className="mt-4 w-full" />}
 
       <div className="mt-4 space-y-4">
         <TextArea label="Description" rows={4} value={form.description ?? ""} onChange={(v) => set("description", v)} disabled={!editable} />

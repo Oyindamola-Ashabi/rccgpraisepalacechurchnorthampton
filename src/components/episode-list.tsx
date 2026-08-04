@@ -1,16 +1,8 @@
 import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play, Pause, Clock, ExternalLink, Headphones } from "lucide-react";
-import { episodeAudioSource, mediaUrl, type Podcast } from "@/lib/cms";
-
-function platformLabel(url: string) {
-  if (/spotify\.com/i.test(url)) return "Listen on Spotify";
-  if (/apple\.com|podcasts\.apple/i.test(url)) return "Listen on Apple Podcasts";
-  if (/youtube\.com|youtu\.be/i.test(url)) return "Watch on YouTube";
-  if (/soundcloud\.com/i.test(url)) return "Listen on SoundCloud";
-  if (/anchor\.fm|spotifyforcreators/i.test(url)) return "Listen on Anchor";
-  return "Listen on the podcast platform";
-}
+import { Play, Pause, Clock, ExternalLink, Headphones, Youtube } from "lucide-react";
+import { episodeSource, mediaUrl, platformName, youTubePoster, type Podcast } from "@/lib/cms";
+import { YouTubePlayer } from "@/components/video-embed";
 
 function formatDate(value: string | null) {
   if (!value) return "";
@@ -18,9 +10,8 @@ function formatDate(value: string | null) {
 }
 
 /**
- * One episode row: cover, details and either an in-page audio player (for
- * uploaded files and direct audio links) or a clear platform button for
- * Spotify / Apple pages, which cannot be played inside a website.
+ * One episode row. Audio episodes get an in-page player and “Listen” wording;
+ * only YouTube episodes use a video player and “Watch” wording.
  */
 export function EpisodeRow({
   episode,
@@ -37,8 +28,11 @@ export function EpisodeRow({
   setPlayingId: (id: string | null) => void;
   register: (id: string, el: HTMLAudioElement | null) => void;
 }) {
-  const { src, external } = episodeAudioSource(episode);
-  const cover = mediaUrl(episode.cover_image_url) || coverFallback;
+  const source = episodeSource(episode as any);
+  const isVideo = source.kind === "youtube";
+  const cover =
+    mediaUrl(episode.cover_image_url) ||
+    (isVideo ? youTubePoster(source.videoId) ?? coverFallback : coverFallback);
   const playing = playingId === episode.id;
 
   return (
@@ -64,7 +58,7 @@ export function EpisodeRow({
           </div>
         </div>
 
-        {src && (
+        {source.kind === "audio" && (
           <button
             type="button"
             onClick={() => {
@@ -79,7 +73,7 @@ export function EpisodeRow({
                 el.pause();
               }
             }}
-            aria-label={playing ? `Pause ${episode.title}` : `Play ${episode.title}`}
+            aria-label={playing ? `Pause ${episode.title}` : `Listen to ${episode.title}`}
             className="grid h-11 w-11 shrink-0 self-center place-items-center rounded-full border border-[#E13495]/30 text-[#E13495] transition hover:gradient-brand hover:text-white"
           >
             {playing ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}
@@ -87,28 +81,43 @@ export function EpisodeRow({
         )}
       </div>
 
-      {src ? (
+      {source.kind === "audio" ? (
         <audio
           id={`audio-${episode.id}`}
           ref={(el) => register(episode.id, el)}
-          src={src}
+          src={source.src}
           controls
           preload="none"
           className="mt-4 w-full"
+          aria-label={`Listen to ${episode.title}`}
           onPlay={() => setPlayingId(episode.id)}
           onPause={() => setPlayingId(playingId === episode.id ? null : playingId)}
           onEnded={() => setPlayingId(null)}
         >
           <track kind="captions" />
         </audio>
-      ) : external ? (
+      ) : source.kind === "youtube" ? (
+        <div className="mt-4">
+          <YouTubePlayer videoId={source.videoId} youtubeUrl={source.url} poster={cover} title={episode.title} />
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Watch ${episode.title} on YouTube`}
+            className="mt-3 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-xs font-semibold text-white shadow-elegant"
+          >
+            <Youtube className="h-3.5 w-3.5" /> Watch on YouTube
+          </a>
+        </div>
+      ) : source.kind === "external" ? (
         <a
-          href={external}
+          href={source.url}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Listen to ${episode.title}`}
           className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-xs font-semibold text-white shadow-elegant"
         >
-          {platformLabel(external)} <ExternalLink className="h-3.5 w-3.5" />
+          Listen on {platformName(source.url)} <ExternalLink className="h-3.5 w-3.5" />
         </a>
       ) : (
         <p className="mt-4 text-xs text-muted-foreground">Audio for this episode is coming soon.</p>
