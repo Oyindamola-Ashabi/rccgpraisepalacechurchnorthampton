@@ -197,6 +197,99 @@ function PodcastCard({
         </div>
       </div>
 
+      <div className="mt-5 rounded-2xl bg-secondary/40 p-4">
+        <label className="block max-w-md">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Episode source</span>
+          <select
+            value={sourceType}
+            disabled={!editable}
+            onChange={(e) => set("playback_type" as any, e.target.value as any)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="upload">Upload audio file</option>
+            <option value="external">External audio or podcast link</option>
+            <option value="youtube">YouTube video</option>
+          </select>
+          <span className="mt-1 block text-[11px] text-muted-foreground">
+            Choose how this episode plays on the website. Only the matching fields are shown below.
+          </span>
+        </label>
+
+        {sourceType === "upload" && (
+          <div className="mt-4">
+            {editable && (
+              <>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={AUDIO_ACCEPT}
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudio(f); e.target.value = ""; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-2 rounded-full border bg-background px-5 py-2 text-sm font-semibold hover:bg-secondary/60 disabled:opacity-60"
+                >
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? "Uploading…" : form.audio_file_url ? "Replace audio file" : "Upload audio file"}
+                </button>
+                {form.audio_file_url && !uploading && (
+                  <button
+                    type="button"
+                    onClick={() => { set("audio_file_url", ""); setUploadNote(null); setFileInfo(null); }}
+                    className="ml-2 rounded-full border px-4 py-2 text-sm font-semibold hover:bg-secondary/60"
+                  >
+                    Remove audio
+                  </button>
+                )}
+              </>
+            )}
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 100 MB. Files are stored in the media library under “podcasts”.
+            </p>
+            {fileInfo && <p className="mt-1 text-[11px] text-muted-foreground">{fileInfo}</p>}
+            {uploadNote && <p className="mt-1 text-xs font-semibold text-emerald-600">{uploadNote}</p>}
+            {techDetail && (
+              <details className="mt-1 text-[11px] text-muted-foreground">
+                <summary className="cursor-pointer">Technical details</summary>
+                <span>{techDetail}</span>
+              </details>
+            )}
+            <div className="mt-3">
+              <Field label="Uploaded audio file" value={form.audio_file_url ?? ""} onChange={(v) => set("audio_file_url", v)} disabled={!editable} hint="Filled in automatically when you upload a file." />
+            </div>
+          </div>
+        )}
+
+        {sourceType === "external" && (
+          <div className="mt-4">
+            <Field
+              label="External audio or podcast link"
+              value={form.external_audio_url ?? ""}
+              onChange={(v) => set("external_audio_url", v)}
+              disabled={!editable}
+              placeholder="https://open.spotify.com/episode/…"
+              hint="Paste the Spotify, Apple Podcasts, RSS or direct audio link for this episode."
+            />
+          </div>
+        )}
+
+        {sourceType === "youtube" && (
+          <div className="mt-4">
+            <Field
+              label="YouTube link"
+              value={(form as any).youtube_url ?? ""}
+              onChange={(v) => set("youtube_url" as any, v as any)}
+              disabled={!editable}
+              placeholder="https://youtu.be/…"
+              hint="The episode will play in a YouTube video player on the website."
+            />
+          </div>
+        )}
+      </div>
+
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Web address (slug)" value={form.slug} onChange={(v) => set("slug", v)} disabled={!editable} />
@@ -204,45 +297,10 @@ function PodcastCard({
         <Field label="Publication date" type="date" value={form.publication_date ?? ""} onChange={(v) => set("publication_date", v)} disabled={!editable} />
         <Field label="Duration (e.g. 32 min)" value={form.duration ?? ""} onChange={(v) => set("duration", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
-        <label className="block">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Episode type</span>
-          <select
-            value={(form as any).playback_type ?? "upload"}
-            disabled={!editable}
-            onChange={(e) => set("playback_type" as any, e.target.value as any)}
-            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
-          >
-            <option value="upload">Uploaded audio file</option>
-            <option value="external">External link (Spotify, Apple, RSS…)</option>
-            <option value="youtube">YouTube video</option>
-          </select>
-        </label>
-        <Field label="YouTube link" value={(form as any).youtube_url ?? ""} onChange={(v) => set("youtube_url" as any, v as any)} disabled={!editable} placeholder="https://youtu.be/…" />
-        <Field label="External audio link (optional)" value={form.external_audio_url ?? ""} onChange={(v) => set("external_audio_url", v)} disabled={!editable} />
-        <Field label="Uploaded audio path" value={form.audio_file_url ?? ""} onChange={(v) => set("audio_file_url", v)} disabled={!editable} />
       </div>
 
-      {editable && (
-        <div className="mt-4">
-          <input
-            ref={fileRef}
-            type="file"
-            accept="audio/*"
-            className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudio(f); e.target.value = ""; }}
-          />
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            className="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold hover:bg-secondary/60 disabled:opacity-60"
-          >
-            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload audio file
-          </button>
-        </div>
-      )}
+      {sourceType !== "youtube" && preview && <audio controls preload="none" src={preview} className="mt-4 w-full" />}
 
-      {preview && <audio controls preload="none" src={preview} className="mt-4 w-full" />}
 
       <div className="mt-4 space-y-4">
         <TextArea label="Description" rows={4} value={form.description ?? ""} onChange={(v) => set("description", v)} disabled={!editable} />
