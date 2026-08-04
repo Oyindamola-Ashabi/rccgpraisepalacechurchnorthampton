@@ -91,33 +91,33 @@ function PodcastCard({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadNote, setUploadNote] = useState<string | null>(null);
+  const [fileInfo, setFileInfo] = useState<string | null>(null);
+  const [techDetail, setTechDetail] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); setSaved(false); }
 
   async function uploadAudio(file: File) {
-    const okTypes = ["mp3", "m4a", "wav", "aac", "ogg", "mpeg", "mp4", "x-m4a", "wave", "x-wav"];
-    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
-    const typeTail = (file.type.split("/").pop() ?? "").toLowerCase();
-    if (!okTypes.includes(ext) && !okTypes.includes(typeTail)) {
-      onError("Please choose an MP3, M4A, WAV, AAC or OGG audio file.");
-      return;
-    }
-    if (file.size > 100 * 1024 * 1024) {
-      onError("That audio file is larger than 100 MB. Please upload a smaller file.");
-      return;
-    }
+    if (uploading) return;
+    const check = validateAudioFile(file);
+    setTechDetail(null);
+    if (check) { setUploadNote(null); onError(check); return; }
 
     setUploading(true);
     onError(null);
+    setUploadNote(null);
+    setFileInfo(`${file.name} · ${prettySize(file.size)} · ${file.type || "audio file"}`);
+
     const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
     const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${Date.now()}-${safe}`;
     const { error } = await supabase.storage
       .from(PODCAST_BUCKET)
-      .upload(path, file, { upsert: true, contentType: file.type || "audio/mpeg" });
+      .upload(path, file, { upsert: true, contentType: uploadContentType(file) });
     if (error) {
       setUploading(false);
-      onError("Audio upload failed: " + error.message);
+      onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+      setTechDetail(error.message);
       return;
     }
 
@@ -127,15 +127,17 @@ function PodcastCard({
       .update({ audio_file_url: path, playback_type: "upload" } as any)
       .eq("id", episode.id);
     setUploading(false);
+    setForm((f) => ({ ...f, audio_file_url: path, playback_type: "upload" } as any));
     if (saveError) {
-      onError("Audio uploaded, but saving it to the episode failed: " + saveError.message);
+      onError("The audio uploaded successfully, but the podcast episode could not be saved. Your uploaded file has not been removed.");
+      setTechDetail(saveError.message);
       return;
     }
-    set("audio_file_url", path);
-    set("playback_type" as any, "upload" as any);
     onError(null);
-    window.alert("Audio uploaded and saved to this episode.");
+    setUploadNote("Audio uploaded and saved successfully.");
   }
+
+
 
 
 
