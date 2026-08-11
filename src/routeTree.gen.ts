@@ -57,6 +57,7 @@ import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
+import { Route as ApiPublicEnsureMediaBucketRouteImport } from './routes/api/public/ensure-media-bucket'
 
 const TestimoniesRoute = TestimoniesRouteImport.update({
   id: '/testimonies',
@@ -300,6 +301,12 @@ const AdminAppointmentsRoute = AdminAppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicEnsureMediaBucketRoute =
+  ApiPublicEnsureMediaBucketRouteImport.update({
+    id: '/api/public/ensure-media-bucket',
+    path: '/api/public/ensure-media-bucket',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -350,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
+  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -395,6 +403,7 @@ export interface FileRoutesByTo {
   '/ministries': typeof MinistriesIndexRoute
   '/podcasts': typeof PodcastsIndexRoute
   '/sermons': typeof SermonsIndexRoute
+  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -446,6 +455,7 @@ export interface FileRoutesById {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
+  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
+    | '/api/public/ensure-media-bucket'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/ministries'
     | '/podcasts'
     | '/sermons'
+    | '/api/public/ensure-media-bucket'
   id:
     | '__root__'
     | '/'
@@ -593,6 +605,7 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
+    | '/api/public/ensure-media-bucket'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -615,6 +628,7 @@ export interface RootRouteChildren {
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
+  ApiPublicEnsureMediaBucketRoute: typeof ApiPublicEnsureMediaBucketRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -955,6 +969,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppointmentsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/ensure-media-bucket': {
+      id: '/api/public/ensure-media-bucket'
+      path: '/api/public/ensure-media-bucket'
+      fullPath: '/api/public/ensure-media-bucket'
+      preLoaderRoute: typeof ApiPublicEnsureMediaBucketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1080,6 +1101,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
+  ApiPublicEnsureMediaBucketRoute: ApiPublicEnsureMediaBucketRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
