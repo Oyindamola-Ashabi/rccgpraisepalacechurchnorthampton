@@ -134,17 +134,29 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
           }`}
         >
           {loading ? (
-            <div className="grid h-full place-items-center text-white/70 text-sm">Loading photographs…</div>
+            <div className="grid h-full place-items-center text-white/70 text-sm">Loading album…</div>
           ) : total === 0 ? (
             <div className="grid h-full place-items-center gap-2 text-white/70 text-sm">
               <Images className="h-6 w-6" />
-              No photographs in this album yet.
+              Nothing has been added to this album yet.
+            </div>
+          ) : (current?.media_type ?? "image") === "video" ? (
+            <div className="grid h-full w-full place-items-center">
+              <video
+                key={current?.id}
+                src={albumItemSrc(current!) ?? ""}
+                poster={albumItemPoster(current!) ?? undefined}
+                controls
+                playsInline
+                preload="metadata"
+                className="max-h-full max-w-full"
+              />
             </div>
           ) : (
             <div className="h-full w-full overflow-auto grid place-items-center">
               <img
                 key={current?.id}
-                src={mediaUrl(current?.image_url) ?? ""}
+                src={albumItemSrc(current!) ?? ""}
                 alt={current?.alt_text ?? current?.caption ?? album.title}
                 style={{
                   transform: `scale(${zoom})`,
@@ -160,6 +172,7 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
               />
             </div>
           )}
+
 
           {total > 1 && (
             <>
