@@ -232,6 +232,7 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return; // guards against double submission
     setError(null);
 
     const name = form.full_name.trim();
@@ -351,7 +352,7 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
           className="mt-6 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 disabled:opacity-60"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          {busy ? "Sending…" : "Submit application"}
+          {busy ? "Submitting…" : "Submit application"}
         </button>
       </form>
 
