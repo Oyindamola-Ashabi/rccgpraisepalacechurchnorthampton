@@ -1,13 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ensureMediaBucketAcceptsAudio } from "@/lib/media-bucket.functions";
 
 /** One-off maintenance endpoint used to widen the media store's accepted file types. */
 export const Route = createFileRoute("/api/public/ensure-media-bucket")({
   server: {
     handlers: {
       POST: async () => {
-        await ensureMediaBucketAcceptsAudio();
-        return new Response("ok");
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { error } = await supabaseAdmin.storage.updateBucket("media", {
+          public: true,
+          fileSizeLimit: 104857600,
+          allowedMimeTypes: [
+            "image/jpeg", "image/png", "image/webp", "image/gif",
+            "audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/x-aac",
+            "audio/wav", "audio/x-wav", "audio/wave", "audio/vnd.wave", "audio/ogg", "application/ogg",
+            "audio/webm", "audio/flac", "audio/x-flac", "video/mp4", "application/octet-stream",
+          ],
+        });
+        return new Response(error ? `error: ${error.message}` : "ok", { status: error ? 500 : 200 });
       },
     },
   },
