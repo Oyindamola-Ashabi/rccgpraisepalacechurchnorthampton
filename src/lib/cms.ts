@@ -886,7 +886,36 @@ export type GalleryAlbumRow = GalleryAlbum & {
   album_date: string | null;
   badge_label: string | null;
   show_in_main_gallery: boolean;
+  album_source: "website" | "fliphtml5";
+  fliphtml5_url: string | null;
 };
+
+/** Hosts we are willing to embed a flip-book publication from. */
+const FLIPHTML5_HOSTS = ["online.fliphtml5.com", "fliphtml5.com", "www.fliphtml5.com"];
+
+/**
+ * Returns a safe FlipHTML5 publication address, or null when the value is not
+ * a plain HTTPS FlipHTML5 link. Only the address is ever stored or embedded —
+ * pasted HTML is always rejected.
+ */
+export function safeFlipHtml5Url(value: string | null | undefined): string | null {
+  const raw = (value ?? "").trim();
+  if (!raw || /[<>]/.test(raw)) return null;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:") return null;
+    if (!FLIPHTML5_HOSTS.includes(url.hostname.toLowerCase())) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+/** True when this album's photographs live in FlipHTML5 rather than on the website. */
+export function isFlipAlbum(a: Partial<GalleryAlbumRow>): boolean {
+  return a.album_source === "fliphtml5" && Boolean(safeFlipHtml5Url(a.fliphtml5_url));
+}
+
 
 /** Short label shown at the top-left of an album cover — blank means no label. */
 export function albumBadge(album: Partial<GalleryAlbumRow>): string | null {
