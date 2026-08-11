@@ -51,7 +51,7 @@ function AdminEventsPage() {
 
   return (
     <div>
-      <AdminHeading title="Events" description="Only published events appear on the website. Events whose date has passed automatically move to “Past events”." />
+      <AdminHeading title="Events" description="Only published events appear on the website. Events whose date has passed automatically move to “Past events”. Switch on “Show on Homepage” for the events you want featured on the homepage, and add a short label (e.g. Picnic) only if you want a small badge on the card — leave it blank for no badge." />
       <Alert error={error} />
 
       {loading ? (
@@ -142,6 +142,7 @@ function EventCard({
         <Field label="Venue" value={form.venue ?? ""} onChange={(v) => set("venue", v)} disabled={!editable} />
         <Field label="Starts" type="datetime-local" value={form.start_at} onChange={(v) => set("start_at", v)} disabled={!editable} />
         <Field label="Ends (optional)" type="datetime-local" value={form.end_at} onChange={(v) => set("end_at", v)} disabled={!editable} />
+        <Field label="Short label / badge (optional)" value={form.badge_label ?? ""} onChange={(v) => set("badge_label", v)} disabled={!editable} />
         <Field label="Registration link" value={form.registration_url ?? ""} onChange={(v) => set("registration_url", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
       </div>
