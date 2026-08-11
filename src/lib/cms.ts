@@ -854,6 +854,9 @@ export function episodeSource(ep: Partial<PodcastRow>): EpisodeSource {
   if (type === "upload" && uploaded) return { kind: "audio", src: uploaded, external: ep.external_audio_url ?? null };
   if (ep.external_audio_url) {
     if (isDirectAudio(ep.external_audio_url)) return { kind: "audio", src: ep.external_audio_url, external: null };
+    // A YouTube address pasted into the link box should still play as a video.
+    const externalYouTubeId = youTubeId(ep.external_audio_url);
+    if (externalYouTubeId) return { kind: "youtube", videoId: externalYouTubeId, url: ep.external_audio_url };
     return { kind: "external", url: ep.external_audio_url };
   }
   if (uploaded) return { kind: "audio", src: uploaded, external: null };
