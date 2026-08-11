@@ -130,10 +130,7 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     { key: "ministries", label: "Grow. Serve. Belong.", hint: "The six ministry cards — radio, business, youth, men, women and the Couples Retreat.", template: "card_grid", itemsLabel: "Manage cards and images", itemNoun: "card" },
     { key: "pastor", label: "Pastor’s Message", hint: "The pastor introduction and photograph.", template: "image_and_text" },
     { key: "community", label: "Community Spotlight", hint: "Manage the community card displayed on the homepage, including its image, title, description and external destination.", template: "card_grid", itemsLabel: "Manage community cards", itemNoun: "community card" },
-    { key: "events", label: "Events heading", hint: "The heading above the events preview on the homepage.", template: "event_list" },
-    { key: "event_card_1", label: "Event preview card 1", hint: "First event shown on the homepage.", template: "card_grid" },
-    { key: "event_card_2", label: "Event preview card 2", hint: "Second event shown on the homepage.", template: "card_grid" },
-    { key: "event_card_3", label: "Event preview card 3", hint: "Third event shown on the homepage.", template: "card_grid" },
+    { key: "events", label: "Events heading", hint: "The heading above the events preview on the homepage. The event cards themselves come from Admin → Events (switch on “Show on Homepage”).", template: "event_list" },
     { key: "giving_cta", label: "Giving call to action", hint: "The pink giving banner near the bottom of the homepage.", template: "cta" },
   ],
   about: [
@@ -151,13 +148,12 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     { key: "live_video", label: "Watch Live Video", hint: "Change the YouTube video and large poster image displayed in the Watch Live area of the Media page.", template: "video" },
   ],
   "couples-retreat": [
-    { key: "hero", label: "Hero", hint: "Heading, introduction and background image at the top of the page.", template: "hero" },
-    { key: "intro", label: "Introduction", hint: "The opening explanation of the retreat.", template: "rich_text" },
-    { key: "details", label: "Introduction picture", hint: "The photograph beside the introduction.", template: "image_and_text" },
-    { key: "upcoming", label: "Upcoming Retreat", hint: "Shown when no retreat is published. Real dates come from Admin → Events.", template: "custom" },
-    { key: "register", label: "Registration Section", hint: "The heading and wording above the application form.", template: "form_section" },
-    { key: "albums", label: "Albums", hint: "The heading above previous retreat photo albums.", template: "album_list" },
-    { key: "contact", label: "Contact", hint: "The contact banner at the bottom of the page.", template: "cta" },
+    { key: "hero", label: "1. Page Header", hint: "The main heading, introductory text and background image at the very top of the page.", template: "hero" },
+    { key: "intro", label: "2. Retreat Information", hint: "The section heading and description that explain the retreat.", template: "rich_text" },
+    { key: "details", label: "3. Event Details picture", hint: "The photograph beside the retreat information. The date, time and venue come from Admin → Events (Couples Retreat).", template: "image_and_text" },
+    { key: "register", label: "4. Registration Section", hint: "The heading, introduction and help text shown above the registration form. Submitted registrations appear in Admin → Event Registrations.", template: "form_section" },
+    { key: "contact", label: "5. Contact / Help", hint: "The help banner at the bottom of the page for couples with questions.", template: "cta" },
+    { key: "albums", label: "6. Albums Link", hint: "The wording of the section that points visitors to the church albums at /events/albums.", template: "album_list" },
   ],
 };
 
