@@ -1,0 +1,1 @@
+UPDATE public.nav_items SET link_type='internal', is_external=false, href='/ministries/community-outreach' WHERE id='f8bc1297-5d78-4c69-8719-a943c65f4a8e';
