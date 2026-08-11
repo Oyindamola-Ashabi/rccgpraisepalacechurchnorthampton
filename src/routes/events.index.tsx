@@ -102,10 +102,10 @@ function EventsPage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {shown.map((e) => (
-            <article key={e.title} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
+            <article key={e.id} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img src={e.image} alt={e.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-                <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{e.tag}</span>
+                {e.tag && <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{e.tag}</span>}
               </div>
               <div className="p-5">
                 <h3 className="font-display font-bold text-lg leading-tight">{e.title}</h3>
