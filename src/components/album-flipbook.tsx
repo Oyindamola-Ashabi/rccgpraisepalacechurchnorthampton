@@ -231,7 +231,7 @@ export function FlipHtml5Viewer({ album, onClose }: { album: GalleryAlbumRow; on
       aria-modal="true"
       aria-label={`${album.title} album`}
     >
-      <div className="flex items-center justify-between gap-3 px-1 pb-2 text-white">
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-black/70 px-3 py-2 mb-2 text-white">
         <div className="min-w-0">
           <h3 className="truncate font-display text-base sm:text-xl font-bold">{album.title}</h3>
           <div className="text-xs text-white/70">
