@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
-import { AdminHeading, Alert, DeleteButton, Field, ImageField, MediaUploader, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
+import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
 import { BADGE_SUGGESTIONS, safeFlipHtml5Url, type GalleryAlbum, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 import { uploadAlbumImage, uploadAlbumVideo } from "@/lib/media";
 import { FlipHtml5Viewer } from "@/components/album-flipbook";
@@ -88,7 +88,7 @@ function AlbumCard({
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState(false);
-  const { upload, uploading, assets, reload } = useMediaLibrary();
+  const { assets, reload } = useMediaLibrary();
   const source = ((form as any).album_source ?? "website") as "website" | "fliphtml5";
   const flipUrl = safeFlipHtml5Url((form as any).fliphtml5_url);
   const flipInvalid = source === "fliphtml5" && Boolean(((form as any).fliphtml5_url ?? "").trim()) && !flipUrl;
