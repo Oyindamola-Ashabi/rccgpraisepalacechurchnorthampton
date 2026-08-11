@@ -117,6 +117,10 @@ export type SectionSpec = {
   itemsLabel?: string;
   /** Word used for one child record, e.g. "card", "slide", "photo". */
   itemNoun?: string;
+  /** Plain-English names for the section's own fields, when the generic ones do not fit. */
+  sectionFields?: { headline?: string; subheading?: string; body?: string; image?: string; cta_label?: string; cta_href?: string };
+  /** Plain-English names for the fields of each child card in this section. */
+  itemFields?: { title?: string; subtitle?: string; body?: string; image?: string; cta_label?: string; cta_href?: string };
 };
 
 export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
