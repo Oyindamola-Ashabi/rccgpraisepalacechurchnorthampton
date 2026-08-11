@@ -35,6 +35,7 @@ import { Route as PodcastsSlugRouteImport } from './routes/podcasts.$slug'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesOutreachRouteImport } from './routes/ministries.outreach'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
+import { Route as MinistriesCommunityOutreachRouteImport } from './routes/ministries.community-outreach'
 import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
 import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
@@ -190,6 +191,12 @@ const MinistriesMensFellowshipRoute =
   MinistriesMensFellowshipRouteImport.update({
     id: '/ministries/mens-fellowship',
     path: '/ministries/mens-fellowship',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MinistriesCommunityOutreachRoute =
+  MinistriesCommunityOutreachRouteImport.update({
+    id: '/ministries/community-outreach',
+    path: '/ministries/community-outreach',
     getParentRoute: () => rootRouteImport,
   } as any)
 const MinistriesSlugRoute = MinistriesSlugRouteImport.update({
@@ -353,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
+  '/ministries/community-outreach': typeof MinistriesCommunityOutreachRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -400,6 +408,7 @@ export interface FileRoutesByTo {
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
+  '/ministries/community-outreach': typeof MinistriesCommunityOutreachRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -453,6 +462,7 @@ export interface FileRoutesById {
   '/media/gallery': typeof MediaGalleryRoute
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
+  '/ministries/community-outreach': typeof MinistriesCommunityOutreachRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
@@ -507,6 +517,7 @@ export interface FileRouteTypes {
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
+    | '/ministries/community-outreach'
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
+    | '/ministries/community-outreach'
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
@@ -606,6 +618,7 @@ export interface FileRouteTypes {
     | '/media/gallery'
     | '/media/podcast'
     | '/ministries/$slug'
+    | '/ministries/community-outreach'
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
@@ -636,6 +649,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestimoniesRoute: typeof TestimoniesRoute
   MinistriesSlugRoute: typeof MinistriesSlugRoute
+  MinistriesCommunityOutreachRoute: typeof MinistriesCommunityOutreachRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesOutreachRoute: typeof MinistriesOutreachRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
@@ -824,6 +838,13 @@ declare module '@tanstack/react-router' {
       path: '/ministries/mens-fellowship'
       fullPath: '/ministries/mens-fellowship'
       preLoaderRoute: typeof MinistriesMensFellowshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/community-outreach': {
+      id: '/ministries/community-outreach'
+      path: '/ministries/community-outreach'
+      fullPath: '/ministries/community-outreach'
+      preLoaderRoute: typeof MinistriesCommunityOutreachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ministries/$slug': {
@@ -1118,6 +1139,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestimoniesRoute: TestimoniesRoute,
   MinistriesSlugRoute: MinistriesSlugRoute,
+  MinistriesCommunityOutreachRoute: MinistriesCommunityOutreachRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesOutreachRoute: MinistriesOutreachRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
