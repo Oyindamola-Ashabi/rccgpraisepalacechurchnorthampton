@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, MediaUploader, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
 import { BADGE_SUGGESTIONS, safeFlipHtml5Url, type GalleryAlbum, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { uploadAlbumImage, uploadAlbumVideo } from "@/lib/media";
 import { FlipHtml5Viewer } from "@/components/album-flipbook";
 
 export const Route = createFileRoute("/admin/gallery")({ ssr: false, component: AdminGalleryPage });
@@ -49,7 +50,7 @@ function AdminGalleryPage() {
 
   return (
     <div>
-      <AdminHeading title="Gallery" description="Group photos into albums. Only published albums and their images appear on the public gallery page." />
+      <AdminHeading title="Albums" description="Group photographs and videos into albums. Published albums appear on the public Events → Albums page." />
       <Alert error={error} />
 
       {loading ? (
@@ -115,9 +116,39 @@ function AlbumCard({
     onError(null); setSaved(true);
   }
 
-  async function addUploaded(files: FileList) {
-    await upload(files);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  /** Uploads photographs straight into this album. */
+  async function addPhotos(files: FileList) {
+    setBusy("Uploading photographs…");
+    let order = images.length;
+    for (const file of Array.from(files)) {
+      const { url, error } = await uploadAlbumImage(file, album.slug);
+      if (error || !url) { onError(error); continue; }
+      const ins = await supabase.from("gallery_images").insert({
+        album_id: album.id, image_url: url, media_type: "image", sort_order: order++, is_visible: true,
+      } as any);
+      if (ins.error) onError(ins.error.message);
+    }
+    setBusy(null);
     await reload();
+    await loadImages();
+  }
+
+  /** Uploads a video straight into this album. */
+  async function addVideos(files: FileList) {
+    setBusy("Uploading video…");
+    let order = images.length;
+    for (const file of Array.from(files)) {
+      const { url, error } = await uploadAlbumVideo(file, album.slug);
+      if (error || !url) { onError(error); continue; }
+      const ins = await supabase.from("gallery_images").insert({
+        album_id: album.id, media_type: "video", video_url: url, caption: file.name, sort_order: order++, is_visible: true,
+      } as any);
+      if (ins.error) onError(ins.error.message);
+    }
+    setBusy(null);
+    await loadImages();
   }
 
   async function attach(url: string) {
@@ -141,7 +172,7 @@ function AlbumCard({
           <Toggle label="Published" checked={form.is_published} onChange={(v) => set("is_published", v)} disabled={!editable} />
           {source === "website" && (
             <button onClick={() => setOpen((o) => !o)} className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60">
-              {open ? "Hide images" : "Manage images"}
+              {open ? "Hide contents" : "Manage photos & videos"}
             </button>
           )}
           {canDelete && (
@@ -240,8 +271,20 @@ function AlbumCard({
         <div className="mt-6 border-t pt-5">
           {editable && (
             <>
-              <MediaUploader upload={addUploaded} uploading={uploading} />
-              <p className="mt-2 text-xs text-muted-foreground">After uploading, click an image below to add it to this album.</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block rounded-xl border border-dashed p-4 text-center text-sm hover:bg-secondary/40 cursor-pointer">
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => e.target.files && addPhotos(e.target.files)} />
+                  <span className="font-semibold">Upload photographs</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">JPG, PNG, WebP or GIF — you can choose several at once.</span>
+                </label>
+                <label className="block rounded-xl border border-dashed p-4 text-center text-sm hover:bg-secondary/40 cursor-pointer">
+                  <input type="file" accept="video/*" multiple className="hidden" onChange={(e) => e.target.files && addVideos(e.target.files)} />
+                  <span className="font-semibold">Upload videos</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">MP4, WebM, OGG or MOV — up to 50 MB each.</span>
+                </label>
+              </div>
+              {busy && <p className="mt-3 text-xs font-semibold text-[#E13495]">{busy}</p>}
+              <p className="mt-3 text-xs text-muted-foreground">Or add a picture you have already uploaded to the media library:</p>
               <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {assets.slice(0, 12).map((a) => (
                   <button key={a.id} onClick={() => attach(a.public_url)} className="overflow-hidden rounded-lg ring-1 ring-black/10 hover:ring-[#E13495]">
@@ -253,7 +296,7 @@ function AlbumCard({
           )}
 
           <ul className="mt-5 space-y-3">
-            {images.length === 0 && <p className="text-sm text-muted-foreground">No images in this album yet.</p>}
+            {images.length === 0 && <p className="text-sm text-muted-foreground">Nothing in this album yet.</p>}
             {images.map((img) => (
               <AlbumImageRow key={img.id} image={img} editable={editable} canDelete={canDelete} onChanged={loadImages} onError={onError} />
             ))}
@@ -270,6 +313,7 @@ function AlbumImageRow({
   const [form, setForm] = useState(image);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const isVideo = ((image as any).media_type ?? "image") === "video";
 
   async function save() {
     if (saving) return;
@@ -279,17 +323,28 @@ function AlbumImageRow({
       alt_text: form.alt_text,
       sort_order: Number(form.sort_order) || 0,
       image_url: form.image_url,
+      video_thumbnail_url: (form as any).video_thumbnail_url ?? null,
       is_visible: Boolean((form as any).is_visible ?? true),
-    }).eq("id", image.id);
+    } as any).eq("id", image.id);
     setSaving(false);
     if (error) onError(error.message); else { onError(null); setSaved(true); }
   }
 
   return (
     <li className="flex flex-wrap items-center gap-4 rounded-xl bg-secondary/30 p-3">
-      <img src={form.image_url} alt={form.alt_text ?? ""} className="h-16 w-24 rounded-lg object-cover" loading="lazy" />
+      {isVideo ? (
+        <video
+          src={(form as any).video_url ?? ""}
+          poster={(form as any).video_thumbnail_url ?? undefined}
+          className="h-16 w-24 rounded-lg bg-black object-cover"
+          controls
+          preload="metadata"
+        />
+      ) : (
+        <img src={form.image_url ?? ""} alt={form.alt_text ?? ""} className="h-16 w-24 rounded-lg object-cover" loading="lazy" />
+      )}
       <div className="grid min-w-[220px] flex-1 gap-2 sm:grid-cols-4">
-        <Field label="Caption" value={form.caption ?? ""} onChange={(v) => { setForm({ ...form, caption: v }); setSaved(false); }} disabled={!editable} />
+        <Field label={isVideo ? "Video title" : "Caption"} value={form.caption ?? ""} onChange={(v) => { setForm({ ...form, caption: v }); setSaved(false); }} disabled={!editable} />
         <Field label="Alt text" value={form.alt_text ?? ""} onChange={(v) => { setForm({ ...form, alt_text: v }); setSaved(false); }} disabled={!editable} />
         <Field label="Order" type="number" value={String(form.sort_order)} onChange={(v) => { setForm({ ...form, sort_order: Number(v) || 0 }); setSaved(false); }} disabled={!editable} />
         <div className="flex items-end pb-1">
@@ -305,7 +360,7 @@ function AlbumImageRow({
         {editable && <SaveButton saving={saving} saved={saved} onClick={save} label="Save" />}
         {canDelete && (
           <DeleteButton
-            confirmText="Remove this image from the album?"
+            confirmText="Remove this item from the album?"
             onConfirm={async () => {
               const { error } = await supabase.from("gallery_images").delete().eq("id", image.id);
               if (error) onError(error.message); else onChanged();
