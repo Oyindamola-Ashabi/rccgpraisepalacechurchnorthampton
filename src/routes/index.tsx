@@ -257,21 +257,6 @@ function HomePage() {
             <div className="mt-5 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
               <Paragraphs text={text("welcome", "body", "RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.\n\nYou are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.")} />
             </div>
-            {welcomeHighlights.length > 0 && (
-              <ul className="mt-8 grid gap-3">
-                {welcomeHighlights.map((h) => (
-                  <li key={h.key} className="flex items-start gap-3 rounded-2xl bg-background/70 p-4 ring-1 ring-black/5 shadow-sm">
-                    <span className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full gradient-brand text-white">
-                      <Sparkles className="h-3.5 w-3.5" />
-                    </span>
-                    <span>
-                      <span className="block font-semibold leading-snug">{h.title}</span>
-                      {h.body && <span className="mt-0.5 block text-sm text-muted-foreground leading-relaxed">{h.body}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
             <div className="mt-8 flex gap-3">
               <BrandButton to={text("welcome", "cta_href", "/about")}>{text("welcome", "cta_label", "About Us")}</BrandButton>
               <Link to="/plan-a-visit" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
@@ -280,6 +265,31 @@ function HomePage() {
             </div>
           </div>
         </div>
+        {welcomeHighlights.length > 0 && (
+          <div className="mx-auto max-w-7xl px-6 pb-20">
+            <ul
+              className={`grid gap-4 ${
+                welcomeHighlights.length === 1
+                  ? "mx-auto max-w-md"
+                  : welcomeHighlights.length === 2
+                    ? "sm:grid-cols-2 mx-auto max-w-3xl"
+                    : "sm:grid-cols-2 lg:grid-cols-3"
+              }`}
+            >
+              {welcomeHighlights.map((h) => (
+                <li key={h.key} className="flex h-full items-start gap-3 rounded-2xl bg-background/70 p-5 ring-1 ring-black/5 shadow-sm">
+                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full gradient-brand text-white">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <span>
+                    <span className="block font-semibold leading-snug">{h.title}</span>
+                    {h.body && <span className="mt-1 block text-sm text-muted-foreground leading-relaxed">{h.body}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       {/* PROGRAMS */}

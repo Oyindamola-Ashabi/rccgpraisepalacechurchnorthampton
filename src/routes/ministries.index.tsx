@@ -26,23 +26,16 @@ const IMAGE_FALLBACKS: Record<string, string> = {
   "mens-fellowship": eventPhotos.men.url,
   "womens-fellowship": eventPhotos.women.url,
   "couples-retreat": eventPhotos.couples.url,
-  "raising-champions-youth-camp": eventPhotos.youth.url,
-  "praisepalace-radio": eventPhotos.modernWorship.url,
-  "praise-palace-business-school": eventPhotos.business.url,
 };
 
 /** Shown only if the admin has no ministries at all. */
 const BUILT_IN = [
   { name: "Men Fellowship", slug: "mens-fellowship", short: "Brothers building one another in faith, purpose and accountability." },
   { name: "Women Fellowship", slug: "womens-fellowship", short: "A sisterhood of grace, prayer and practical support." },
-  { name: "Couples Retreat", slug: "couples-retreat", short: "Strengthening marriages with the word of God." },
-  { name: "Raising Champions Youth Camp", slug: "raising-champions-youth-camp", short: "Equipping the next generation to live boldly for Christ." },
-  { name: "PraisePalace Radio", slug: "praisepalace-radio", short: "Worship, teaching and encouragement on demand." },
-  { name: "Praise Palace Business School", slug: "praise-palace-business-school", short: "Kingdom principles for enterprise and career." },
 ];
 
 function MinistriesPage() {
-  const { rows, loading } = useActiveMinistries();
+  const { rows, loading } = useActiveMinistries("church");
 
   const items = (rows.length ? rows : BUILT_IN).map((m: any) => ({
     name: m.name,
@@ -59,7 +52,7 @@ function MinistriesPage() {
       <PageHero
         eyebrow="Get Involved"
         title="Our Ministries"
-        subtitle="There is a place for everyone at RCCG Praise Palace Northampton — find yours."
+        subtitle="Our church ministries — there is a place for everyone at RCCG Praise Palace Northampton."
         image={heroImg}
       />
 
