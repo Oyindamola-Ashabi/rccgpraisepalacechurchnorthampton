@@ -198,12 +198,12 @@ export function SiteHeader() {
           scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-background/70 backdrop-blur"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-3">
-          <Link to="/" className="flex items-center gap-2 min-w-0">
-            <img src={rccgLogoAsset} alt="RCCG" className="h-14 w-14 shrink-0 object-contain" />
-            <img src={logoAsset} alt="Praise Palace" className="h-14 w-14 shrink-0 object-contain" />
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-4 lg:gap-10 xl:gap-14">
+          <Link to="/" className="flex shrink-0 items-center gap-2 sm:gap-3 lg:mr-4">
+            <img src={rccgLogoAsset} alt="RCCG" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+            <img src={logoAsset} alt="Praise Palace" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
             <div className="leading-tight">
-              <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base md:text-lg">
+              <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base lg:text-[17px] xl:text-lg">
                 <span className="text-[#E13495]">RCCG</span>{" "}
                 <span className="text-[#996DB5]">Praise Palace</span>
               </div>
@@ -213,7 +213,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex flex-1 items-center justify-center gap-0.5 xl:gap-1.5">
             {nav
               .filter((i) => i.label !== "Give")
               .map((item) => (
@@ -221,7 +221,7 @@ export function SiteHeader() {
               ))}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex shrink-0 items-center gap-2 lg:ml-4">
             {socials.map(({ url, Icon, label }) => (
               <a
                 key={label}
