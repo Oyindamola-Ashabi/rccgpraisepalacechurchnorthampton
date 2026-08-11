@@ -151,8 +151,8 @@ function PodcastCard({
     setUploadNote(null);
     setFileInfo(`${file.name} · ${prettySize(file.size)} · ${file.type || "audio file"}`);
 
-    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
-    const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${Date.now()}-${safe}`;
+    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-").toLowerCase();
+    const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${safe}`;
     const { error } = await supabase.storage
       .from(PODCAST_BUCKET)
       .upload(path, file, { upsert: true, contentType: uploadContentType(file) });
@@ -161,12 +161,12 @@ function PodcastCard({
       const msg = (error.message || "").toLowerCase();
       if (msg.includes("mime") || msg.includes("not supported") || msg.includes("invalid_mime")) {
         onError(
-          "The media store is currently set to accept images only, so audio files cannot be uploaded yet. Ask your Supabase administrator to allow audio files (MP3, M4A, WAV, OGG) and a 100 MB limit on the \"media\" store — meanwhile you can use the \"Link on another platform\" or \"YouTube\" source options.",
+          "The media store is not yet set to accept audio files. Ask your Supabase administrator to allow audio types (MP3, M4A, AAC, WAV, OGG, WebM, FLAC) with a 50 MB limit on the \"media\" store — meanwhile you can use the \"External audio or podcast link\" or \"YouTube\" source options.",
         );
       } else if (msg.includes("size") || msg.includes("too large") || msg.includes("payload")) {
-        onError("This audio file is too large for the current upload limit. Please use a smaller file or ask your administrator to raise the limit to 100 MB.");
+        onError("This audio file is too large for the current upload limit. Please use a smaller file, or ask your administrator to set the limit to 50 MB.");
       } else {
-        onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+        onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 50 MB.");
       }
       setTechDetail(error.message);
       return;
