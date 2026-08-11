@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type {} from "@tanstack/react-start";
 
 /** One-off maintenance endpoint used to widen the media store's accepted file types. */
 export const Route = createFileRoute("/api/public/ensure-media-bucket")({
   server: {
     handlers: {
-      POST: async () => {
+      GET: async () => {
         try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { error } = await supabaseAdmin.storage.updateBucket("media", {
