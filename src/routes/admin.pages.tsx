@@ -256,8 +256,8 @@ function SectionCard({
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Field label="Heading" value={form.headline ?? ""} onChange={(v) => set("headline", v)} disabled={!editable} hint="The main heading shown for this section." />
-        <Field label="Small heading above" value={form.subheading ?? ""} onChange={(v) => set("subheading", v)} disabled={!editable} hint="The short label printed above the heading." />
+        <Field label={spec?.sectionFields?.headline ?? "Heading"} value={form.headline ?? ""} onChange={(v) => set("headline", v)} disabled={!editable} hint="The main heading shown for this section." />
+        <Field label={spec?.sectionFields?.subheading ?? "Small heading above"} value={form.subheading ?? ""} onChange={(v) => set("subheading", v)} disabled={!editable} hint="The short label printed above the heading." />
         <Field label="Button wording" value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
         <Field
           label="Button link"
