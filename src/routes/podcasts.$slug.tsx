@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/section-ui";
-import { episodeAudioSource, mediaUrl, type Podcast } from "@/lib/cms";
+import { episodeSource, mediaUrl, platformName, youTubePoster, type Podcast } from "@/lib/cms";
+import { YouTubePlayer } from "@/components/video-embed";
 import { Paragraphs } from "@/components/rich-text";
 import { eventPhotos } from "@/lib/gallery-images";
 
