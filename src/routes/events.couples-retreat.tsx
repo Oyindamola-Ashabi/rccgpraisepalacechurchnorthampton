@@ -245,7 +245,9 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
     if (!consent) return setError("Please confirm you are happy for us to contact you about the retreat.");
 
     setBusy(true);
-    const { error: err } = await supabase.from("event_registrations" as any).insert({
+    // NOTE: `status`, `is_read` and `admin_notes` are deliberately NOT sent —
+    // visitors have no column permission on them and the database fills them in.
+    const { error: err } = await supabase.from("event_registrations").insert({
       event_id: eventId,
       event_slug: "couples-retreat",
       full_name: name,
@@ -258,14 +260,15 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
       accessibility_requirements: form.accessibility_requirements.trim() || null,
       message: form.message.trim() || null,
       consent_given: true,
-      status: "new",
     });
     setBusy(false);
 
     if (err) {
+      if (import.meta.env.DEV) console.error("[couples-retreat registration]", err);
       setError("Sorry, we could not save your registration. Please try again or email us.");
       return;
     }
+
     setDone(true);
     setForm(EMPTY_FORM);
     setConsent(false);
