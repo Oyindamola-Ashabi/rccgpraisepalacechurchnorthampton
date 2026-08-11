@@ -148,16 +148,23 @@ function CouplesRetreatPage() {
 
       {albums.length > 0 && (
         <section className="bg-secondary/40 border-y">
-          <Section className="!py-16">
-            <SectionHeader
-              eyebrow={text("albums", "subheading", "Photo albums")}
-              title={text("albums", "headline", "Retreats we've shared")}
-              subtitle={text("albums", "body", "Flip through photos from previous retreats.")}
-            />
-            <AlbumGrid albums={albums} />
+          <Section className="!py-14">
+            <div className="text-center">
+              <h2 className="font-display text-2xl font-bold">Photographs from previous retreats</h2>
+              <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+                All retreat albums now live with the rest of our church albums.
+              </p>
+              <Link
+                to="/events/albums"
+                className="mt-5 inline-flex items-center gap-1 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant"
+              >
+                View church albums <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </Section>
         </section>
       )}
+
 
       <Section className="!py-14">
         <div className="rounded-3xl gradient-brand p-8 text-white md:p-12">
