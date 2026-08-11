@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { text, image, visible } = usePageContent("home");
+  const { text, image, visible, all } = usePageContent("home");
   const settings = useSiteSettings();
   const { rows: ministryItems } = useSectionItems("home", "ministries");
   const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
@@ -48,6 +48,7 @@ function HomePage() {
   const { rows: programItems } = useSectionItems("home", "programs");
   const { rows: eventRows } = usePublishedEvents();
   const { rows: communityItems } = useSectionItems("home", "community");
+  const { rows: welcomeHighlightRows } = useSectionItems("home", "welcome_highlights");
   const showCommunity = visible("community") && communityItems.length > 0;
 
 
@@ -112,6 +113,27 @@ function HomePage() {
       };
     });
 
+
+  /**
+   * Welcome Home highlights. Once an administrator manages them in the CMS the
+   * database is the only source, so a highlight that is removed or hidden truly
+   * disappears. The original three points are the fallback before then.
+   */
+  const welcomeHighlightDefaults = [
+    { title: "Join us every Sunday by 10AM", body: "" },
+    { title: "We pray, we worship, we share the word", body: "" },
+    { title: "A welcoming home for every heart", body: "" },
+  ];
+  const welcomeHighlights = all["welcome_highlights"]
+    ? (visible("welcome_highlights")
+        ? welcomeHighlightRows.map((it: SectionItem) => ({ key: it.id, title: it.title ?? "", body: it.body ?? "" }))
+        : [])
+    : welcomeHighlightDefaults.map((d) => ({ key: d.title, title: d.title, body: d.body }));
+
+  /** The gold tagline badge beside the Welcome Home picture. */
+  const showTagline = visible("tagline");
+  const taglineTitle = text("tagline", "headline", "A Family for All Nations");
+  const taglineSub = text("tagline", "subheading", "One House. One Praise.");
 
   const watchLiveHref = text("hero_watch_live", "cta_href", "/media");
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
@@ -218,31 +240,38 @@ function HomePage() {
         <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
           <div className="relative">
             <img src={image("welcome", eventPhotos.fathers.url)} alt="RCCG Praise Palace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
-            <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[240px]">
-              <div className="font-display font-bold text-2xl text-[#3a2b00] leading-tight">A Family for All Nations</div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-[#3a2b00]/70">One House. One Praise.</div>
-            </div>
+            {showTagline && (taglineTitle || taglineSub) && (
+              <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[240px]">
+                {taglineTitle && <div className="font-display font-bold text-2xl text-[#3a2b00] leading-tight">{taglineTitle}</div>}
+                {taglineSub && <div className="mt-1 text-xs uppercase tracking-widest text-[#3a2b00]/70">{taglineSub}</div>}
+              </div>
+            )}
           </div>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495] mb-3">{text("welcome", "subheading", "Welcome Home")}</div>
-            <h2 className="font-display font-bold text-3xl md:text-5xl leading-tight">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#E13495]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#E13495]">
+              {text("welcome", "subheading", "Welcome Home")}
+            </div>
+            <h2 className="mt-4 font-display font-bold text-3xl md:text-5xl leading-[1.1]">
               <Highlight text={text("welcome", "headline", "We Have Been Waiting *For You.*")} />
             </h2>
-            <div className="mt-5 text-muted-foreground leading-relaxed">
+            <div className="mt-5 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
               <Paragraphs text={text("welcome", "body", "RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.\n\nYou are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.")} />
             </div>
-            <ul className="mt-6 space-y-3">
-              {[
-                "Join us every Sunday by 10AM",
-                "We pray, we worship, we share the word",
-                "A welcoming home for every heart",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-3">
-                  <span className="mt-1.5 h-2 w-2 rounded-full gradient-brand" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
+            {welcomeHighlights.length > 0 && (
+              <ul className="mt-8 grid gap-3">
+                {welcomeHighlights.map((h) => (
+                  <li key={h.key} className="flex items-start gap-3 rounded-2xl bg-background/70 p-4 ring-1 ring-black/5 shadow-sm">
+                    <span className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full gradient-brand text-white">
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </span>
+                    <span>
+                      <span className="block font-semibold leading-snug">{h.title}</span>
+                      {h.body && <span className="mt-0.5 block text-sm text-muted-foreground leading-relaxed">{h.body}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="mt-8 flex gap-3">
               <BrandButton to={text("welcome", "cta_href", "/about")}>{text("welcome", "cta_label", "About Us")}</BrandButton>
               <Link to="/plan-a-visit" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
