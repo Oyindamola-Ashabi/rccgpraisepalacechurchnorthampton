@@ -339,11 +339,19 @@ export type GalleryAlbum = {
 export type GalleryImage = {
   id: string;
   album_id: string;
-  image_url: string;
+  image_url: string | null;
   caption: string | null;
   alt_text: string | null;
   sort_order: number;
+  is_visible?: boolean;
+  media_type?: "image" | "video";
+  video_url?: string | null;
+  video_thumbnail_url?: string | null;
 };
+
+/** One item inside a website album — either a photograph or a video. */
+export type AlbumMediaItem = GalleryImage & { media_type: "image" | "video" };
+
 
 export type GivingContent = {
   id: string;
