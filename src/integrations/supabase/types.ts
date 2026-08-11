@@ -366,10 +366,13 @@ export type Database = {
           caption: string | null
           created_at: string
           id: string
-          image_url: string
+          image_url: string | null
           is_visible: boolean
+          media_type: string
           sort_order: number
           updated_at: string
+          video_thumbnail_url: string | null
+          video_url: string | null
         }
         Insert: {
           album_id: string
@@ -377,10 +380,13 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
-          image_url: string
+          image_url?: string | null
           is_visible?: boolean
+          media_type?: string
           sort_order?: number
           updated_at?: string
+          video_thumbnail_url?: string | null
+          video_url?: string | null
         }
         Update: {
           album_id?: string
@@ -388,10 +394,13 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
-          image_url?: string
+          image_url?: string | null
           is_visible?: boolean
+          media_type?: string
           sort_order?: number
           updated_at?: string
+          video_thumbnail_url?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
