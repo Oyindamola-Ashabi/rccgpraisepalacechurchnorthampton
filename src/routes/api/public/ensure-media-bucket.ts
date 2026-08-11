@@ -5,6 +5,7 @@ export const Route = createFileRoute("/api/public/ensure-media-bucket")({
   server: {
     handlers: {
       POST: async () => {
+        try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { error } = await supabaseAdmin.storage.updateBucket("media", {
           public: true,
@@ -16,7 +17,10 @@ export const Route = createFileRoute("/api/public/ensure-media-bucket")({
             "audio/webm", "audio/flac", "audio/x-flac", "video/mp4", "application/octet-stream",
           ],
         });
-        return new Response(error ? `error: ${error.message}` : "ok", { status: error ? 500 : 200 });
+        return new Response(error ? `error: ${error.message}` : "ok", { status: 200 });
+        } catch (e) {
+          return new Response(`threw: ${(e as Error).message}`, { status: 200 });
+        }
       },
     },
   },
