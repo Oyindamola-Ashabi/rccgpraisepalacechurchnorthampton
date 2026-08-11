@@ -324,7 +324,18 @@ export type ChurchEvent = {
   is_featured: boolean;
   is_published: boolean;
   sort_order: number;
+  badge_label?: string | null;
+  show_on_homepage?: boolean;
 };
+
+/** An event is "upcoming" until its end date (or start date) has passed. */
+export function eventEndsAt(ev: { start_at: string; end_at?: string | null }): number {
+  return new Date(ev.end_at ?? ev.start_at).getTime();
+}
+
+export function isUpcomingEvent(ev: { start_at: string; end_at?: string | null }): boolean {
+  return eventEndsAt(ev) >= Date.now();
+}
 
 export type GalleryAlbum = {
   id: string;
@@ -526,14 +537,13 @@ export function useCmsList<T>(
   return { rows, loading, reload: () => setTick((t) => t + 1) };
 }
 
-/** Published events that have not happened yet, soonest first. */
+/** Published events, soonest first — filtered to upcoming ones by the caller. */
 export function usePublishedEvents() {
   return useCmsList<ChurchEvent>(() =>
     supabase
       .from("events")
       .select("*")
       .eq("is_published", true)
-      .gte("start_at", new Date().toISOString())
       .order("start_at", { ascending: true }),
   );
 }
