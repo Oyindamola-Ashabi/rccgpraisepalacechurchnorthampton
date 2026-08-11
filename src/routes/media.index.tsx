@@ -146,14 +146,14 @@ function MediaPage() {
 
       <Section>
         <div className="grid gap-6 md:grid-cols-3">
-          <Link to="/media/gallery" className="group relative overflow-hidden rounded-2xl shadow-elegant">
+          <Link to="/events/albums" className="group relative overflow-hidden rounded-2xl shadow-elegant">
             <img src={galleryPhotos[0].url} alt="Gallery" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#3a1d0d]/90 via-[#3a1d0d]/40 to-transparent" />
             <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
               <ImageIcon className="h-8 w-8 text-[#F0DE51]" />
-              <h3 className="mt-3 font-display font-bold text-2xl">Photo Gallery</h3>
+              <h3 className="mt-3 font-display font-bold text-2xl">Church Albums</h3>
               <p className="mt-1 text-sm text-white/80">Moments of worship, family and fellowship.</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#F0DE51]">Browse gallery <ArrowRight className="h-4 w-4" /></span>
+              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#F0DE51]">Browse albums <ArrowRight className="h-4 w-4" /></span>
             </div>
           </Link>
           <Link to="/media/podcast" className="group relative overflow-hidden rounded-2xl shadow-elegant">
