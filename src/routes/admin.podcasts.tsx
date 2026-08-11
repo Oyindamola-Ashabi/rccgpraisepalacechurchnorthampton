@@ -301,7 +301,7 @@ function PodcastCard({
               </>
             )}
             <p className="mt-2 text-[11px] text-muted-foreground">
-              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 100 MB. Files are stored in the media library under “podcasts”.
+              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 50 MB. Files are stored in the media library under “podcasts”.
             </p>
             {fileInfo && <p className="mt-1 text-[11px] text-muted-foreground">{fileInfo}</p>}
             {uploadNote && <p className="mt-1 text-xs font-semibold text-emerald-600">{uploadNote}</p>}
