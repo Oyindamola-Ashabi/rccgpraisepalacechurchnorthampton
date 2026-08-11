@@ -112,6 +112,18 @@ function MinistryCard({
         <Field label="Leader" value={form.leader ?? ""} onChange={(v) => set("leader", v)} disabled={!editable} />
         <Field label="Meeting information" value={form.meeting_info ?? ""} onChange={(v) => set("meeting_info", v)} disabled={!editable} />
         <Field label="Link (page or external site)" value={form.link_url ?? ""} onChange={(v) => set("link_url", v)} disabled={!editable} />
+        <label className="block text-sm">
+          <span className="mb-1 block font-medium">Group</span>
+          <select
+            value={(form.group_key as string) ?? "church"}
+            onChange={(e) => set("group_key" as any, e.target.value as any)}
+            disabled={!editable}
+            className="w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="church">Church Ministries</option>
+            <option value="outreach">Outreach & Initiatives</option>
+          </select>
+        </label>
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
       </div>
       <div className="mt-4 space-y-4">
