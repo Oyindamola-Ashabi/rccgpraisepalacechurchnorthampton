@@ -359,6 +359,7 @@ export type Ministry = {
   link_url: string | null;
   sort_order: number;
   is_active: boolean;
+  group_key?: string | null;
 };
 
 export type ChurchEvent = {
@@ -597,10 +598,16 @@ export function usePublishedEvents() {
   );
 }
 
-export function useActiveMinistries() {
-  return useCmsList<Ministry>(() =>
-    supabase.from("ministries").select("*").eq("is_active", true).order("sort_order").order("name"),
-  );
+/**
+ * Active ministries, optionally limited to one group:
+ * "church" = internal church ministries, "outreach" = outreach & initiatives.
+ */
+export function useActiveMinistries(group?: "church" | "outreach") {
+  return useCmsList<Ministry>(() => {
+    let q = supabase.from("ministries").select("*").eq("is_active", true);
+    if (group) q = q.eq("group_key", group);
+    return q.order("sort_order").order("name");
+  }, [group]);
 }
 
 
