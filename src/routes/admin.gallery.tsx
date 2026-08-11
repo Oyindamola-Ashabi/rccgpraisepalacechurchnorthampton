@@ -4,7 +4,8 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, MediaUploader, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
-import { BADGE_SUGGESTIONS, type GalleryAlbum, type GalleryImage } from "@/lib/cms";
+import { BADGE_SUGGESTIONS, safeFlipHtml5Url, type GalleryAlbum, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { FlipHtml5Viewer } from "@/components/album-flipbook";
 
 export const Route = createFileRoute("/admin/gallery")({ ssr: false, component: AdminGalleryPage });
 
@@ -85,7 +86,11 @@ function AlbumCard({
   const [saved, setSaved] = useState(false);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [open, setOpen] = useState(false);
+  const [preview, setPreview] = useState(false);
   const { upload, uploading, assets, reload } = useMediaLibrary();
+  const source = ((form as any).album_source ?? "website") as "website" | "fliphtml5";
+  const flipUrl = safeFlipHtml5Url((form as any).fliphtml5_url);
+  const flipInvalid = source === "fliphtml5" && Boolean(((form as any).fliphtml5_url ?? "").trim()) && !flipUrl;
 
   function set<K extends keyof GalleryAlbum>(k: K, v: GalleryAlbum[K]) { setForm((f) => ({ ...f, [k]: v })); setSaved(false); }
 
@@ -98,6 +103,10 @@ function AlbumCard({
 
   async function save() {
     if (saving) return;
+    if (source === "fliphtml5" && !flipUrl) {
+      onError("Enter a valid FlipHTML5 album address, e.g. https://online.fliphtml5.com/your-account/abcd/");
+      return;
+    }
     setSaving(true);
     const { id, ...values } = form as any;
     const { error } = await supabase.from("gallery_albums").update(values).eq("id", album.id);
@@ -130,9 +139,11 @@ function AlbumCard({
         </div>
         <div className="flex items-center gap-3">
           <Toggle label="Published" checked={form.is_published} onChange={(v) => set("is_published", v)} disabled={!editable} />
-          <button onClick={() => setOpen((o) => !o)} className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60">
-            {open ? "Hide images" : "Manage images"}
-          </button>
+          {source === "website" && (
+            <button onClick={() => setOpen((o) => !o)} className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/60">
+              {open ? "Hide images" : "Manage images"}
+            </button>
+          )}
           {canDelete && (
             <DeleteButton
               confirmText={`Delete the album “${album.title}” and all of its images?`}
@@ -172,12 +183,60 @@ function AlbumCard({
             Couples Retreat albums stay on the Couples Retreat page unless you switch this on.
           </p>
         </div>
+        <label className="block text-sm">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Album source</span>
+          <select
+            value={source}
+            disabled={!editable}
+            onChange={(e) => set("album_source" as any, e.target.value as any)}
+            className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
+          >
+            <option value="website">Website album (photographs uploaded here)</option>
+            <option value="fliphtml5">FlipHTML5 album (flip-book hosted in FlipHTML5)</option>
+          </select>
+        </label>
+        {source === "fliphtml5" && (
+          <Field
+            label="FlipHTML5 album address"
+            value={(form as any).fliphtml5_url ?? ""}
+            onChange={(v) => set("fliphtml5_url" as any, (v || null) as any)}
+            disabled={!editable}
+            placeholder="https://online.fliphtml5.com/your-account/abcd/"
+            hint="Paste the album link only — not embed code."
+          />
+        )}
+        {source === "fliphtml5" && (
+          <div className="sm:col-span-2 rounded-xl bg-secondary/40 p-4 text-xs text-muted-foreground">
+            The photographs inside a FlipHTML5 album are managed in your FlipHTML5 account. This page controls how the album appears on the Praise Palace website.
+            {flipInvalid && (
+              <span className="mt-2 block font-semibold text-red-600">
+                That address is not a valid HTTPS FlipHTML5 album link.
+              </span>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              {flipUrl && (
+                <>
+                  <a href={flipUrl} target="_blank" rel="noopener noreferrer" className="rounded-full border px-3 py-1.5 font-semibold hover:bg-background">
+                    Open in FlipHTML5
+                  </a>
+                  <button type="button" onClick={() => setPreview(true)} className="rounded-full border px-3 py-1.5 font-semibold hover:bg-background">
+                    Preview Album
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         <div className="sm:col-span-2"><TextArea label="Description" rows={2} value={form.description ?? ""} onChange={(v) => set("description", v)} disabled={!editable} /></div>
         <div className="sm:col-span-2"><ImageField label="Album cover" value={form.cover_image_url ?? ""} onChange={(v) => set("cover_image_url", v)} disabled={!editable} /></div>
       </div>
       {editable && <div className="mt-4"><SaveButton saving={saving} saved={saved} onClick={save} /></div>}
 
-      {open && (
+      {preview && flipUrl && (
+        <FlipHtml5Viewer album={{ ...(form as any), fliphtml5_url: flipUrl } as GalleryAlbumRow} onClose={() => setPreview(false)} />
+      )}
+
+      {open && source === "website" && (
         <div className="mt-6 border-t pt-5">
           {editable && (
             <>
