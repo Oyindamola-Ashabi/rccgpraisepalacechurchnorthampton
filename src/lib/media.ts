@@ -81,3 +81,78 @@ export function formatBytes(bytes: number | null) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
+
+/* ---------------------------------------------------------------------------
+ * Album videos
+ * ------------------------------------------------------------------------- */
+
+export const ALLOWED_VIDEO_TYPES = [
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "video/quicktime",
+];
+export const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50 MB (Supabase Free plan)
+
+const VIDEO_EXT_TYPES: Record<string, string> = {
+  mp4: "video/mp4",
+  m4v: "video/mp4",
+  webm: "video/webm",
+  ogv: "video/ogg",
+  mov: "video/quicktime",
+};
+
+/** Content type to upload with — falls back to the file extension when the browser reports nothing useful. */
+export function videoContentType(file: File): string | null {
+  if (ALLOWED_VIDEO_TYPES.includes(file.type)) return file.type;
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  return VIDEO_EXT_TYPES[ext] ?? null;
+}
+
+/** Uploads one album video into the existing media bucket under albums/{slug}/videos/. */
+export async function uploadAlbumVideo(file: File, albumSlug: string) {
+  const contentType = videoContentType(file);
+  if (!contentType) {
+    return { url: null as string | null, error: `${file.name}: only MP4, WebM, OGG or MOV videos are supported.` };
+  }
+  if (file.size > MAX_VIDEO_BYTES) {
+    return { url: null, error: `${file.name}: file is larger than 50 MB.` };
+  }
+  const path = `albums/${albumSlug || "album"}/videos/${crypto.randomUUID()}-${safeName(file.name)}`;
+  const up = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, {
+    cacheControl: "31536000",
+    contentType,
+    upsert: false,
+  });
+  if (up.error) {
+    return {
+      url: null,
+      error:
+        `Could not upload the video: ${up.error.message}. ` +
+        `If this mentions the file type, the media storage area still needs video types (video/mp4, video/webm, video/ogg, video/quicktime) added to its allowed list.`,
+    };
+  }
+  return { url: supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl, error: null as string | null };
+}
+
+/** Uploads one album photograph under albums/{slug}/images/ and records it in the media library. */
+export async function uploadAlbumImage(file: File, albumSlug: string) {
+  const invalid = validateImage(file);
+  if (invalid) return { url: null as string | null, error: invalid };
+  const path = `albums/${albumSlug || "album"}/images/${crypto.randomUUID()}-${safeName(file.name)}`;
+  const up = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, {
+    cacheControl: "31536000",
+    contentType: file.type,
+    upsert: false,
+  });
+  if (up.error) return { url: null, error: up.error.message };
+  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
+  await supabase.from("media_assets").insert({
+    storage_path: path,
+    public_url: publicUrl,
+    title: file.name,
+    mime_type: file.type,
+    size_bytes: file.size,
+  });
+  return { url: publicUrl, error: null as string | null };
+}

@@ -39,6 +39,7 @@ import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
 import { Route as MediaGalleryRouteImport } from './routes/media.gallery'
 import { Route as EventsCouplesRetreatRouteImport } from './routes/events.couples-retreat'
 import { Route as EventsCouplesRouteImport } from './routes/events.couples'
+import { Route as EventsAlbumsRouteImport } from './routes/events.albums'
 import { Route as AdminVisitsRouteImport } from './routes/admin.visits'
 import { Route as AdminTestimoniesRouteImport } from './routes/admin.testimonies'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -210,6 +211,11 @@ const EventsCouplesRoute = EventsCouplesRouteImport.update({
   path: '/couples',
   getParentRoute: () => EventsRoute,
 } as any)
+const EventsAlbumsRoute = EventsAlbumsRouteImport.update({
+  id: '/albums',
+  path: '/albums',
+  getParentRoute: () => EventsRoute,
+} as any)
 const AdminVisitsRoute = AdminVisitsRouteImport.update({
   id: '/visits',
   path: '/visits',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
+  '/events/albums': typeof EventsAlbumsRoute
   '/events/couples': typeof EventsCouplesRoute
   '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
@@ -380,6 +387,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
+  '/events/albums': typeof EventsAlbumsRoute
   '/events/couples': typeof EventsCouplesRoute
   '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
@@ -431,6 +439,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonies': typeof AdminTestimoniesRoute
   '/admin/visits': typeof AdminVisitsRoute
+  '/events/albums': typeof EventsAlbumsRoute
   '/events/couples': typeof EventsCouplesRoute
   '/events/couples-retreat': typeof EventsCouplesRetreatRoute
   '/media/gallery': typeof MediaGalleryRoute
@@ -483,6 +492,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
+    | '/events/albums'
     | '/events/couples'
     | '/events/couples-retreat'
     | '/media/gallery'
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
+    | '/events/albums'
     | '/events/couples'
     | '/events/couples-retreat'
     | '/media/gallery'
@@ -578,6 +589,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonies'
     | '/admin/visits'
+    | '/events/albums'
     | '/events/couples'
     | '/events/couples-retreat'
     | '/media/gallery'
@@ -829,6 +841,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsCouplesRouteImport
       parentRoute: typeof EventsRoute
     }
+    '/events/albums': {
+      id: '/events/albums'
+      path: '/albums'
+      fullPath: '/events/albums'
+      preLoaderRoute: typeof EventsAlbumsRouteImport
+      parentRoute: typeof EventsRoute
+    }
     '/admin/visits': {
       id: '/admin/visits'
       path: '/visits'
@@ -1005,12 +1024,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface EventsRouteChildren {
+  EventsAlbumsRoute: typeof EventsAlbumsRoute
   EventsCouplesRoute: typeof EventsCouplesRoute
   EventsCouplesRetreatRoute: typeof EventsCouplesRetreatRoute
   EventsIndexRoute: typeof EventsIndexRoute
 }
 
 const EventsRouteChildren: EventsRouteChildren = {
+  EventsAlbumsRoute: EventsAlbumsRoute,
   EventsCouplesRoute: EventsCouplesRoute,
   EventsCouplesRetreatRoute: EventsCouplesRetreatRoute,
   EventsIndexRoute: EventsIndexRoute,
@@ -1084,13 +1105,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

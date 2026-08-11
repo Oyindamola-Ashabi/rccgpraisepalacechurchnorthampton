@@ -339,11 +339,19 @@ export type GalleryAlbum = {
 export type GalleryImage = {
   id: string;
   album_id: string;
-  image_url: string;
+  image_url: string | null;
   caption: string | null;
   alt_text: string | null;
   sort_order: number;
+  is_visible?: boolean;
+  media_type?: "image" | "video";
+  video_url?: string | null;
+  video_thumbnail_url?: string | null;
 };
+
+/** One item inside a website album — either a photograph or a video. */
+export type AlbumMediaItem = GalleryImage & { media_type: "image" | "video" };
+
 
 export type GivingContent = {
   id: string;
@@ -959,6 +967,11 @@ export function useMainGalleryAlbums() {
   return { rows: rows.filter((a) => !isCouplesAlbum(a) || a.show_in_main_gallery), loading };
 }
 
+/** Every published album — photograph albums and FlipHTML5 albums together. */
+export function useAllAlbums() {
+  return usePublishedAlbums();
+}
+
 export function useAlbumImages(albumId: string | null) {
   return useCmsList<GalleryImage>(() => {
     if (!albumId) return Promise.resolve({ data: [], error: null }) as any;
@@ -970,4 +983,19 @@ export function useAlbumImages(albumId: string | null) {
       .order("sort_order");
   }, [albumId ?? ""]);
 }
+
+/** The playable address of one album item, or null when it is not set up yet. */
+export function albumItemSrc(item: GalleryImage): string | null {
+  if ((item.media_type ?? "image") === "video") return mediaUrl(item.video_url) ?? null;
+  return mediaUrl(item.image_url) ?? null;
+}
+
+/** The still picture used for an album item in thumbnails and covers. */
+export function albumItemPoster(item: GalleryImage): string | null {
+  if ((item.media_type ?? "image") === "video") {
+    return mediaUrl(item.video_thumbnail_url) ?? mediaUrl(item.image_url) ?? null;
+  }
+  return mediaUrl(item.image_url) ?? null;
+}
+
 

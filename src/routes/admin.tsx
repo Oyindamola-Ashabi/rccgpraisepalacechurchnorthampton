@@ -16,7 +16,7 @@ const NAV = [
   { to: "/admin/pages", label: "Page Content", icon: FileText },
   { to: "/admin/navigation", label: "Navigation Menu", icon: MenuIcon },
   { to: "/admin/media", label: "Media Library", icon: ImageIcon },
-  { to: "/admin/gallery", label: "Gallery Albums", icon: Images },
+  { to: "/admin/gallery", label: "Albums", icon: Images },
   { to: "/admin/events", label: "Events", icon: CalendarDays },
   { to: "/admin/ministries", label: "Ministries", icon: Church },
   { to: "/admin/sermons", label: "Sermons", icon: Mic },

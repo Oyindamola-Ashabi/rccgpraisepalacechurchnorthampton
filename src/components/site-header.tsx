@@ -38,8 +38,9 @@ const NAV: NavItem[] = [
     label: "Events",
     to: "/events",
     children: [
-      { label: "All Events", to: "/events" },
+      { label: "Events", to: "/events" },
       { label: "Couples Retreat", to: "/events/couples-retreat" },
+      { label: "Albums", to: "/events/albums" },
     ],
   },
   {
@@ -47,7 +48,6 @@ const NAV: NavItem[] = [
     to: "/media",
     children: [
       { label: "All Media", to: "/media" },
-      { label: "Gallery", to: "/media/gallery" },
       { label: "Podcast", to: "/media/podcast" },
       { label: "Podcast Episodes", to: "/podcasts" },
       { label: "Sermons", to: "/sermons" },
