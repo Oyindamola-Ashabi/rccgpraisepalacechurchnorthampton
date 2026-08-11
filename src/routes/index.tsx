@@ -237,13 +237,13 @@ function HomePage() {
 
       {/* WELCOME / ABOUT */}
       <section className="bg-gradient-to-b from-background to-secondary/40">
-        <div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 lg:grid-cols-2 items-center">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:py-20 grid gap-10 lg:grid-cols-2 items-center">
           <div className="relative">
             <img src={image("welcome", eventPhotos.fathers.url)} alt="RCCG Praise Palace family" className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]" loading="lazy" width={1200} height={800} />
             {showTagline && (taglineTitle || taglineSub) && (
-              <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-6 shadow-card max-w-[240px]">
-                {taglineTitle && <div className="font-display font-bold text-2xl text-[#3a2b00] leading-tight">{taglineTitle}</div>}
-                {taglineSub && <div className="mt-1 text-xs uppercase tracking-widest text-[#3a2b00]/70">{taglineSub}</div>}
+              <div className="absolute -bottom-6 -right-6 hidden md:block bg-[#F0DE51] rounded-2xl p-5 shadow-card max-w-[220px]">
+                {taglineTitle && <div className="font-display font-bold text-xl text-[#3a2b00] leading-tight">{taglineTitle}</div>}
+                {taglineSub && <div className="mt-1 text-[11px] uppercase tracking-widest text-[#3a2b00]/70">{taglineSub}</div>}
               </div>
             )}
           </div>
@@ -251,13 +251,13 @@ function HomePage() {
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E13495]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#E13495]">
               {text("welcome", "subheading", "Welcome Home")}
             </div>
-            <h2 className="mt-4 font-display font-bold text-3xl md:text-5xl leading-[1.1]">
+            <h2 className="mt-3 font-display font-bold text-3xl md:text-4xl leading-tight">
               <Highlight text={text("welcome", "headline", "We Have Been Waiting *For You.*")} />
             </h2>
-            <div className="mt-5 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
+            <div className="mt-4 max-w-xl text-base text-muted-foreground leading-relaxed">
               <Paragraphs text={text("welcome", "body", "RCCG Praise Palace Northampton is a family church for all nations — a parish of The Redeemed Christian Church of God. We are a community experiencing steady growth by His grace, dedicated to prayer, worship and the pursuit of Christ.\n\nYou are invited to join us for any of our services as we seek to bring alive the glory of His kingdom.")} />
             </div>
-            <div className="mt-8 flex gap-3">
+            <div className="mt-6 flex gap-3">
               <BrandButton to={text("welcome", "cta_href", "/about")}>{text("welcome", "cta_label", "About Us")}</BrandButton>
               <Link to="/plan-a-visit" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E13495] hover:underline">
                 Visit us <ArrowRight className="h-4 w-4" />
@@ -266,24 +266,24 @@ function HomePage() {
           </div>
         </div>
         {welcomeHighlights.length > 0 && (
-          <div className="mx-auto max-w-7xl px-6 pb-20">
+          <div className="mx-auto max-w-7xl px-6 pb-16">
             <ul
-              className={`grid gap-4 ${
+              className={`grid gap-4 items-stretch ${
                 welcomeHighlights.length === 1
-                  ? "mx-auto max-w-md"
+                  ? "mx-auto max-w-sm"
                   : welcomeHighlights.length === 2
                     ? "sm:grid-cols-2 mx-auto max-w-3xl"
                     : "sm:grid-cols-2 lg:grid-cols-3"
               }`}
             >
               {welcomeHighlights.map((h) => (
-                <li key={h.key} className="flex h-full items-start gap-3 rounded-2xl bg-background/70 p-5 ring-1 ring-black/5 shadow-sm">
-                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full gradient-brand text-white">
-                    <Sparkles className="h-4 w-4" />
+                <li key={h.key} className="flex h-full items-start gap-3 rounded-xl border bg-card p-4 shadow-card/50 ring-1 ring-black/5 transition hover:shadow-card">
+                  <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full gradient-brand text-white">
+                    <Sparkles className="h-3.5 w-3.5" />
                   </span>
-                  <span>
-                    <span className="block font-semibold leading-snug">{h.title}</span>
-                    {h.body && <span className="mt-1 block text-sm text-muted-foreground leading-relaxed">{h.body}</span>}
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold leading-snug">{h.title}</span>
+                    {h.body && <span className="mt-1 block text-[13px] text-muted-foreground leading-relaxed">{h.body}</span>}
                   </span>
                 </li>
               ))}
