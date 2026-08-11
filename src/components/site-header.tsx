@@ -34,7 +34,7 @@ const NAV: NavItem[] = [
           { label: "PraisePalace Radio", to: "https://praisepalaceradio.com/", external: true },
           { label: "Business School", to: "https://praisepalacebusinessschool.com/", external: true },
           { label: "Youth Camp", to: "https://raisingchampions.org.uk", external: true },
-          { label: "Community Outreach", to: "https://uksmegrowthsummit.co.uk/", external: true },
+          { label: "Community Outreach", to: "/ministries/community-outreach" },
         ],
       },
     ],
