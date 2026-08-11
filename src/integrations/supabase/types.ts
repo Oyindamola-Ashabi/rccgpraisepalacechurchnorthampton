@@ -299,6 +299,7 @@ export type Database = {
       gallery_albums: {
         Row: {
           album_date: string | null
+          album_source: string
           album_year: number | null
           badge_label: string | null
           category: string
@@ -306,6 +307,7 @@ export type Database = {
           created_at: string
           description: string | null
           event_slug: string | null
+          fliphtml5_url: string | null
           id: string
           is_published: boolean
           location: string | null
@@ -317,6 +319,7 @@ export type Database = {
         }
         Insert: {
           album_date?: string | null
+          album_source?: string
           album_year?: number | null
           badge_label?: string | null
           category?: string
@@ -324,6 +327,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           event_slug?: string | null
+          fliphtml5_url?: string | null
           id?: string
           is_published?: boolean
           location?: string | null
@@ -335,6 +339,7 @@ export type Database = {
         }
         Update: {
           album_date?: string | null
+          album_source?: string
           album_year?: number | null
           badge_label?: string | null
           category?: string
@@ -342,6 +347,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           event_slug?: string | null
+          fliphtml5_url?: string | null
           id?: string
           is_published?: boolean
           location?: string | null

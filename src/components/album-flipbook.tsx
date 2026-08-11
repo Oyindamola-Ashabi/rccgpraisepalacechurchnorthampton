@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, X, Images, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from "lucide-react";
-import { albumBadge, mediaUrl, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { albumBadge, isFlipAlbum, mediaUrl, safeFlipHtml5Url, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 
 /**
  * A polished interactive photo-book viewer with arrows, keyboard support,
@@ -209,7 +209,78 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
   );
 }
 
-/** Album covers that open the flipbook viewer, grouped by year when available. */
+/**
+ * A FlipHTML5 publication shown inside the website. Only a validated HTTPS
+ * FlipHTML5 address is embedded — no HTML is ever stored or injected.
+ */
+export function FlipHtml5Viewer({ album, onClose }: { album: GalleryAlbumRow; onClose: () => void }) {
+  const src = safeFlipHtml5Url(album.fliphtml5_url);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex flex-col bg-black/95 p-2 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${album.title} album`}
+    >
+      <div className="flex items-center justify-between gap-3 px-1 pb-2 text-white">
+        <div className="min-w-0">
+          <h3 className="truncate font-display text-base sm:text-xl font-bold">{album.title}</h3>
+          <div className="text-xs text-white/70">
+            {[album.location, album.album_year].filter(Boolean).join(" · ")}
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {src && (
+            <a
+              href={src}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20"
+            >
+              Open in FlipHTML5
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close album"
+            className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20"
+          >
+            <X className="h-4 w-4" /> Close
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden rounded-2xl bg-neutral-900">
+        {src ? (
+          <iframe
+            src={src}
+            title={album.title}
+            loading="lazy"
+            allowFullScreen
+            allow="fullscreen"
+            className="h-full w-full border-0"
+          />
+        ) : (
+          <div className="grid h-full place-items-center px-6 text-center text-sm text-white/70">
+            This album is not available yet.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Album covers that open the right viewer, grouped by year when available. */
 export function AlbumGrid({ albums }: { albums: GalleryAlbumRow[] }) {
   const [open, setOpen] = useState<GalleryAlbumRow | null>(null);
 
@@ -252,6 +323,11 @@ export function AlbumGrid({ albums }: { albums: GalleryAlbumRow[] }) {
                 </div>
                 <div className="p-4">
                   <div className="font-display font-bold">{a.title}</div>
+                  {(a.album_year || a.location) && (
+                    <div className="mt-0.5 text-xs text-muted-foreground">
+                      {[a.album_year, a.location].filter(Boolean).join(" · ")}
+                    </div>
+                  )}
                   {a.description && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{a.description}</p>}
                   <span className="mt-3 inline-block text-xs font-semibold uppercase tracking-widest text-[#E13495]">Open album</span>
                 </div>
@@ -261,7 +337,13 @@ export function AlbumGrid({ albums }: { albums: GalleryAlbumRow[] }) {
         </div>
       ))}
 
-      {open && <AlbumFlipbook album={open} onClose={() => setOpen(null)} />}
+      {open &&
+        (isFlipAlbum(open) ? (
+          <FlipHtml5Viewer album={open} onClose={() => setOpen(null)} />
+        ) : (
+          <AlbumFlipbook album={open} onClose={() => setOpen(null)} />
+        ))}
     </div>
   );
 }
+
