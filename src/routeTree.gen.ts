@@ -33,6 +33,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SermonsSlugRouteImport } from './routes/sermons.$slug'
 import { Route as PodcastsSlugRouteImport } from './routes/podcasts.$slug'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
+import { Route as MinistriesOutreachRouteImport } from './routes/ministries.outreach'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
 import { Route as MinistriesSlugRouteImport } from './routes/ministries.$slug'
 import { Route as MediaPodcastRouteImport } from './routes/media.podcast'
@@ -180,6 +181,11 @@ const MinistriesWomensFellowshipRoute =
     path: '/ministries/womens-fellowship',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MinistriesOutreachRoute = MinistriesOutreachRouteImport.update({
+  id: '/ministries/outreach',
+  path: '/ministries/outreach',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinistriesMensFellowshipRoute =
   MinistriesMensFellowshipRouteImport.update({
     id: '/ministries/mens-fellowship',
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
@@ -394,6 +401,7 @@ export interface FileRoutesByTo {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
@@ -446,6 +454,7 @@ export interface FileRoutesById {
   '/media/podcast': typeof MediaPodcastRoute
   '/ministries/$slug': typeof MinistriesSlugRoute
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
+  '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
+    | '/ministries/outreach'
     | '/ministries/womens-fellowship'
     | '/podcasts/$slug'
     | '/sermons/$slug'
@@ -545,6 +555,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
+    | '/ministries/outreach'
     | '/ministries/womens-fellowship'
     | '/podcasts/$slug'
     | '/sermons/$slug'
@@ -596,6 +607,7 @@ export interface FileRouteTypes {
     | '/media/podcast'
     | '/ministries/$slug'
     | '/ministries/mens-fellowship'
+    | '/ministries/outreach'
     | '/ministries/womens-fellowship'
     | '/podcasts/$slug'
     | '/sermons/$slug'
@@ -625,6 +637,7 @@ export interface RootRouteChildren {
   TestimoniesRoute: typeof TestimoniesRoute
   MinistriesSlugRoute: typeof MinistriesSlugRoute
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
+  MinistriesOutreachRoute: typeof MinistriesOutreachRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
 }
@@ -797,6 +810,13 @@ declare module '@tanstack/react-router' {
       path: '/ministries/womens-fellowship'
       fullPath: '/ministries/womens-fellowship'
       preLoaderRoute: typeof MinistriesWomensFellowshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ministries/outreach': {
+      id: '/ministries/outreach'
+      path: '/ministries/outreach'
+      fullPath: '/ministries/outreach'
+      preLoaderRoute: typeof MinistriesOutreachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ministries/mens-fellowship': {
@@ -1099,6 +1119,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestimoniesRoute: TestimoniesRoute,
   MinistriesSlugRoute: MinistriesSlugRoute,
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
+  MinistriesOutreachRoute: MinistriesOutreachRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
 }
