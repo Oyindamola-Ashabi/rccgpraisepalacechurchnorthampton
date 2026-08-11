@@ -728,34 +728,7 @@ export function invalidatePageSections(pageSlug?: string) {
   else sectionCache.clear();
 }
 
-/* =====================================================================
- * Event videos — separate from Sermons and the Watch Live video
- * ===================================================================== */
 
-export type EventVideo = {
-  id: string;
-  event_id: string | null;
-  event_slug: string | null;
-  title: string;
-  description: string | null;
-  youtube_url: string | null;
-  youtube_video_id: string | null;
-  thumbnail_url: string | null;
-  is_visible: boolean;
-  sort_order: number;
-};
-
-export function useEventVideos(eventSlug?: string) {
-  return useCmsList<EventVideo>(() => {
-    let q = supabase
-      .from("event_videos" as any)
-      .select("*")
-      .eq("is_visible", true)
-      .order("sort_order");
-    if (eventSlug) q = q.eq("event_slug", eventSlug);
-    return q;
-  }, [eventSlug ?? ""]);
-}
 
 
 /* =====================================================================
