@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, X, Images, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from "lucide-react";
-import { albumBadge, isFlipAlbum, mediaUrl, safeFlipHtml5Url, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { ChevronLeft, ChevronRight, X, Images, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Play } from "lucide-react";
+import { albumBadge, albumItemPoster, albumItemSrc, isFlipAlbum, mediaUrl, safeFlipHtml5Url, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 
 /**
  * A polished interactive photo-book viewer with arrows, keyboard support,
@@ -122,7 +122,7 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
           <h3 className="font-display text-lg sm:text-2xl font-bold">{album.title}</h3>
           <div className="text-xs text-white/70">
             {[album.location, album.album_year].filter(Boolean).join(" · ")}
-            {total > 0 && ` · Page ${page + 1} of ${total}`}
+            {total > 0 && ` · ${page + 1} of ${total}`}
           </div>
         </div>
 
@@ -180,7 +180,7 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
                 type="button"
                 onClick={() => go("prev")}
                 disabled={page === 0}
-                aria-label="Previous photograph"
+                aria-label="Previous item"
                 className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2.5 text-white hover:bg-white/30 disabled:opacity-25"
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -189,7 +189,7 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
                 type="button"
                 onClick={() => go("next")}
                 disabled={page >= total - 1}
-                aria-label="Next photograph"
+                aria-label="Next item"
                 className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-2.5 text-white hover:bg-white/30 disabled:opacity-25"
               >
                 <ChevronRight className="h-6 w-6" />
@@ -208,11 +208,18 @@ export function AlbumFlipbook({ album, onClose }: { album: GalleryAlbumRow; onCl
                 key={img.id}
                 type="button"
                 onClick={() => go(idx > page ? "next" : "prev", idx)}
-                className={`h-12 w-16 shrink-0 overflow-hidden rounded-lg transition ${
+                className={`relative h-12 w-16 shrink-0 overflow-hidden rounded-lg transition ${
                   idx === page ? "ring-2 ring-[#E13495] opacity-100 scale-105" : "opacity-50 hover:opacity-80"
                 }`}
               >
-                <img src={mediaUrl(img.image_url) ?? ""} alt="" className="h-full w-full object-cover" loading="lazy" />
+                {albumItemPoster(img) ? (
+                  <img src={albumItemPoster(img) ?? ""} alt="" className="h-full w-full object-cover" loading="lazy" />
+                ) : (
+                  <span className="grid h-full w-full place-items-center bg-neutral-800 text-white"><Play className="h-4 w-4" /></span>
+                )}
+                {(img.media_type ?? "image") === "video" && (
+                  <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/30 text-white"><Play className="h-4 w-4" /></span>
+                )}
               </button>
             ))}
           </div>
