@@ -213,6 +213,8 @@ const GENERIC_SECTION_LABELS: Record<string, string> = {
   hero: "Page banner (heading, text and background image)",
   intro: "Introduction block",
   welcome: "Welcome section",
+  welcome_highlights: "Welcome Home Highlights",
+  tagline: "Homepage Tagline",
   vision: "Our Vision card",
   mission: "Our Mission card",
   values: "Our Values card",
