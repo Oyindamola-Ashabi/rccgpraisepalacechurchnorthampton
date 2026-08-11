@@ -35,8 +35,33 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const { text, image } = usePageContent("about");
+  const { text, image, visible } = usePageContent("about");
   const { rows: lifeItems } = useSectionItems("about", "life_gallery");
+  const { rows: pastorItems } = useSectionItems("about", "pastor");
+
+  /**
+   * The Our Pastor card is a CMS record, so the name, role, biography, photo
+   * and button are all editable. The original wording remains as a fallback so
+   * the page never appears empty.
+   */
+  const pastorFallback = {
+    name: "Pastor Abiodun Bamgbala",
+    role: "Lead Pastor",
+    bio: "Pastor Abiodun Bamgbala is passionate about the spread of the gospel of Jesus Christ to the ends of the earth — evidenced by miracles, signs and wonders as in the days of the apostles. He has dedicated his life to the cause of Christ, having pastored various other parishes of the RCCG before leading Praise Palace Northampton.\n\nHe believes deeply in prayer as a potent key to realising every person's divine purpose on the earth.",
+    image: pastorsImg,
+    ctaLabel: "Get in Touch",
+    ctaHref: "/contact",
+  };
+  const pastorItem = pastorItems[0];
+  const pastor = {
+    name: pastorItem?.title?.trim() || pastorFallback.name,
+    role: pastorItem?.subtitle?.trim() || pastorFallback.role,
+    bio: pastorItem?.body?.trim() || pastorFallback.bio,
+    image: imageOr(pastorItem?.image_url, image("pastor", pastorFallback.image)),
+    ctaLabel: pastorItem?.cta_label?.trim() || pastorFallback.ctaLabel,
+    ctaHref: pastorItem?.cta_href?.trim() || pastorFallback.ctaHref,
+  };
+  const showPastor = visible("pastor");
 
   /** Administrators can replace these photos card-by-card in Admin → Page Content → About. */
   const lifeImages = lifeItems.length
@@ -87,26 +112,33 @@ function AboutPage() {
         </Section>
       </section>
 
-      <Section>
-        <SectionHeader eyebrow="Leadership" title="Our Pastor" subtitle="Dedicated servant leading the RCCG Praise Palace Northampton family with grace and truth." />
-        <div className="grid gap-10 lg:grid-cols-2 items-center">
-          <img src={image("pastor", pastorsImg)} alt="Pastor Abiodun Bamgbala" className="rounded-3xl shadow-elegant object-cover w-full max-w-md mx-auto aspect-[3/4]" loading="lazy" />
-          <div>
-            <h3 className="font-display font-bold text-3xl">Pastor Abiodun Bamgbala</h3>
-            <p className="mt-2 text-sm font-semibold text-[#E13495] uppercase tracking-widest">Lead Pastor</p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              Pastor Abiodun Bamgbala is passionate about the spread of the gospel of Jesus Christ to the ends of the earth — evidenced by miracles, signs and wonders as in the days of the apostles. He has dedicated his life to the cause of Christ, having pastored various other parishes of the RCCG before leading Praise Palace Northampton.
-            </p>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              He believes deeply in prayer as a potent key to realising every person's divine purpose on the earth.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <BrandButton to="/contact">Get in Touch</BrandButton>
-              <BrandButton to="/book-appointment" variant="outline">Book Appointment</BrandButton>
+      {showPastor && (
+        <Section>
+          <SectionHeader
+            eyebrow={text("pastor", "subheading", "Leadership")}
+            title={text("pastor", "headline", "Our Pastor")}
+            subtitle={text("pastor", "body", "Dedicated servant leading the RCCG Praise Palace Northampton family with grace and truth.")}
+          />
+          <div className="grid gap-10 lg:grid-cols-2 items-center">
+            <img src={pastor.image} alt={pastor.name} className="rounded-3xl shadow-elegant object-cover w-full max-w-md mx-auto aspect-[3/4]" loading="lazy" />
+            <div>
+              <h3 className="font-display font-bold text-3xl">{pastor.name}</h3>
+              <p className="mt-2 text-sm font-semibold text-[#E13495] uppercase tracking-widest">{pastor.role}</p>
+              <div className="mt-4 text-muted-foreground leading-relaxed">
+                <Paragraphs text={pastor.bio} />
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                {pastor.ctaHref.startsWith("/") ? (
+                  <BrandButton to={pastor.ctaHref}>{pastor.ctaLabel}</BrandButton>
+                ) : (
+                  <BrandButton href={pastor.ctaHref}>{pastor.ctaLabel}</BrandButton>
+                )}
+                <BrandButton to="/book-appointment" variant="outline">Book Appointment</BrandButton>
+              </div>
             </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
 
       <section className="bg-secondary/40 border-y">
         <Section>

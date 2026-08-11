@@ -20,16 +20,21 @@ const NAV: NavItem[] = [
     label: "Ministries",
     to: "/ministries",
     children: [
-      { label: "All Ministries", to: "/ministries" },
-      { label: "Men Fellowship", to: "/ministries/mens-fellowship" },
-      { label: "Women Fellowship", to: "/ministries/womens-fellowship" },
-      { label: "PraisePalace Radio", to: "https://praisepalaceradio.com/", external: true },
-      { label: "Business School", to: "https://praisepalacebusinessschool.com/", external: true },
-      { label: "Youth Camp", to: "https://raisingchampions.org.uk", external: true },
       {
-        label: "Community",
+        label: "Church Ministries",
         children: [
-          { label: "UK SME Growth Summit", to: "https://uksmegrowthsummit.co.uk/", external: true },
+          { label: "All Ministries", to: "/ministries" },
+          { label: "Men Fellowship", to: "/ministries/mens-fellowship" },
+          { label: "Women Fellowship", to: "/ministries/womens-fellowship" },
+        ],
+      },
+      {
+        label: "Outreach & Initiatives",
+        children: [
+          { label: "PraisePalace Radio", to: "https://praisepalaceradio.com/", external: true },
+          { label: "Business School", to: "https://praisepalacebusinessschool.com/", external: true },
+          { label: "Youth Camp", to: "https://raisingchampions.org.uk", external: true },
+          { label: "Community Outreach", to: "https://uksmegrowthsummit.co.uk/", external: true },
         ],
       },
     ],
@@ -116,21 +121,27 @@ export function SiteHeader() {
   // Admin → Navigation wins when it has records; otherwise the built-in menu is used.
   let nav: NavItem[] = managed.length ? managed.map(toNavItem) : NAV;
 
-  // With the built-in menu, the Ministries list still mirrors Admin → Ministries.
+  // With the built-in menu, the Church Ministries group still mirrors Admin → Ministries.
   if (!managed.length && ministries.length) {
     nav = nav.map((item) =>
       item.label === "Ministries"
         ? {
             ...item,
-            children: [
-              { label: "All Ministries", to: "/ministries" },
-              ...ministries.map((m) => ({
-                label: m.name,
-                to: m.link_url || `/ministries/${m.slug}`,
-                external: Boolean(m.link_url && /^https?:\/\//i.test(m.link_url)),
-              })),
-              ...(item.children ?? []).filter((c) => c.label === "Community"),
-            ],
+            children: (item.children ?? []).map((group) =>
+              group.label === "Church Ministries"
+                ? {
+                    ...group,
+                    children: [
+                      { label: "All Ministries", to: "/ministries" },
+                      ...ministries.map((m) => ({
+                        label: m.name,
+                        to: m.link_url || `/ministries/${m.slug}`,
+                        external: Boolean(m.link_url && /^https?:\/\//i.test(m.link_url)),
+                      })),
+                    ],
+                  }
+                : group,
+            ),
           }
         : item,
     );

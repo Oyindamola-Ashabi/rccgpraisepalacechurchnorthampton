@@ -117,6 +117,10 @@ export type SectionSpec = {
   itemsLabel?: string;
   /** Word used for one child record, e.g. "card", "slide", "photo". */
   itemNoun?: string;
+  /** Plain-English names for the section's own fields, when the generic ones do not fit. */
+  sectionFields?: { headline?: string; subheading?: string; body?: string; image?: string; cta_label?: string; cta_href?: string };
+  /** Plain-English names for the fields of each child card in this section. */
+  itemFields?: { title?: string; subtitle?: string; body?: string; image?: string; cta_label?: string; cta_href?: string };
 };
 
 export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
@@ -125,7 +129,34 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     { key: "hero_slides", label: "Hero Background Slides", hint: "The photographs that fade behind the homepage hero.", template: "image_grid", itemsLabel: "Manage hero slides", itemNoun: "slide" },
     { key: "hero_services", label: "Hero Service Times", hint: "The Sunday, Wednesday and Last Friday boxes shown inside the hero.", template: "card_grid", itemsLabel: "Manage service-time cards", itemNoun: "service card" },
     { key: "hero_watch_live", label: "Watch Live button", hint: "The wording and destination of the Watch Live button in the hero.", template: "cta" },
-    { key: "welcome", label: "Welcome Section", hint: "The 'We have been waiting for you' block and its picture.", template: "image_and_text" },
+    {
+      key: "welcome",
+      label: "Welcome Home",
+      hint: "The small label, heading, short introduction, picture and button of the Welcome Home block on the homepage.",
+      template: "image_and_text",
+      sectionFields: {
+        subheading: "Small label (e.g. WELCOME HOME)",
+        headline: "Main heading",
+        body: "Introductory text",
+        image: "Supporting picture",
+      },
+    },
+    {
+      key: "welcome_highlights",
+      label: "Welcome Home Highlights",
+      hint: "The short points listed under the Welcome Home text. Edit, reorder, hide, remove or add as many as you like — if none are visible the section simply shows the heading and paragraph.",
+      template: "card_grid",
+      itemsLabel: "Manage highlights",
+      itemNoun: "highlight",
+      itemFields: { title: "Highlight", body: "Short description (optional)" },
+    },
+    {
+      key: "tagline",
+      label: "Homepage Tagline",
+      hint: "The small gold badge beside the Welcome Home picture — “A Family for All Nations · One House. One Praise.”",
+      template: "custom",
+      sectionFields: { headline: "Tagline", subheading: "Second line" },
+    },
     { key: "programs", label: "Weekly Rhythms of Grace", hint: "The four weekly programme cards.", template: "card_grid", itemsLabel: "Manage programme cards", itemNoun: "programme card" },
     { key: "ministries", label: "Grow. Serve. Belong.", hint: "The six ministry cards — radio, business, youth, men, women and the Couples Retreat.", template: "card_grid", itemsLabel: "Manage cards and images", itemNoun: "card" },
     { key: "pastor", label: "Pastor’s Message", hint: "The pastor introduction and photograph.", template: "image_and_text" },
@@ -139,7 +170,27 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     { key: "vision", label: "Our Vision card", hint: "", template: "card_grid" },
     { key: "mission", label: "Our Mission card", hint: "", template: "card_grid" },
     { key: "values", label: "Our Values card", hint: "", template: "card_grid" },
-    { key: "pastor", label: "Pastor section", hint: "The pastor photograph and introduction.", template: "image_and_text" },
+    {
+      key: "pastor",
+      label: "Our Pastor",
+      hint: "The Our Pastor block on the About page. The small label, heading and introduction are set here; the pastor’s name, role, biography, photograph and button are edited on the pastor card below. Switch this section off to hide the whole block.",
+      template: "image_and_text",
+      itemsLabel: "Manage pastor details",
+      itemNoun: "pastor",
+      sectionFields: {
+        subheading: "Small label (e.g. Leadership)",
+        headline: "Section heading (e.g. Our Pastor)",
+        body: "Short introductory text",
+      },
+      itemFields: {
+        title: "Pastor name",
+        subtitle: "Role / title",
+        body: "Biography",
+        image: "Pastor photograph",
+        cta_label: "Button wording",
+        cta_href: "Button destination",
+      },
+    },
     { key: "life_gallery", label: "Life at Praise Palace", hint: "Upload, replace and arrange the photographs displayed in the Life at Praise Palace section of the About page.", template: "image_grid", itemsLabel: "Manage photos", itemNoun: "photo" },
     { key: "cta", label: "Closing call to action", hint: "", template: "cta" },
   ],
@@ -162,6 +213,8 @@ const GENERIC_SECTION_LABELS: Record<string, string> = {
   hero: "Page banner (heading, text and background image)",
   intro: "Introduction block",
   welcome: "Welcome section",
+  welcome_highlights: "Welcome Home Highlights",
+  tagline: "Homepage Tagline",
   vision: "Our Vision card",
   mission: "Our Mission card",
   values: "Our Values card",

@@ -256,8 +256,8 @@ function SectionCard({
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Field label="Heading" value={form.headline ?? ""} onChange={(v) => set("headline", v)} disabled={!editable} hint="The main heading shown for this section." />
-        <Field label="Small heading above" value={form.subheading ?? ""} onChange={(v) => set("subheading", v)} disabled={!editable} hint="The short label printed above the heading." />
+        <Field label={spec?.sectionFields?.headline ?? "Heading"} value={form.headline ?? ""} onChange={(v) => set("headline", v)} disabled={!editable} hint="The main heading shown for this section." />
+        <Field label={spec?.sectionFields?.subheading ?? "Small heading above"} value={form.subheading ?? ""} onChange={(v) => set("subheading", v)} disabled={!editable} hint="The short label printed above the heading." />
         <Field label="Button wording" value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
         <Field
           label="Button link"
@@ -278,9 +278,9 @@ function SectionCard({
       </div>
 
       <div className="mt-4 space-y-4">
-        <TextArea label="Text" rows={4} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
+        <TextArea label={spec?.sectionFields?.body ?? "Text"} rows={4} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
         <ImageField
-          label="Image"
+          label={spec?.sectionFields?.image ?? "Image"}
           value={form.image_url ?? ""}
           onChange={(v) => set("image_url", v)}
           disabled={!editable}
@@ -310,6 +310,7 @@ function SectionCard({
           sectionKey={row.section_key}
           itemsLabel={spec.itemsLabel}
           itemNoun={spec.itemNoun ?? "card"}
+          itemFields={spec.itemFields}
           editable={editable}
           canDelete={canDelete}
           onError={onError}
@@ -326,6 +327,7 @@ function SectionItems({
   sectionKey,
   itemsLabel,
   itemNoun,
+  itemFields,
   editable,
   canDelete,
   onError,
@@ -335,6 +337,7 @@ function SectionItems({
   sectionKey: string;
   itemsLabel: string;
   itemNoun: string;
+  itemFields?: Record<string, string | undefined>;
   editable: boolean;
   canDelete: boolean;
   onError: (m: string | null) => void;
@@ -405,6 +408,7 @@ function SectionItems({
               key={it.id}
               item={it}
               itemNoun={itemNoun}
+              itemFields={itemFields}
               pageSlug={pageSlug}
               sectionKey={sectionKey}
               editable={editable}
@@ -434,6 +438,7 @@ const ICON_CHOICES = ["", "radio", "graduation-cap", "tent", "users", "heart", "
 function ItemCard({
   item,
   itemNoun,
+  itemFields,
   pageSlug,
   sectionKey,
   editable,
@@ -443,6 +448,7 @@ function ItemCard({
 }: {
   item: SectionItem;
   itemNoun: string;
+  itemFields?: Record<string, string | undefined>;
   pageSlug: string;
   sectionKey: string;
   editable: boolean;
@@ -512,8 +518,8 @@ function ItemCard({
       {open && (
         <>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Field label="Title" value={form.title ?? ""} onChange={(v) => set("title", v)} disabled={!editable} />
-            <Field label="Day or subtitle" value={form.subtitle ?? ""} onChange={(v) => set("subtitle", v)} disabled={!editable} hint="For service times and programmes this is the day, e.g. Sundays." />
+            <Field label={itemFields?.title ?? "Title"} value={form.title ?? ""} onChange={(v) => set("title", v)} disabled={!editable} />
+            <Field label={itemFields?.subtitle ?? "Day or subtitle"} value={form.subtitle ?? ""} onChange={(v) => set("subtitle", v)} disabled={!editable} hint="For service times and programmes this is the day, e.g. Sundays." />
             <Field
               label="Card badge"
               value={form.badge_label ?? ""}
@@ -523,9 +529,9 @@ function ItemCard({
               suggestions={BADGE_SUGGESTIONS}
               hint="This short label appears at the top-left of the card image. Leave it empty to hide the label."
             />
-            <Field label="Button wording" value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
+            <Field label={itemFields?.cta_label ?? "Button wording"} value={form.cta_label ?? ""} onChange={(v) => set("cta_label", v)} disabled={!editable} />
             <Field
-              label="Link"
+              label={itemFields?.cta_href ?? "Link"}
               value={form.cta_href ?? ""}
               onChange={(v) => set("cta_href", v)}
               disabled={!editable}
@@ -567,9 +573,9 @@ function ItemCard({
           </div>
 
           <div className="mt-3 space-y-3">
-            <TextArea label="Description" rows={2} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
+            <TextArea label={itemFields?.body ?? "Description"} rows={2} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
             <ImageField
-              label="Image"
+              label={itemFields?.image ?? "Image"}
               value={form.image_url ?? ""}
               onChange={(v) => set("image_url", v)}
               disabled={!editable}
