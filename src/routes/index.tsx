@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useSectionItems, imageOr, type SectionItem } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, type SectionItem } from "@/lib/cms";
 
 /** Card icons an administrator can choose per item. */
 const CARD_ICONS: Record<string, any> = {
@@ -46,6 +46,7 @@ function HomePage() {
   const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
   const { rows: serviceItems } = useSectionItems("home", "hero_services");
   const { rows: programItems } = useSectionItems("home", "programs");
+  const { rows: eventRows } = usePublishedEvents();
   const { rows: communityItems } = useSectionItems("home", "community");
   const showCommunity = visible("community") && communityItems.length > 0;
 
