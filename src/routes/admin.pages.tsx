@@ -278,9 +278,9 @@ function SectionCard({
       </div>
 
       <div className="mt-4 space-y-4">
-        <TextArea label="Text" rows={4} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
+        <TextArea label={spec?.sectionFields?.body ?? "Text"} rows={4} value={form.body ?? ""} onChange={(v) => set("body", v)} disabled={!editable} />
         <ImageField
-          label="Image"
+          label={spec?.sectionFields?.image ?? "Image"}
           value={form.image_url ?? ""}
           onChange={(v) => set("image_url", v)}
           disabled={!editable}
