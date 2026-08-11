@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHero, Section, SectionHeader } from "@/components/section-ui";
-import { VideoEmbed } from "@/components/video-embed";
+import { PageHero, Section } from "@/components/section-ui";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { eventPhotos } from "@/lib/gallery-images";

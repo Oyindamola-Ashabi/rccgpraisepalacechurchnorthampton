@@ -745,17 +745,6 @@ export type EventVideo = {
   sort_order: number;
 };
 
-export function useEventVideos(eventSlug?: string) {
-  return useCmsList<EventVideo>(() => {
-    let q = supabase
-      .from("event_videos" as any)
-      .select("*")
-      .eq("is_visible", true)
-      .order("sort_order");
-    if (eventSlug) q = q.eq("event_slug", eventSlug);
-    return q;
-  }, [eventSlug ?? ""]);
-}
 
 
 /* =====================================================================
