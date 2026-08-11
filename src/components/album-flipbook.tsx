@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, X, Images, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize } from "lucide-react";
-import { albumBadge, mediaUrl, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { albumBadge, isFlipAlbum, mediaUrl, safeFlipHtml5Url, useAlbumImages, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 
 /**
  * A polished interactive photo-book viewer with arrows, keyboard support,
