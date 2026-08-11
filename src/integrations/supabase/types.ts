@@ -244,6 +244,7 @@ export type Database = {
       }
       events: {
         Row: {
+          badge_label: string | null
           created_at: string
           description: string | null
           detail_page: string | null
@@ -253,6 +254,7 @@ export type Database = {
           is_featured: boolean
           is_published: boolean
           registration_url: string | null
+          show_on_homepage: boolean
           slug: string | null
           sort_order: number
           start_at: string
@@ -261,6 +263,7 @@ export type Database = {
           venue: string | null
         }
         Insert: {
+          badge_label?: string | null
           created_at?: string
           description?: string | null
           detail_page?: string | null
@@ -270,6 +273,7 @@ export type Database = {
           is_featured?: boolean
           is_published?: boolean
           registration_url?: string | null
+          show_on_homepage?: boolean
           slug?: string | null
           sort_order?: number
           start_at: string
@@ -278,6 +282,7 @@ export type Database = {
           venue?: string | null
         }
         Update: {
+          badge_label?: string | null
           created_at?: string
           description?: string | null
           detail_page?: string | null
@@ -287,6 +292,7 @@ export type Database = {
           is_featured?: boolean
           is_published?: boolean
           registration_url?: string | null
+          show_on_homepage?: boolean
           slug?: string | null
           sort_order?: number
           start_at?: string
