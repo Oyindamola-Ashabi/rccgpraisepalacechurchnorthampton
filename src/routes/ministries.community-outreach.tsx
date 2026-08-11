@@ -51,10 +51,10 @@ function CommunityOutreachPage() {
 }
 
 function OutreachCard({ item }: { item: SectionItem }) {
-  const href = item.cta_href ?? "";
+  const href = (item.cta_href ?? "").trim() || "https://uksmegrowthsummit.co.uk/";
   const internal = href.startsWith("/");
   const badge = item.badge_label?.trim();
-  const label = item.cta_label?.trim() || "Learn more";
+  const label = item.cta_label?.trim() || "Register Now";
   const image = mediaUrl(item.image_url);
 
   return (
