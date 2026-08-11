@@ -359,11 +359,17 @@ function HomePage() {
               View all events <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {homeEvents.map((e) => (
-              <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} location={e.location} to={e.to} />
-            ))}
-          </div>
+          {homeEvents.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No events are featured at the moment — see all our gatherings on the events page.
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {homeEvents.map((e) => (
+                <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} time={e.time} location={e.location} to={e.to} href={e.href} />
+              ))}
+            </div>
+          )}
         </Section>
       </section>
 
