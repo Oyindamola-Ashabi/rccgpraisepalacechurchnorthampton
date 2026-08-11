@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
-import { AlbumGrid } from "@/components/album-flipbook";
-import { Calendar, MapPin, Mail, Phone, Loader2, CheckCircle2, Heart, Users, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Mail, Phone, Loader2, CheckCircle2, Heart, Users, Sparkles, ArrowRight } from "lucide-react";
+
 import { eventPhotos } from "@/lib/gallery-images";
 import { supabase } from "@/integrations/supabase/client";
 import {
