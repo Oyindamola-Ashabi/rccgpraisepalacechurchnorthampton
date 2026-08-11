@@ -155,7 +155,16 @@ function PodcastCard({
       .upload(path, file, { upsert: true, contentType: uploadContentType(file) });
     if (error) {
       setUploading(false);
-      onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+      const msg = (error.message || "").toLowerCase();
+      if (msg.includes("mime") || msg.includes("not supported") || msg.includes("invalid_mime")) {
+        onError(
+          "The media store is currently set to accept images only, so audio files cannot be uploaded yet. Ask your Supabase administrator to allow audio files (MP3, M4A, WAV, OGG) and a 100 MB limit on the \"media\" store — meanwhile you can use the \"Link on another platform\" or \"YouTube\" source options.",
+        );
+      } else if (msg.includes("size") || msg.includes("too large") || msg.includes("payload")) {
+        onError("This audio file is too large for the current upload limit. Please use a smaller file or ask your administrator to raise the limit to 100 MB.");
+      } else {
+        onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+      }
       setTechDetail(error.message);
       return;
     }
