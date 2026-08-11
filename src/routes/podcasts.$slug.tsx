@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Section } from "@/components/section-ui";
-import { episodeAudioSource, mediaUrl, type Podcast } from "@/lib/cms";
+import { episodeSource, mediaUrl, platformName, youTubePoster, type Podcast } from "@/lib/cms";
+import { YouTubePlayer } from "@/components/video-embed";
 import { Paragraphs } from "@/components/rich-text";
 import { eventPhotos } from "@/lib/gallery-images";
 
@@ -69,8 +70,10 @@ function PodcastDetail() {
     );
   }
 
-  const { src, external } = episodeAudioSource(episode);
-  const cover = mediaUrl(episode.cover_image_url) || eventPhotos.modernWorship.url;
+  const source = episodeSource(episode as any);
+  const cover =
+    mediaUrl(episode.cover_image_url) ||
+    (source.kind === "youtube" ? youTubePoster(source.videoId) ?? eventPhotos.modernWorship.url : eventPhotos.modernWorship.url);
 
   return (
     <Section>
@@ -88,28 +91,40 @@ function PodcastDetail() {
             {episode.duration ? ` · ${episode.duration}` : ""}
           </p>
 
-          {src ? (
-            <audio controls preload="metadata" src={src} className="mt-5 w-full">
+          {source.kind === "audio" ? (
+            <audio controls preload="metadata" src={source.src} aria-label={`Listen to ${episode.title}`} className="mt-5 w-full">
               <track kind="captions" />
             </audio>
-          ) : external ? (
-            <p className="mt-5 text-sm text-muted-foreground">
-              This episode is hosted on an external platform that cannot play inside a website.
-            </p>
+          ) : source.kind === "youtube" ? (
+            <div className="mt-5">
+              <YouTubePlayer videoId={source.videoId} youtubeUrl={source.url} poster={cover} title={episode.title} />
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant"
+              >
+                Watch on YouTube <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          ) : source.kind === "external" ? (
+            <>
+              <p className="mt-5 text-sm text-muted-foreground">
+                This episode is hosted on {platformName(source.url)}, which cannot play inside a website.
+              </p>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant"
+              >
+                Listen on {platformName(source.url)} <ExternalLink className="h-4 w-4" />
+              </a>
+            </>
           ) : (
             <p className="mt-5 text-sm text-muted-foreground">Audio for this episode is coming soon.</p>
           )}
 
-          {external && (
-            <a
-              href={external}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-2.5 text-sm font-semibold text-white shadow-elegant"
-            >
-              Open episode on the platform <ExternalLink className="h-4 w-4" />
-            </a>
-          )}
 
           {episode.description && (
             <div className="mt-6 leading-relaxed text-muted-foreground">

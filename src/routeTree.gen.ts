@@ -57,8 +57,6 @@ import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
-import { Route as ApiPublicPingTestRouteImport } from './routes/api/public/ping-test'
-import { Route as ApiPublicEnsureMediaBucketRouteImport } from './routes/api/public/ensure-media-bucket'
 
 const TestimoniesRoute = TestimoniesRouteImport.update({
   id: '/testimonies',
@@ -302,17 +300,6 @@ const AdminAppointmentsRoute = AdminAppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiPublicPingTestRoute = ApiPublicPingTestRouteImport.update({
-  id: '/api/public/ping-test',
-  path: '/api/public/ping-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicEnsureMediaBucketRoute =
-  ApiPublicEnsureMediaBucketRouteImport.update({
-    id: '/api/public/ensure-media-bucket',
-    path: '/api/public/ensure-media-bucket',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -363,8 +350,6 @@ export interface FileRoutesByFullPath {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
-  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
-  '/api/public/ping-test': typeof ApiPublicPingTestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -410,8 +395,6 @@ export interface FileRoutesByTo {
   '/ministries': typeof MinistriesIndexRoute
   '/podcasts': typeof PodcastsIndexRoute
   '/sermons': typeof SermonsIndexRoute
-  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
-  '/api/public/ping-test': typeof ApiPublicPingTestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -463,8 +446,6 @@ export interface FileRoutesById {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
-  '/api/public/ensure-media-bucket': typeof ApiPublicEnsureMediaBucketRoute
-  '/api/public/ping-test': typeof ApiPublicPingTestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -517,8 +498,6 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
-    | '/api/public/ensure-media-bucket'
-    | '/api/public/ping-test'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -564,8 +543,6 @@ export interface FileRouteTypes {
     | '/ministries'
     | '/podcasts'
     | '/sermons'
-    | '/api/public/ensure-media-bucket'
-    | '/api/public/ping-test'
   id:
     | '__root__'
     | '/'
@@ -616,8 +593,6 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
-    | '/api/public/ensure-media-bucket'
-    | '/api/public/ping-test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -640,8 +615,6 @@ export interface RootRouteChildren {
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
-  ApiPublicEnsureMediaBucketRoute: typeof ApiPublicEnsureMediaBucketRoute
-  ApiPublicPingTestRoute: typeof ApiPublicPingTestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -982,20 +955,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppointmentsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/public/ping-test': {
-      id: '/api/public/ping-test'
-      path: '/api/public/ping-test'
-      fullPath: '/api/public/ping-test'
-      preLoaderRoute: typeof ApiPublicPingTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/ensure-media-bucket': {
-      id: '/api/public/ensure-media-bucket'
-      path: '/api/public/ensure-media-bucket'
-      fullPath: '/api/public/ensure-media-bucket'
-      preLoaderRoute: typeof ApiPublicEnsureMediaBucketRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -1121,8 +1080,6 @@ const rootRouteChildren: RootRouteChildren = {
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
-  ApiPublicEnsureMediaBucketRoute: ApiPublicEnsureMediaBucketRoute,
-  ApiPublicPingTestRoute: ApiPublicPingTestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

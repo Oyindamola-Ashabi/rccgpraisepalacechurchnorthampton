@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play, Pause, Clock, ExternalLink, Headphones, Youtube } from "lucide-react";
+import { Play, Pause, Clock, ExternalLink, Headphones } from "lucide-react";
 import { episodeSource, mediaUrl, platformName, youTubePoster, type Podcast } from "@/lib/cms";
 import { YouTubePlayer } from "@/components/video-embed";
 
@@ -10,8 +10,10 @@ function formatDate(value: string | null) {
 }
 
 /**
- * One episode row. Audio episodes get an in-page player and “Listen” wording;
- * only YouTube episodes use a video player and “Watch” wording.
+ * One episode row: cover, details and the right player for the episode's
+ * source — an in-page audio player for uploaded files and direct audio links,
+ * a video player for YouTube episodes, or a clear platform button for pages
+ * (Spotify, Apple) that cannot play inside a website.
  */
 export function EpisodeRow({
   episode,
@@ -29,10 +31,9 @@ export function EpisodeRow({
   register: (id: string, el: HTMLAudioElement | null) => void;
 }) {
   const source = episodeSource(episode as any);
-  const isVideo = source.kind === "youtube";
   const cover =
     mediaUrl(episode.cover_image_url) ||
-    (isVideo ? youTubePoster(source.videoId) ?? coverFallback : coverFallback);
+    (source.kind === "youtube" ? youTubePoster(source.videoId) ?? coverFallback : coverFallback);
   const playing = playingId === episode.id;
 
   return (
@@ -73,7 +74,7 @@ export function EpisodeRow({
                 el.pause();
               }
             }}
-            aria-label={playing ? `Pause ${episode.title}` : `Listen to ${episode.title}`}
+            aria-label={playing ? `Pause ${episode.title}` : `Play ${episode.title}`}
             className="grid h-11 w-11 shrink-0 self-center place-items-center rounded-full border border-[#E13495]/30 text-[#E13495] transition hover:gradient-brand hover:text-white"
           >
             {playing ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}
@@ -89,7 +90,6 @@ export function EpisodeRow({
           controls
           preload="none"
           className="mt-4 w-full"
-          aria-label={`Listen to ${episode.title}`}
           onPlay={() => setPlayingId(episode.id)}
           onPause={() => setPlayingId(playingId === episode.id ? null : playingId)}
           onEnded={() => setPlayingId(null)}
@@ -99,22 +99,12 @@ export function EpisodeRow({
       ) : source.kind === "youtube" ? (
         <div className="mt-4">
           <YouTubePlayer videoId={source.videoId} youtubeUrl={source.url} poster={cover} title={episode.title} />
-          <a
-            href={source.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Watch ${episode.title} on YouTube`}
-            className="mt-3 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-xs font-semibold text-white shadow-elegant"
-          >
-            <Youtube className="h-3.5 w-3.5" /> Watch on YouTube
-          </a>
         </div>
       ) : source.kind === "external" ? (
         <a
           href={source.url}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Listen to ${episode.title}`}
           className="mt-4 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-xs font-semibold text-white shadow-elegant"
         >
           Listen on {platformName(source.url)} <ExternalLink className="h-3.5 w-3.5" />
