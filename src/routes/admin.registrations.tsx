@@ -21,6 +21,8 @@ export const Route = createFileRoute("/admin/registrations")({ ssr: false, compo
         { key: "accommodation_preference", label: "Accommodation" },
         { key: "dietary_requirements", label: "Dietary" },
         { key: "accessibility_requirements", label: "Accessibility" },
+        { key: "event_slug", label: "Event" },
+        { key: "consent_given", label: "Consent given", format: (v) => (v ? "Yes" : "No") },
         { key: "created_at", label: "Received", format: (v) => new Date(v).toLocaleString() },
       ],
     }}

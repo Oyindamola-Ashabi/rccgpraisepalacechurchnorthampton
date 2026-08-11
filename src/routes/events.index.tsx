@@ -4,7 +4,7 @@ import { VideoEmbed } from "@/components/video-embed";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { eventPhotos } from "@/lib/gallery-images";
-import { usePublishedEvents, usePastEvents, formatEventDate, formatEventTime } from "@/lib/cms";
+import { usePublishedEvents, formatEventDate, formatEventTime, eventEndsAt, type ChurchEvent } from "@/lib/cms";
 import { useState } from "react";
 
 export const Route = createFileRoute("/events/")({
@@ -22,20 +22,11 @@ export const Route = createFileRoute("/events/")({
   component: EventsPage,
 });
 
-/** Built-in events kept alongside anything added in the admin area. */
-const FALLBACK_EVENTS = [
-  { start: "2026-08-15T17:00:00Z", image: eventPhotos.celebration.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", time: "6:00 PM", location: "Praise Palace Auditorium", to: "/events/couples-retreat" },
-  { start: "2026-06-20T08:00:00Z", image: eventPhotos.youth.url, tag: "Youth", title: "Raising Champions Youth Camp 2026", date: "Fri, 20 Jun 2026", time: "All Day", location: "Sanctuary Grounds" },
-  { start: "2026-07-09T18:30:00Z", image: eventPhotos.tableFellowship.url, tag: "Podcast", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", time: "7:30 PM", location: "Studio B" },
-  { start: "2026-07-25T19:00:00Z", image: eventPhotos.dinner.url, tag: "Worship", title: "Night of Worship & Praise", date: "Fri, 25 Jul 2026", time: "8:00 PM", location: "Main Sanctuary" },
-  { start: "2026-06-21T09:00:00Z", image: eventPhotos.fathers.url, tag: "Celebration", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", time: "10:00 AM", location: "Main Sanctuary" },
-  { start: "2026-10-04T09:00:00Z", image: eventPhotos.familyMeals.url, tag: "Outreach", title: "Family Life Class", date: "Sat, 04 Oct 2026", time: "10:00 AM", location: "Briar Hill Community Centre" },
-];
-
 type EventCardData = {
+  id: string;
   start: number;
   image: string;
-  tag: string;
+  tag: string | null;
   title: string;
   date: string;
   time: string;
@@ -45,59 +36,43 @@ type EventCardData = {
   description?: string;
 };
 
+function toCard(e: ChurchEvent & { detail_page?: string | null }): EventCardData {
+  const link = e.detail_page ?? e.registration_url ?? undefined;
+  const internal = !!link && link.startsWith("/");
+  return {
+    id: e.id,
+    start: new Date(e.start_at).getTime(),
+    image: e.image_url ?? heroImg,
+    tag: e.badge_label?.trim() || null,
+    title: e.title,
+    date: formatEventDate(e.start_at),
+    time: formatEventTime(e.start_at),
+    location: e.venue ?? "RCCG Praise Palace Northampton",
+    to: internal ? link : undefined,
+    href: internal ? undefined : link,
+    description: e.description ?? undefined,
+  };
+}
+
 function EventsPage() {
   const { rows } = usePublishedEvents();
-  const { rows: pastRows } = usePastEvents();
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
   const now = Date.now();
 
-  // Admin-managed events come first; built-in ones are kept unless the admin
-  // already manages an event with the same name. Past events are never shown.
-  const fromCms: EventCardData[] = rows.map((e) => {
-    const link = (e as any).detail_page ?? e.registration_url ?? undefined;
-    const internal = !!link && link.startsWith("/");
-    return {
-      start: new Date(e.start_at).getTime(),
-      image: e.image_url ?? heroImg,
-      tag: e.is_featured ? "Featured" : "Event",
-      title: e.title,
-      date: formatEventDate(e.start_at),
-      time: formatEventTime(e.start_at),
-      location: e.venue ?? "RCCG Praise Palace Northampton",
-      to: internal ? link : undefined,
-      href: internal ? undefined : link,
-      description: e.description ?? undefined,
-    };
-  });
+  // Upcoming / past is worked out automatically from the event dates:
+  // an event stays upcoming until its end date (or start date) has passed.
+  const events = rows
+    .filter((e) => eventEndsAt(e) >= now)
+    .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
+    .map((e) => toCard(e as any));
 
-  const cmsTitles = new Set(fromCms.map((e) => e.title.toLowerCase()));
-  const fromBuiltIn: EventCardData[] = FALLBACK_EVENTS.filter(
-    (e) => new Date(e.start).getTime() >= now && !cmsTitles.has(e.title.toLowerCase()),
-  ).map((e) => ({ ...e, start: new Date(e.start).getTime(), to: (e as any).to as string | undefined }));
-
-  const events = [...fromCms, ...fromBuiltIn]
-    .filter((e) => e.start >= now)
-    .sort((a, b) => a.start - b.start);
-
-  // Past events move here automatically once their date has gone by.
-  const pastEvents: EventCardData[] = pastRows.map((e) => {
-    const link = e.detail_page ?? e.registration_url ?? undefined;
-    const internal = !!link && link.startsWith("/");
-    return {
-      start: new Date(e.start_at).getTime(),
-      image: e.image_url ?? heroImg,
-      tag: "Past",
-      title: e.title,
-      date: formatEventDate(e.start_at),
-      time: formatEventTime(e.start_at),
-      location: e.venue ?? "RCCG Praise Palace Northampton",
-      to: internal ? link : undefined,
-      href: internal ? undefined : link,
-      description: e.description ?? undefined,
-    };
-  });
+  const pastEvents = rows
+    .filter((e) => eventEndsAt(e) < now)
+    .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime())
+    .map((e) => toCard(e as any));
 
   const shown = tab === "upcoming" ? events : pastEvents;
+
 
 
   return (
@@ -127,10 +102,10 @@ function EventsPage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {shown.map((e) => (
-            <article key={e.title} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
+            <article key={e.id} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 hover:-translate-y-1 transition">
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img src={e.image} alt={e.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-                <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{e.tag}</span>
+                {e.tag && <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{e.tag}</span>}
               </div>
               <div className="p-5">
                 <h3 className="font-display font-bold text-lg leading-tight">{e.title}</h3>

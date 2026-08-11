@@ -51,7 +51,7 @@ function AdminEventsPage() {
 
   return (
     <div>
-      <AdminHeading title="Events" description="Only published events appear on the website. Events whose date has passed automatically move to “Past events”." />
+      <AdminHeading title="Events" description="Only published events appear on the website. Events whose date has passed automatically move to “Past events”. Switch on “Show on Homepage” for the events you want featured on the homepage, and add a short label (e.g. Picnic) only if you want a small badge on the card — leave it blank for no badge." />
       <Alert error={error} />
 
       {loading ? (
@@ -103,6 +103,8 @@ function EventCard({
       venue: form.venue,
       image_url: form.image_url,
       registration_url: form.registration_url,
+      badge_label: (form.badge_label ?? "").trim() || null,
+      show_on_homepage: form.show_on_homepage,
       is_featured: form.is_featured,
       is_published: form.is_published,
       sort_order: Number(form.sort_order) || 0,
@@ -120,9 +122,9 @@ function EventCard({
           <h3 className="font-display text-lg font-bold">{event.title}</h3>
           {past && <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">Past</span>}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Toggle label="Published" checked={form.is_published} onChange={(v) => set("is_published", v)} disabled={!editable} />
-          <Toggle label="Featured" checked={form.is_featured} onChange={(v) => set("is_featured", v)} disabled={!editable} />
+          <Toggle label="Show on Homepage" checked={!!form.show_on_homepage} onChange={(v) => set("show_on_homepage", v)} disabled={!editable} />
           {canDelete && (
             <DeleteButton
               confirmText={`Delete the event “${event.title}”?`}
@@ -140,6 +142,7 @@ function EventCard({
         <Field label="Venue" value={form.venue ?? ""} onChange={(v) => set("venue", v)} disabled={!editable} />
         <Field label="Starts" type="datetime-local" value={form.start_at} onChange={(v) => set("start_at", v)} disabled={!editable} />
         <Field label="Ends (optional)" type="datetime-local" value={form.end_at} onChange={(v) => set("end_at", v)} disabled={!editable} />
+        <Field label="Short label / badge (optional)" value={form.badge_label ?? ""} onChange={(v) => set("badge_label", v)} disabled={!editable} />
         <Field label="Registration link" value={form.registration_url ?? ""} onChange={(v) => set("registration_url", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
       </div>

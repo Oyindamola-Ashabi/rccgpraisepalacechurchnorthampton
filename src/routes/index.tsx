@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useSectionItems, imageOr, type SectionItem } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, type SectionItem } from "@/lib/cms";
 
 /** Card icons an administrator can choose per item. */
 const CARD_ICONS: Record<string, any> = {
@@ -46,6 +46,7 @@ function HomePage() {
   const { rows: heroSlideItems } = useSectionItems("home", "hero_slides");
   const { rows: serviceItems } = useSectionItems("home", "hero_services");
   const { rows: programItems } = useSectionItems("home", "programs");
+  const { rows: eventRows } = usePublishedEvents();
   const { rows: communityItems } = useSectionItems("home", "community");
   const showCommunity = visible("community") && communityItems.length > 0;
 
@@ -90,26 +91,27 @@ function HomePage() {
   ).filter((m: any) => m.show !== false) as any[];
 
 
-  const eventCardDefaults = [
-    { image: eventPhotos.couples.url, tag: "Couples", title: "Love & Legacy Couples Retreat", date: "Sat, 15 Aug 2026", location: "Praise Palace Auditorium", to: "/events/couples" },
-    { image: eventPhotos.celebration.url, tag: "Family", title: "Fathers' Honour Sunday", date: "Sun, 21 Jun 2026", location: "Main Sanctuary", to: "/events" },
-    { image: eventPhotos.modernWorship.url, tag: "Worship", title: "Praise Talks Live Recording", date: "Wed, 09 Jul 2026", location: "Studio B", to: "/events" },
-  ];
-  const homeEvents = eventCardDefaults
-    .map((d, i) => {
-      const key = `event_card_${i + 1}`;
+  // Homepage events come only from Admin → Events: published, still upcoming and
+  // switched on with "Show on Homepage". No demo or placeholder cards.
+  const homeEvents = eventRows
+    .filter((e) => e.is_published && e.show_on_homepage && eventEndsAt(e) >= Date.now())
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
+    .map((e) => {
+      const link = (e as any).detail_page ?? e.registration_url ?? null;
+      const internal = !!link && link.startsWith("/");
       return {
-        key,
-        image: image(key, d.image),
-        tag: text(key, "subheading", d.tag),
-        title: text(key, "headline", d.title),
-        date: text(key, "body", d.date),
-        location: text(key, "cta_label", d.location),
-        to: text(key, "cta_href", d.to),
-        show: visible(key),
+        key: e.id,
+        image: e.image_url ?? eventPhotos.celebration.url,
+        tag: e.badge_label?.trim() || null,
+        title: e.title,
+        date: formatEventDate(e.start_at),
+        time: formatEventTime(e.start_at),
+        location: e.venue ?? null,
+        to: internal ? (link as string) : null,
+        href: internal ? null : (link as string | null),
       };
-    })
-    .filter((e) => e.show);
+    });
+
 
   const watchLiveHref = text("hero_watch_live", "cta_href", "/media");
   const watchLiveExternal = /^https?:/.test(watchLiveHref);
@@ -357,11 +359,17 @@ function HomePage() {
               View all events <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {homeEvents.map((e) => (
-              <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} location={e.location} to={e.to} />
-            ))}
-          </div>
+          {homeEvents.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No events are featured at the moment — see all our gatherings on the events page.
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {homeEvents.map((e) => (
+                <EventCard key={e.key} image={e.image} tag={e.tag} title={e.title} date={e.date} time={e.time} location={e.location} to={e.to} href={e.href} />
+              ))}
+            </div>
+          )}
         </Section>
       </section>
 
@@ -484,20 +492,25 @@ function CommunityCard({ item }: { item: SectionItem }) {
 }
 
 
-function EventCard({ image, tag, title, date, location, to }: { image: string; tag: string; title: string; date: string; location: string; to: string }) {
-  return (
-    <Link to={to} className="group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 block">
+function EventCard({ image, tag, title, date, time, location, to, href }: { image: string; tag?: string | null; title: string; date: string; time?: string | null; location?: string | null; to?: string | null; href?: string | null }) {
+  const body = (
+    <>
       <div className="relative aspect-[16/10] overflow-hidden">
         <img src={image} alt={title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-        <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{tag}</span>
+        {tag && <span className="absolute top-3 left-3 rounded-full gradient-brand text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1">{tag}</span>}
       </div>
       <div className="p-5">
         <h3 className="font-display font-bold text-lg leading-tight">{title}</h3>
         <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#E13495]" /> {date}</div>
-          <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#E13495]" /> {location}</div>
+          {date && <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#E13495]" /> {date}</div>}
+          {time && <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-[#E13495]" /> {time}</div>}
+          {location && <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#E13495]" /> {location}</div>}
         </div>
       </div>
-    </Link>
+    </>
   );
+  const cls = "group overflow-hidden rounded-2xl bg-card shadow-card ring-1 ring-black/5 block";
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{body}</a>;
+  if (to) return <Link to={to} className={cls}>{body}</Link>;
+  return <div className={cls}>{body}</div>;
 }
