@@ -7,36 +7,39 @@ import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextA
 import { PODCAST_BUCKET, PODCAST_FOLDER, podcastAudioUrl, slugify, type Podcast } from "@/lib/cms";
 
 /** File extensions and MIME types accepted for podcast audio uploads. */
-const AUDIO_EXTENSIONS = ["mp3", "mpeg", "m4a", "aac", "wav", "ogg", "oga", "opus", "webm", "flac", "mp4"];
+const AUDIO_EXTENSIONS = ["mp3", "mpeg", "m4a", "aac", "wav", "ogg", "oga", "webm", "flac"];
 const AUDIO_MIME_TYPES = [
   "audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/x-aac",
   "audio/wav", "audio/x-wav", "audio/wave", "audio/vnd.wave", "audio/ogg", "application/ogg",
-  "audio/webm", "audio/flac", "audio/x-flac", "video/mp4", "application/octet-stream",
+  "audio/webm", "audio/flac", "audio/x-flac",
 ];
 export const AUDIO_ACCEPT = AUDIO_EXTENSIONS.map((e) => `.${e}`).join(",") + ",audio/*";
-const MAX_AUDIO_BYTES = 100 * 1024 * 1024;
+const MAX_AUDIO_BYTES = 50 * 1024 * 1024;
 
 /** Returns a friendly message when the file cannot be accepted, otherwise null. */
 function validateAudioFile(file: File): string | null {
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   const type = (file.type || "").toLowerCase();
   const okExt = AUDIO_EXTENSIONS.includes(ext);
-  const okType = !type || type.startsWith("audio/") || AUDIO_MIME_TYPES.includes(type);
+  const okType = AUDIO_MIME_TYPES.includes(type);
+  // A blank or generic browser MIME type is fine as long as the extension is a known audio one.
   if (!okExt && !okType) {
     return "That file does not look like an audio file. Please choose an MP3, M4A, AAC, WAV, OGG, WebM or FLAC file.";
   }
-  if (file.size > MAX_AUDIO_BYTES) return "This audio file is larger than the 100 MB upload limit.";
+  if (file.size > MAX_AUDIO_BYTES) return "This audio file is larger than the 50 MB upload limit.";
   return null;
 }
 
-/** A content type the storage area always accepts, based on the file extension. */
+/** Maps the file extension to an audio content type the storage area accepts. */
 function uploadContentType(file: File): string {
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   const byExt: Record<string, string> = {
-    mp3: "audio/mpeg", mpeg: "audio/mpeg", m4a: "audio/mp4", mp4: "audio/mp4", aac: "audio/aac",
-    wav: "audio/wav", ogg: "audio/ogg", oga: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac",
+    mp3: "audio/mpeg", mpeg: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac",
+    wav: "audio/wav", ogg: "audio/ogg", oga: "audio/ogg", webm: "audio/webm", flac: "audio/flac",
   };
-  return byExt[ext] || (file.type && file.type.startsWith("audio/") ? file.type : "audio/mpeg");
+  const type = (file.type || "").toLowerCase();
+  // Trust the extension first, so files reported with a blank or generic type still upload.
+  return byExt[ext] || (AUDIO_MIME_TYPES.includes(type) ? type : "audio/mpeg");
 }
 
 function prettySize(bytes: number) {
@@ -148,8 +151,8 @@ function PodcastCard({
     setUploadNote(null);
     setFileInfo(`${file.name} · ${prettySize(file.size)} · ${file.type || "audio file"}`);
 
-    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
-    const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${Date.now()}-${safe}`;
+    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-").toLowerCase();
+    const path = `${PODCAST_FOLDER}/${episode.slug || episode.id}/${safe}`;
     const { error } = await supabase.storage
       .from(PODCAST_BUCKET)
       .upload(path, file, { upsert: true, contentType: uploadContentType(file) });
@@ -158,12 +161,12 @@ function PodcastCard({
       const msg = (error.message || "").toLowerCase();
       if (msg.includes("mime") || msg.includes("not supported") || msg.includes("invalid_mime")) {
         onError(
-          "The media store is currently set to accept images only, so audio files cannot be uploaded yet. Ask your Supabase administrator to allow audio files (MP3, M4A, WAV, OGG) and a 100 MB limit on the \"media\" store — meanwhile you can use the \"Link on another platform\" or \"YouTube\" source options.",
+          "The media store is not yet set to accept audio files. Ask your Supabase administrator to allow audio types (MP3, M4A, AAC, WAV, OGG, WebM, FLAC) with a 50 MB limit on the \"media\" store — meanwhile you can use the \"External audio or podcast link\" or \"YouTube\" source options.",
         );
       } else if (msg.includes("size") || msg.includes("too large") || msg.includes("payload")) {
-        onError("This audio file is too large for the current upload limit. Please use a smaller file or ask your administrator to raise the limit to 100 MB.");
+        onError("This audio file is too large for the current upload limit. Please use a smaller file, or ask your administrator to set the limit to 50 MB.");
       } else {
-        onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 100 MB.");
+        onError("The audio could not be uploaded. Please confirm that the file is a valid audio file and is below 50 MB.");
       }
       setTechDetail(error.message);
       return;
@@ -298,7 +301,7 @@ function PodcastCard({
               </>
             )}
             <p className="mt-2 text-[11px] text-muted-foreground">
-              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 100 MB. Files are stored in the media library under “podcasts”.
+              MP3, M4A, AAC, WAV, OGG, WebM or FLAC — up to 50 MB. Files are stored in the media library under “podcasts”.
             </p>
             {fileInfo && <p className="mt-1 text-[11px] text-muted-foreground">{fileInfo}</p>}
             {uploadNote && <p className="mt-1 text-xs font-semibold text-emerald-600">{uploadNote}</p>}
