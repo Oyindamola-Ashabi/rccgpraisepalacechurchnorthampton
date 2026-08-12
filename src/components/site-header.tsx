@@ -346,7 +346,7 @@ function NavDesktopItem({ item }: { item: NavItem }) {
     return (
       <NavLink
         item={item}
-        className="rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+        className="rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
       />
     );
   }
@@ -357,10 +357,10 @@ function NavDesktopItem({ item }: { item: NavItem }) {
         <NavLink
           item={item}
           showArrow
-          className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+          className="flex items-center gap-1 rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
         />
       ) : (
-        <button className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
+        <button className="flex items-center gap-1 rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
           {item.label}
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
