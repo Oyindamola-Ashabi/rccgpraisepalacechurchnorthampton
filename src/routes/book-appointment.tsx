@@ -6,7 +6,10 @@ import { Calendar as CalendarIcon, Clock, User, Mail, Phone, MessageSquare, Chec
 import { PageHero, Section } from "@/components/section-ui";
 import { Calendar } from "@/components/ui/calendar";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyPastorOfAppointment } from "@/lib/appointments.functions";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/book-appointment")({
   head: () => ({
