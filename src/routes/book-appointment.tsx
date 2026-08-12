@@ -94,16 +94,16 @@ function BookAppointmentPage() {
       appointment_time: time,
       reason,
       notes: notes.trim() || null,
-    }).select("id").maybeSingle();
+    });
     setSending(false);
     if (error) {
       setError("Sorry, your request could not be submitted. Please try another date or contact us directly.");
       return;
     }
-    if (inserted?.id) {
-      // Fire-and-forget: notify the selected pastor privately, server-side.
-      notifyPastor({ data: { appointmentId: inserted.id } }).catch(() => {});
-    }
+    // Fire-and-forget: notify the selected pastor privately, server-side.
+    // Email problems must never affect the saved appointment or this visitor's
+    // success message.
+    notifyPastor({ data: { appointmentId } }).catch(() => {});
     setSubmitted(true);
 
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
