@@ -225,7 +225,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex min-w-0 flex-1 items-center justify-end gap-0 lg:gap-0.5 xl:gap-1">
+          <nav className="hidden lg:flex min-w-0 flex-1 items-center justify-end gap-0 xl:gap-0.5 [&>*]:shrink-0">
             {nav
               .filter((i) => i.label !== "Give")
               .map((item) => (
@@ -233,7 +233,7 @@ export function SiteHeader() {
               ))}
           </nav>
 
-          <div className="hidden md:flex shrink-0 items-center gap-1.5">
+          <div className="hidden lg:flex shrink-0 items-center gap-1.5">
             {socials.map(({ url, Icon, label }) => (
               <a
                 key={label}
@@ -254,7 +254,7 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <div className="flex md:hidden shrink-0 items-center gap-2">
+          <div className="flex lg:hidden shrink-0 items-center gap-2">
             <Link
               to="/give"
               className="hidden sm:inline-flex rounded-full gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
@@ -276,7 +276,7 @@ export function SiteHeader() {
 
         {/* Mobile menu */}
         {open && (
-          <div className="md:hidden border-t bg-background max-h-[calc(100vh-64px)] overflow-y-auto">
+          <div className="lg:hidden border-t bg-background max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="px-4 py-3 space-y-1">
               {nav
                 .filter((i) => i.label !== "Give")
