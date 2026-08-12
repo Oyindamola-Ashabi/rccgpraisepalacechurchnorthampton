@@ -209,8 +209,8 @@ export function SiteHeader() {
           scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-background/70 backdrop-blur"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-4 lg:gap-10 xl:gap-14">
-          <Link to="/" className="flex shrink-0 items-center gap-2 sm:gap-3 lg:mr-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-3 lg:gap-4 xl:gap-8">
+          <Link to="/" className="flex shrink-0 items-center gap-2 sm:gap-3">
             <img src={rccgLogoAsset} alt="RCCG" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
             <img src={logoAsset} alt="Praise Palace" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
             <div className="leading-tight">
@@ -224,7 +224,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex flex-1 items-center justify-center gap-0.5 xl:gap-1.5">
+          <nav className="hidden lg:flex min-w-0 flex-1 items-center justify-center gap-0.5 xl:gap-1.5">
             {nav
               .filter((i) => i.label !== "Give")
               .map((item) => (
@@ -232,7 +232,7 @@ export function SiteHeader() {
               ))}
           </nav>
 
-          <div className="hidden lg:flex shrink-0 items-center gap-2 lg:ml-4">
+          <div className="hidden lg:flex shrink-0 items-center gap-2">
             {socials.map(({ url, Icon, label }) => (
               <a
                 key={label}
@@ -240,7 +240,7 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="rounded-full border p-2 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
+                className="hidden xl:inline-flex rounded-full border p-2 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
               >
                 <Icon className="h-4 w-4" />
               </a>
