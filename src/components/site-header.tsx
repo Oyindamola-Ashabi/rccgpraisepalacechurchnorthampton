@@ -276,7 +276,7 @@ export function SiteHeader() {
 
         {/* Mobile menu */}
         {open && (
-          <div className="min-[1400px]:hidden border-t bg-background max-h-[calc(100vh-64px)] overflow-y-auto">
+          <div className="md:hidden border-t bg-background max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="px-4 py-3 space-y-1">
               {nav
                 .filter((i) => i.label !== "Give")
@@ -351,7 +351,7 @@ function NavDesktopItem({ item }: { item: NavItem }) {
     return (
       <NavLink
         item={item}
-        className="rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+        className="rounded-md px-1.5 lg:px-2 py-2 text-[13px] lg:text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
       />
     );
   }
@@ -362,10 +362,10 @@ function NavDesktopItem({ item }: { item: NavItem }) {
         <NavLink
           item={item}
           showArrow
-          className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+          className="flex items-center gap-1 rounded-md px-1.5 lg:px-2 py-2 text-[13px] lg:text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
         />
       ) : (
-        <button className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
+        <button className="flex items-center gap-1 rounded-md px-1.5 lg:px-2 py-2 text-[13px] lg:text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
           {item.label}
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
