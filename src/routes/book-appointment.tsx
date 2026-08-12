@@ -33,7 +33,9 @@ const REASONS = ["Prayer", "Counselling", "Marriage", "Baptism / Dedication", "C
 
 function BookAppointmentPage() {
   const settings = useSiteSettings();
+  const notifyPastor = useServerFn(notifyPastorOfAppointment);
   const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+
   const [pastors, setPastors] = useState<Pastor[]>([]);
   const [loadingPastors, setLoadingPastors] = useState(true);
   const [pastor, setPastor] = useState("");
