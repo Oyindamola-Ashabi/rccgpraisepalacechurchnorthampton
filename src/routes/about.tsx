@@ -133,8 +133,8 @@ function AboutPage() {
                 ) : (
                   <BrandButton href={pastor.ctaHref}>{pastor.ctaLabel}</BrandButton>
                 )}
-                <BrandButton to="/book-appointment" variant="outline">Book Appointment</BrandButton>
               </div>
+
             </div>
           </div>
         </Section>

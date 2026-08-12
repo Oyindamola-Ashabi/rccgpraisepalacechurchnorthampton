@@ -82,29 +82,27 @@ function MediaPage() {
         image={image("hero", heroImg)}
       />
 
-      <Section>
-        <SectionHeader eyebrow="Featured" title={featured ? "Latest Message" : "Latest Message"} />
-        <div className="mx-auto max-w-4xl">
-          <YouTubePlayer
-            videoId={featuredId}
-            youtubeUrl={featured?.youtube_url ?? null}
-            poster={featuredPoster}
-            title={featured?.title ?? "RCCG Praise Palace — Latest Message"}
-          />
-          <div className="mt-6">
-            <h3 className="font-display text-2xl font-bold">
-              {featured?.title ?? "RCCG Praise Palace — Latest Message"}
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {featured?.speaker ?? "RCCG Praise Palace Northampton"}
-              {featured?.sermon_date ? ` · ${formatDate(featured.sermon_date)}` : ""}
-            </p>
-            {featured?.short_description && (
-              <div className="mt-3 leading-relaxed text-muted-foreground">
-                <Paragraphs text={featured.short_description} />
-              </div>
-            )}
-            {featured && (
+      {featured && (
+        <Section>
+          <SectionHeader eyebrow="Featured" title="Latest Message" />
+          <div className="mx-auto max-w-4xl">
+            <YouTubePlayer
+              videoId={featuredId}
+              youtubeUrl={featured.youtube_url ?? null}
+              poster={featuredPoster}
+              title={featured.title}
+            />
+            <div className="mt-6">
+              <h3 className="font-display text-2xl font-bold">{featured.title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {featured.speaker ?? "RCCG Praise Palace Northampton"}
+                {featured.sermon_date ? ` · ${formatDate(featured.sermon_date)}` : ""}
+              </p>
+              {featured.short_description && (
+                <div className="mt-3 leading-relaxed text-muted-foreground">
+                  <Paragraphs text={featured.short_description} />
+                </div>
+              )}
               <Link
                 to="/sermons/$slug"
                 params={{ slug: featured.slug }}
@@ -112,10 +110,11 @@ function MediaPage() {
               >
                 Open sermon page <ArrowRight className="h-4 w-4" />
               </Link>
-            )}
+            </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
+
 
       <section className="bg-secondary/40 border-y">
         <Section>
