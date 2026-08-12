@@ -10,6 +10,7 @@ import {
   sermonPoster,
   usePageContent,
   usePublishedSermons,
+  useSectionItems,
   youTubeId,
   youTubePoster,
 } from "@/lib/cms";
@@ -40,6 +41,33 @@ function MediaPage() {
   const { text, image } = usePageContent("media");
   const { rows: sermons, loading } = usePublishedSermons();
   const featured = pickFeaturedSermon(sermons);
+  const { rows: cardRows } = useSectionItems("media", "cards");
+
+  const CARD_DEFAULTS: Record<string, { icon: any; image: string; overlay: string; accent: string }> = {
+    albums: { icon: ImageIcon, image: galleryPhotos[0].url, overlay: "from-[#3a1d0d]/90 via-[#3a1d0d]/40 to-transparent", accent: "text-[#F0DE51]" },
+    podcast: { icon: Headphones, image: eventPhotos.guests.url, overlay: "from-[#3a0d2a]/90 via-[#3a0d2a]/40 to-transparent", accent: "text-[#F0DE51]" },
+    radio: { icon: Video, image: eventPhotos.students.url, overlay: "from-[#0d2a3a]/90 via-[#0d2a3a]/40 to-transparent", accent: "text-[#91D7F6]" },
+  };
+
+  const cards = cardRows
+    .filter((r) => r.is_visible !== false)
+    .map((r) => {
+      const d = CARD_DEFAULTS[r.item_key] ?? { icon: ImageIcon, image: galleryPhotos[0].url, overlay: "from-black/90 via-black/40 to-transparent", accent: "text-[#F0DE51]" };
+      const href = (r.cta_href ?? "").trim();
+      return {
+        key: r.id,
+        icon: d.icon,
+        overlay: d.overlay,
+        accent: d.accent,
+        image: mediaUrl(r.image_url) || d.image,
+        title: r.title ?? "",
+        body: r.body ?? "",
+        ctaLabel: r.cta_label ?? "",
+        href: href || "/media",
+        external: /^https?:\/\//i.test(href),
+      };
+    })
+    .filter((c) => c.title);
 
   const featuredPoster = sermonPoster(featured, eventPhotos.celebration.url);
   const featuredId = featured ? featured.youtube_video_id || youTubeId(featured.youtube_url) : null;
