@@ -371,7 +371,7 @@ function NavDesktopItem({ item }: { item: NavItem }) {
         </button>
       )}
       {open && (
-        <div className="absolute left-0 top-full pt-2 min-w-[240px]">
+        <div className="absolute right-0 top-full pt-2 min-w-[240px]">
           <div className="rounded-xl border bg-popover p-2 shadow-card">
             {item.children.map((c) =>
               c.children ? (
