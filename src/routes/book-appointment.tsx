@@ -73,7 +73,7 @@ function BookAppointmentPage() {
     if (disabled || !date) return;
     setSending(true);
     setError(null);
-    const { error } = await supabase.from("appointment_requests").insert({
+    const { data: inserted, error } = await supabase.from("appointment_requests").insert({
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim() || null,
@@ -82,13 +82,18 @@ function BookAppointmentPage() {
       appointment_time: time,
       reason,
       notes: notes.trim() || null,
-    });
+    }).select("id").maybeSingle();
     setSending(false);
     if (error) {
       setError("Sorry, your request could not be submitted. Please try another date or contact us directly.");
       return;
     }
+    if (inserted?.id) {
+      // Fire-and-forget: notify the selected pastor privately, server-side.
+      notifyPastor({ data: { appointmentId: inserted.id } }).catch(() => {});
+    }
     setSubmitted(true);
+
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
