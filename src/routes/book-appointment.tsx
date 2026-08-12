@@ -116,7 +116,7 @@ function BookAppointmentPage() {
             </div>
           </div>
         )}
-        <div className="grid gap-8 lg:grid-cols-[1.1fr,1fr]">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] [&>*]:min-w-0">
           {/* Form */}
           <form onSubmit={handleSubmit} className="rounded-3xl bg-card p-6 md:p-8 shadow-card ring-1 ring-black/5 space-y-8">
             {/* Pastor */}

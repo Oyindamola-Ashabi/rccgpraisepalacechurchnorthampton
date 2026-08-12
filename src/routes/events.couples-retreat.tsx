@@ -172,12 +172,12 @@ function CouplesRetreatPage() {
           <p className="mt-2 text-white/90">{text("contact", "body", "Our team is glad to help you plan your weekend.")}</p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm">
             {settings.email && (
-              <a href={`mailto:${settings.email}`} className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
+              <a href={`mailto:${settings.email}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
                 <Mail className="h-4 w-4" /> {settings.email}
               </a>
             )}
             {settings.phone && (
-              <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
+              <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
                 <Phone className="h-4 w-4" /> {settings.phone}
               </a>
             )}

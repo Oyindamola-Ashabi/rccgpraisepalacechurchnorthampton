@@ -50,7 +50,7 @@ function ContactPage() {
       <CmsPageHero page="contact" eyebrow="Get In Touch" title="We'd Love To Hear From You" subtitle="Prayer requests, visits, questions — we're here." image={heroImg} />
 
       <Section>
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid min-w-0 gap-10 lg:grid-cols-2 [&>*]:min-w-0">
           <div>
             <SectionHeader center={false} eyebrow={text("contact_info", "subheading", "Reach Us")} title={text("contact_info", "headline", "Contact Information")} />
             <div className="space-y-5">

@@ -44,7 +44,7 @@ export function Section({
   id,
 }: { children: ReactNode; className?: string; id?: string }) {
   return (
-    <section id={id} className={`mx-auto max-w-7xl px-6 py-16 md:py-24 ${className}`}>
+    <section id={id} className={`mx-auto w-full min-w-0 max-w-7xl px-4 sm:px-6 py-16 md:py-24 ${className}`}>
       {children}
     </section>
   );
@@ -57,13 +57,13 @@ export function SectionHeader({
   center = true,
 }: { eyebrow?: string; title: ReactNode; subtitle?: string; center?: boolean }) {
   return (
-    <div className={`${center ? "text-center mx-auto" : ""} max-w-2xl mb-12`}>
+    <div className={`${center ? "text-center mx-auto" : ""} min-w-0 max-w-2xl mb-12`}>
       {eyebrow && (
-        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#E13495]">
+        <div className="mb-3 break-words text-[11px] font-semibold uppercase tracking-[0.2em] text-[#E13495] sm:text-xs sm:tracking-[0.3em]">
           {eyebrow}
         </div>
       )}
-      <h2 className="font-display font-bold text-3xl md:text-4xl">{title}</h2>
+      <h2 className="font-display font-bold text-2xl break-words sm:text-3xl md:text-4xl">{title}</h2>
       {subtitle && <p className="mt-4 text-muted-foreground">{subtitle}</p>}
     </div>
   );
