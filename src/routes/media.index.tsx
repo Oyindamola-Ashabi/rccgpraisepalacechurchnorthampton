@@ -10,6 +10,7 @@ import {
   sermonPoster,
   usePageContent,
   usePublishedSermons,
+  useSectionItems,
   youTubeId,
   youTubePoster,
 } from "@/lib/cms";
@@ -40,6 +41,33 @@ function MediaPage() {
   const { text, image } = usePageContent("media");
   const { rows: sermons, loading } = usePublishedSermons();
   const featured = pickFeaturedSermon(sermons);
+  const { rows: cardRows } = useSectionItems("media", "cards");
+
+  const CARD_DEFAULTS: Record<string, { icon: any; image: string; overlay: string; accent: string }> = {
+    albums: { icon: ImageIcon, image: galleryPhotos[0].url, overlay: "from-[#3a1d0d]/90 via-[#3a1d0d]/40 to-transparent", accent: "text-[#F0DE51]" },
+    podcast: { icon: Headphones, image: eventPhotos.guests.url, overlay: "from-[#3a0d2a]/90 via-[#3a0d2a]/40 to-transparent", accent: "text-[#F0DE51]" },
+    radio: { icon: Video, image: eventPhotos.students.url, overlay: "from-[#0d2a3a]/90 via-[#0d2a3a]/40 to-transparent", accent: "text-[#91D7F6]" },
+  };
+
+  const cards = cardRows
+    .filter((r) => r.is_visible !== false)
+    .map((r) => {
+      const d = CARD_DEFAULTS[r.item_key] ?? { icon: ImageIcon, image: galleryPhotos[0].url, overlay: "from-black/90 via-black/40 to-transparent", accent: "text-[#F0DE51]" };
+      const href = (r.cta_href ?? "").trim();
+      return {
+        key: r.id,
+        icon: d.icon,
+        overlay: d.overlay,
+        accent: d.accent,
+        image: mediaUrl(r.image_url) || d.image,
+        title: r.title ?? "",
+        body: r.body ?? "",
+        ctaLabel: r.cta_label ?? "",
+        href: href || "/media",
+        external: /^https?:\/\//i.test(href),
+      };
+    })
+    .filter((c) => c.title);
 
   const featuredPoster = sermonPoster(featured, eventPhotos.celebration.url);
   const featuredId = featured ? featured.youtube_video_id || youTubeId(featured.youtube_url) : null;
@@ -144,40 +172,38 @@ function MediaPage() {
         </Section>
       </section>
 
-      <Section>
-        <div className="grid gap-6 md:grid-cols-3">
-          <Link to="/events/albums" className="group relative overflow-hidden rounded-2xl shadow-elegant">
-            <img src={galleryPhotos[0].url} alt="Gallery" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#3a1d0d]/90 via-[#3a1d0d]/40 to-transparent" />
-            <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-              <ImageIcon className="h-8 w-8 text-[#F0DE51]" />
-              <h3 className="mt-3 font-display font-bold text-2xl">Church Albums</h3>
-              <p className="mt-1 text-sm text-white/80">Moments of worship, family and fellowship.</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#F0DE51]">Browse albums <ArrowRight className="h-4 w-4" /></span>
-            </div>
-          </Link>
-          <Link to="/media/podcast" className="group relative overflow-hidden rounded-2xl shadow-elegant">
-            <img src={eventPhotos.guests.url} alt="Podcast" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#3a0d2a]/90 via-[#3a0d2a]/40 to-transparent" />
-            <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-              <Headphones className="h-8 w-8 text-[#F0DE51]" />
-              <h3 className="mt-3 font-display font-bold text-2xl">Praise Talks Podcast</h3>
-              <p className="mt-1 text-sm text-white/80">Conversations that stir faith and fuel purpose.</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#F0DE51]">Listen now <ArrowRight className="h-4 w-4" /></span>
-            </div>
-          </Link>
-          <a href="https://praisepalaceradio.com/" target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden rounded-2xl shadow-elegant">
-            <img src={eventPhotos.students.url} alt="Radio" className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d2a3a]/90 via-[#0d2a3a]/40 to-transparent" />
-            <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-              <Video className="h-8 w-8 text-[#91D7F6]" />
-              <h3 className="mt-3 font-display font-bold text-2xl">Praise Palace Radio</h3>
-              <p className="mt-1 text-sm text-white/80">Faith-filled broadcasts, streaming 24/7.</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#91D7F6]">Tune in ↗</span>
-            </div>
-          </a>
-        </div>
-      </Section>
+      {cards.length > 0 && (
+        <Section>
+          <div className={`grid gap-6 ${cards.length >= 3 ? "md:grid-cols-3" : cards.length === 2 ? "md:grid-cols-2" : "md:max-w-xl md:mx-auto"}`}>
+            {cards.map((c) => {
+              const Icon = c.icon;
+              const inner = (
+                <>
+                  <img src={c.image} alt={c.title} className="w-full aspect-[16/10] object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${c.overlay}`} />
+                  <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
+                    <Icon className={`h-8 w-8 ${c.accent}`} />
+                    <h3 className="mt-3 font-display font-bold text-2xl">{c.title}</h3>
+                    {c.body && <p className="mt-1 text-sm text-white/80">{c.body}</p>}
+                    {c.ctaLabel && (
+                      <span className={`mt-3 inline-flex items-center gap-1 text-sm font-semibold ${c.accent}`}>
+                        {c.ctaLabel} {c.external ? "↗" : <ArrowRight className="h-4 w-4" />}
+                      </span>
+                    )}
+                  </div>
+                </>
+              );
+              const className = "group relative overflow-hidden rounded-2xl shadow-elegant";
+              return c.external ? (
+                <a key={c.key} href={c.href} target="_blank" rel="noopener noreferrer" className={className}>{inner}</a>
+              ) : (
+                <Link key={c.key} to={c.href} className={className}>{inner}</Link>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
     </>
   );
 }
