@@ -199,16 +199,20 @@ function InboxRow({
           {editable ? (
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Status</label>
-                <select
-                  value={row[config.statusField]}
-                  onChange={(e) => patch(row.id, { [config.statusField]: e.target.value })}
-                  className="rounded-lg border bg-background px-3 py-1.5 text-sm"
-                >
-                  {config.statusOptions.map((s) => (
-                    <option key={s} value={s}>{labelize(s)}</option>
-                  ))}
-                </select>
+                {!config.hideStatusSelect && (
+                  <>
+                    <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Status</label>
+                    <select
+                      value={row[config.statusField]}
+                      onChange={(e) => patch(row.id, { [config.statusField]: e.target.value })}
+                      className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+                    >
+                      {config.statusOptions.map((s) => (
+                        <option key={s} value={s}>{labelize(s)}</option>
+                      ))}
+                    </select>
+                  </>
+                )}
                 <button
                   onClick={() => patch(row.id, { is_read: !row.is_read })}
                   className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-secondary/50"
@@ -218,7 +222,10 @@ function InboxRow({
                 {config.extraControls?.(row, refresh)}
               </div>
 
+              {config.panel?.(row, refresh)}
+
               <div>
+
                 <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Internal notes</label>
                 <textarea
                   rows={3}
