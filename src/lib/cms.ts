@@ -202,6 +202,21 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
   media: [
     { key: "hero", label: "Media Page Hero", hint: "Heading, text and background image at the top of the Media page.", template: "hero" },
     { key: "live_video", label: "Watch Live Video", hint: "Change the YouTube video and large poster image displayed in the Watch Live area of the Media page.", template: "video" },
+    {
+      key: "cards",
+      label: "Media Cards",
+      hint: "The three large cards near the bottom of the Media page — Church Albums, Praise Talks Podcast and Praise Palace Radio. Edit the picture, wording, button and destination of each, hide any you do not need, or drag them into a different order.",
+      template: "card_grid",
+      itemsLabel: "Manage media cards",
+      itemNoun: "media card",
+      itemFields: {
+        title: "Card title",
+        body: "Short description",
+        image: "Card image",
+        cta_label: "Button wording",
+        cta_href: "Destination link",
+      },
+    },
   ],
   "couples-retreat": [
     { key: "hero", label: "1. Page Header", hint: "The main heading, introductory text and background image at the very top of the page.", template: "hero" },
