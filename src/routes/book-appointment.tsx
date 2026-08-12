@@ -1,3 +1,4 @@
+import { useSiteSettings } from "@/lib/cms";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
@@ -28,6 +29,7 @@ const TIMES = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "1
 const REASONS = ["Prayer", "Counselling", "Marriage", "Baptism / Dedication", "Career & Purpose", "Other"];
 
 function BookAppointmentPage() {
+  const settings = useSiteSettings();
   const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
   const [pastors, setPastors] = useState<Pastor[]>([]);
   const [loadingPastors, setLoadingPastors] = useState(true);
@@ -272,7 +274,9 @@ function BookAppointmentPage() {
               <h4 className="font-display font-bold text-lg">Need it urgent?</h4>
               <p className="mt-2 text-sm text-muted-foreground">For urgent prayer or care, please reach us directly.</p>
               <div className="mt-4 space-y-2 text-sm">
-                <a href="tel:+447000000000" className="flex items-center gap-2 hover:text-[#E13495]"><Phone className="h-4 w-4 text-[#E13495]" /> +44 7000 000 000</a>
+                {settings.phone && (
+                  <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="flex items-center gap-2 hover:text-[#E13495]"><Phone className="h-4 w-4 text-[#E13495]" /> {settings.phone}</a>
+                )}
                 <a href="mailto:rccgpraisepalace01@gmail.com" className="flex items-center gap-2 hover:text-[#E13495] break-all"><Mail className="h-4 w-4 text-[#E13495]" /> rccgpraisepalace01@gmail.com</a>
               </div>
             </div>

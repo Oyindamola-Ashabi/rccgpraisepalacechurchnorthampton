@@ -25,7 +25,7 @@ export const SETTINGS_FALLBACK: SiteSettings = {
   church_name: "RCCG Praise Palace Northampton",
   short_description:
     "A vibrant Redeemed Christian Church of God parish in Northampton, UK. Come as you are — it shall end in praise.",
-  phone: "+44 7000 000 000",
+  phone: null,
   email: "rccgpraisepalace01@gmail.com",
   address: "Briar Hill Community Centre NN4 8SX",
   service_times: "Sunday Worship 10:00 AM · Wednesday Bible Study 7:00 PM",
@@ -59,7 +59,12 @@ export function useSiteSettings(): SiteSettings {
       .limit(1)
       .maybeSingle()
       .then(({ data }) => {
-        if (active && data) setSettings(merge(SETTINGS_FALLBACK, data as any));
+        if (!active || !data) return;
+        const row = data as any;
+        const merged = merge(SETTINGS_FALLBACK, row);
+        // Phone numbers are optional: a blank value in Admin removes them everywhere.
+        merged.phone = typeof row.phone === "string" && row.phone.trim() ? row.phone : null;
+        setSettings(merged);
       });
     return () => {
       active = false;

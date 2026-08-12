@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { CmsPageHero } from "@/components/cms-page-hero";
-import { usePageContent } from "@/lib/cms";
+import { usePageContent, useSiteSettings } from "@/lib/cms";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const settings = useSiteSettings();
   const { text } = usePageContent("contact");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -53,12 +54,14 @@ function ContactPage() {
           <div>
             <SectionHeader center={false} eyebrow={text("contact_info", "subheading", "Reach Us")} title={text("contact_info", "headline", "Contact Information")} />
             <div className="space-y-5">
-              {[
+              {([
                 { icon: MapPin, label: "Address", value: "Briar Hill Community Centre NN4 8SX" },
-                { icon: Phone, label: "Phone", value: "+44 7000 000 000", href: "tel:+447000000000" },
                 { icon: Mail, label: "Email", value: "rccgpraisepalace01@gmail.com", href: "mailto:rccgpraisepalace01@gmail.com" },
+                ...(settings.phone
+                  ? [{ icon: Phone, label: "Phone", value: settings.phone, href: `tel:${settings.phone.replace(/\s+/g, "")}` }]
+                  : []),
                 { icon: Clock, label: "Service Times", value: "Sundays 10:00 AM · Wed 7:00 PM" },
-              ].map((c) => (
+              ] as { icon: any; label: string; value: string; href?: string }[]).map((c) => (
                 <div key={c.label} className="flex gap-4 rounded-2xl bg-card p-5 shadow-card ring-1 ring-black/5">
                   <div className="shrink-0 grid h-12 w-12 place-items-center rounded-xl gradient-brand text-white">
                     <c.icon className="h-5 w-5" />
