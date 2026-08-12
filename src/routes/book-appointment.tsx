@@ -78,7 +78,14 @@ function BookAppointmentPage() {
     if (disabled || !date) return;
     setSending(true);
     setError(null);
-    const { data: inserted, error } = await supabase.from("appointment_requests").insert({
+    const appointmentId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}`;
+    // Note: no .select() here — public visitors intentionally have no read
+    // access to appointment_requests, so asking for the row back fails.
+    const { error } = await supabase.from("appointment_requests").insert({
+      id: appointmentId,
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim() || null,
