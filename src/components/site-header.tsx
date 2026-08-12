@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, ChevronRight, Phone, Mail, Instagram, Youtube, Facebook } from "lucide-react";
 import { useSiteSettings, useActiveMinistries, useNavigation, type NavNode } from "@/lib/cms";
-import { ThemeToggle } from "@/components/theme-toggle";
 import logoAsset from "@/assets/logo.png";
 import rccgLogoAsset from "@/assets/rccg-logo.png";
 
@@ -247,7 +246,6 @@ export function SiteHeader() {
                 <Icon className="h-4 w-4" />
               </a>
             ))}
-            <ThemeToggle />
             <Link
               to="/give"
               className="rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
@@ -263,7 +261,6 @@ export function SiteHeader() {
             >
               Give
             </Link>
-            <ThemeToggle />
 
             <button
               className="inline-flex items-center justify-center rounded-md p-2 text-foreground"
