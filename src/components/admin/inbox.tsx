@@ -20,8 +20,11 @@ export type InboxConfig = {
   fields: InboxField[];
   statusField: "status" | "review_status";
   statusOptions: string[];
+  hideStatusSelect?: boolean;
   extraControls?: (row: any, refresh: () => void) => React.ReactNode;
+  panel?: (row: any, refresh: () => void) => React.ReactNode;
   searchFields: string[];
+
 };
 
 export function AdminInbox({ config }: { config: InboxConfig }) {
