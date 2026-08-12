@@ -210,22 +210,22 @@ export function SiteHeader() {
           scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-background/70 backdrop-blur"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-6 min-[1400px]:gap-10">
-          <Link to="/" className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
-            <img src={rccgLogoAsset} alt="RCCG" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
-            <img src={logoAsset} alt="Praise Palace" className="hidden sm:block h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-5 py-3 gap-3 lg:gap-5 xl:gap-8">
+          <Link to="/" className="flex shrink-0 items-center gap-2">
+            <img src={rccgLogoAsset} alt="RCCG" className="h-10 w-10 shrink-0 object-contain lg:h-11 lg:w-11" />
+            <img src={logoAsset} alt="Praise Palace" className="hidden sm:block h-10 w-10 shrink-0 object-contain lg:h-11 lg:w-11" />
             <div className="leading-tight">
-              <div className="font-display font-extrabold whitespace-nowrap text-sm sm:text-base min-[1400px]:text-lg">
+              <div className="font-display font-extrabold whitespace-nowrap text-sm md:text-[13px] lg:text-[15px] xl:text-base">
                 <span className="text-[#E13495]">RCCG</span>{" "}
                 <span className="text-[#996DB5]">Praise Palace</span>
               </div>
-              <div className="text-[9px] sm:text-[10px] tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
+              <div className="text-[9px] md:text-[8px] lg:text-[9px] tracking-[0.16em] lg:tracking-[0.2em] text-muted-foreground uppercase whitespace-nowrap">
                 Northampton
               </div>
             </div>
           </Link>
 
-          <nav className="hidden min-[1400px]:flex min-w-0 flex-1 items-center justify-center gap-1">
+          <nav className="hidden md:flex min-w-0 flex-1 items-center justify-end gap-0 lg:gap-0.5 xl:gap-1">
             {nav
               .filter((i) => i.label !== "Give")
               .map((item) => (
@@ -233,7 +233,7 @@ export function SiteHeader() {
               ))}
           </nav>
 
-          <div className="hidden min-[1400px]:flex shrink-0 items-center gap-2">
+          <div className="hidden md:flex shrink-0 items-center gap-1.5">
             {socials.map(({ url, Icon, label }) => (
               <a
                 key={label}
@@ -241,20 +241,20 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="hidden min-[1650px]:inline-flex rounded-full border p-2 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
+                className="hidden min-[1600px]:inline-flex rounded-full border p-1.5 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-3.5 w-3.5" />
               </a>
             ))}
             <Link
               to="/give"
-              className="rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
+              className="rounded-full gradient-brand px-3 lg:px-4 py-2 text-xs lg:text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
             >
               Give
             </Link>
           </div>
 
-          <div className="flex min-[1400px]:hidden shrink-0 items-center gap-2">
+          <div className="flex md:hidden shrink-0 items-center gap-2">
             <Link
               to="/give"
               className="hidden sm:inline-flex rounded-full gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
@@ -270,6 +270,7 @@ export function SiteHeader() {
               {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
+
 
         </div>
 
