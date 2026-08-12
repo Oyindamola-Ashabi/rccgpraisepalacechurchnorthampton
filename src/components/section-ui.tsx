@@ -79,7 +79,7 @@ export function BrandButton({
   to?: string;
   href?: string;
   children: ReactNode;
-  variant?: "primary" | "outline" | "gold";
+  variant?: "primary" | "outline" | "gold" | "soft";
   external?: boolean;
 }) {
   const base = "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition";
@@ -87,7 +87,9 @@ export function BrandButton({
     primary: "gradient-brand text-white shadow-elegant hover:opacity-95",
     outline: "border-2 border-white/70 text-white hover:bg-white hover:text-[#E13495]",
     gold: "bg-[#F0DE51] text-[#3a2b00] hover:brightness-105",
+    soft: "border-2 border-border bg-card text-foreground hover:border-[#E13495] hover:text-[#E13495]",
   }[variant];
+
 
   if (href) {
     return (

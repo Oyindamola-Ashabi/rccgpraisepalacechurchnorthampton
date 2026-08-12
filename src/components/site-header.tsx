@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, ChevronRight, Phone, Mail, Instagram, Youtube, Facebook } from "lucide-react";
 import { useSiteSettings, useActiveMinistries, useNavigation, type NavNode } from "@/lib/cms";
+import { ThemeToggle } from "@/components/theme-toggle";
 import logoAsset from "@/assets/logo.png";
 import rccgLogoAsset from "@/assets/rccg-logo.png";
+
 
 type NavItem = {
   label: string;
@@ -209,10 +211,10 @@ export function SiteHeader() {
           scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-background/70 backdrop-blur"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-3 lg:gap-4 xl:gap-8">
-          <Link to="/" className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 gap-4 lg:gap-8 xl:gap-10">
+          <Link to="/" className="flex shrink-0 items-center gap-2 sm:gap-3 mr-1 lg:mr-4">
             <img src={rccgLogoAsset} alt="RCCG" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
-            <img src={logoAsset} alt="Praise Palace" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+            <img src={logoAsset} alt="Praise Palace" className="hidden sm:block h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
             <div className="leading-tight">
               <div className="font-display font-extrabold whitespace-nowrap text-[13px] sm:text-base lg:text-[17px] xl:text-lg">
                 <span className="text-[#E13495]">RCCG</span>{" "}
@@ -224,7 +226,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex min-w-0 flex-1 items-center justify-center gap-0.5 xl:gap-1.5">
+          <nav className="hidden lg:flex min-w-0 flex-1 items-center justify-end xl:justify-center gap-0 xl:gap-1">
             {nav
               .filter((i) => i.label !== "Give")
               .map((item) => (
@@ -240,11 +242,12 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="hidden xl:inline-flex rounded-full border p-2 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
+                className="hidden 2xl:inline-flex rounded-full border p-2 text-foreground/70 hover:text-[#E13495] hover:border-[#E13495] transition"
               >
                 <Icon className="h-4 w-4" />
               </a>
             ))}
+            <ThemeToggle />
             <Link
               to="/give"
               className="rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95 transition"
@@ -253,13 +256,17 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <button
-            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-foreground"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          <div className="flex lg:hidden items-center gap-1">
+            <ThemeToggle />
+            <button
+              className="inline-flex items-center justify-center rounded-md p-2 text-foreground"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+
         </div>
 
         {/* Mobile menu */}
@@ -339,7 +346,7 @@ function NavDesktopItem({ item }: { item: NavItem }) {
     return (
       <NavLink
         item={item}
-        className="rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+        className="rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
       />
     );
   }
@@ -350,10 +357,10 @@ function NavDesktopItem({ item }: { item: NavItem }) {
         <NavLink
           item={item}
           showArrow
-          className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
+          className="flex items-center gap-1 rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap"
         />
       ) : (
-        <button className="flex items-center gap-1 rounded-md px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
+        <button className="flex items-center gap-1 rounded-md px-2 xl:px-2.5 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition whitespace-nowrap">
           {item.label}
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
