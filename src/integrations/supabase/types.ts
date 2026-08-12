@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_notifications: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          notification_type: string
+          recipient_email: string
+          recipient_kind: string
+          status_at_send:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
+          success: boolean
+          triggered_by: string | null
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          notification_type: string
+          recipient_email: string
+          recipient_kind: string
+          status_at_send?:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
+          success?: boolean
+          triggered_by?: string | null
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          notification_type?: string
+          recipient_email?: string
+          recipient_kind?: string
+          status_at_send?:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
+          success?: boolean
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointment_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointment_requests: {
         Row: {
           admin_notes: string | null
@@ -27,10 +80,20 @@ export type Database = {
           notes: string | null
           pastor_id: string
           pastor_name: string | null
+          pastor_notified_at: string | null
           phone: string | null
+          proposed_date: string | null
+          proposed_time: string | null
           reason: string | null
+          reschedule_message: string | null
           status: Database["public"]["Enums"]["appointment_status"]
+          status_changed_at: string | null
+          status_changed_by: string | null
           updated_at: string
+          visitor_notified_at: string | null
+          visitor_notified_status:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
         }
         Insert: {
           admin_notes?: string | null
@@ -44,10 +107,20 @@ export type Database = {
           notes?: string | null
           pastor_id: string
           pastor_name?: string | null
+          pastor_notified_at?: string | null
           phone?: string | null
+          proposed_date?: string | null
+          proposed_time?: string | null
           reason?: string | null
+          reschedule_message?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           updated_at?: string
+          visitor_notified_at?: string | null
+          visitor_notified_status?:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
         }
         Update: {
           admin_notes?: string | null
@@ -61,10 +134,20 @@ export type Database = {
           notes?: string | null
           pastor_id?: string
           pastor_name?: string | null
+          pastor_notified_at?: string | null
           phone?: string | null
+          proposed_date?: string | null
+          proposed_time?: string | null
           reason?: string | null
+          reschedule_message?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           updated_at?: string
+          visitor_notified_at?: string | null
+          visitor_notified_status?:
+            | Database["public"]["Enums"]["appointment_status"]
+            | null
         }
         Relationships: [
           {
@@ -1142,6 +1225,8 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "archived"
+        | "approved"
+        | "reschedule_requested"
       review_status: "pending" | "approved" | "rejected" | "archived"
       submission_status: "new" | "in_progress" | "resolved" | "archived"
     }
@@ -1279,6 +1364,8 @@ export const Constants = {
         "completed",
         "cancelled",
         "archived",
+        "approved",
+        "reschedule_requested",
       ],
       review_status: ["pending", "approved", "rejected", "archived"],
       submission_status: ["new", "in_progress", "resolved", "archived"],
