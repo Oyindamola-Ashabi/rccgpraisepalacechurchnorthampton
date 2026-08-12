@@ -1,3 +1,4 @@
+import { useSiteSettings } from "@/lib/cms";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
 import { Calendar, MapPin, Shield, Users, Flame, Mail, Phone } from "lucide-react";
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/ministries/mens-fellowship")({
 });
 
 function MensFellowshipPage() {
+  const settings = useSiteSettings();
   return (
     <>
       <PageHero
@@ -98,9 +100,11 @@ function MensFellowshipPage() {
             <a href="mailto:rccgpraisepalace01@gmail.com" className="flex items-center gap-3 hover:text-[#E13495]">
               <Mail className="h-5 w-5 text-[#E13495]" /> rccgpraisepalace01@gmail.com
             </a>
-            <a href="tel:+447000000000" className="flex items-center gap-3 hover:text-[#E13495]">
-              <Phone className="h-5 w-5 text-[#E13495]" /> +44 7000 000 000
-            </a>
+            {settings.phone && (
+              <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="flex items-center gap-3 hover:text-[#E13495]">
+                <Phone className="h-5 w-5 text-[#E13495]" /> {settings.phone}
+              </a>
+            )}
           </div>
         </Section>
       </section>
