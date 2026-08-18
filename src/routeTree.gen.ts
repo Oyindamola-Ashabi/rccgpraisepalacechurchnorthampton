@@ -17,6 +17,7 @@ import { Route as PrayerRequestRouteImport } from './routes/prayer-request'
 import { Route as PodcastsRouteImport } from './routes/podcasts'
 import { Route as PlanAVisitRouteImport } from './routes/plan-a-visit'
 import { Route as MediaRouteImport } from './routes/media'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as GiveRouteImport } from './routes/give'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -32,6 +33,7 @@ import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SermonsSlugRouteImport } from './routes/sermons.$slug'
 import { Route as PodcastsSlugRouteImport } from './routes/podcasts.$slug'
+import { Route as PagesGivingRouteImport } from './routes/pages.giving'
 import { Route as MinistriesWomensFellowshipRouteImport } from './routes/ministries.womens-fellowship'
 import { Route as MinistriesOutreachRouteImport } from './routes/ministries.outreach'
 import { Route as MinistriesMensFellowshipRouteImport } from './routes/ministries.mens-fellowship'
@@ -60,6 +62,7 @@ import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin.appointments'
+import { Route as GalleryNggallerySundayServicesRouteImport } from './routes/gallery.nggallery.sunday-services'
 
 const TestimoniesRoute = TestimoniesRouteImport.update({
   id: '/testimonies',
@@ -99,6 +102,11 @@ const PlanAVisitRoute = PlanAVisitRouteImport.update({
 const MediaRoute = MediaRouteImport.update({
   id: '/media',
   path: '/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GiveRoute = GiveRouteImport.update({
@@ -175,6 +183,11 @@ const PodcastsSlugRoute = PodcastsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => PodcastsRoute,
+} as any)
+const PagesGivingRoute = PagesGivingRouteImport.update({
+  id: '/pages/giving',
+  path: '/pages/giving',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MinistriesWomensFellowshipRoute =
   MinistriesWomensFellowshipRouteImport.update({
@@ -319,6 +332,12 @@ const AdminAppointmentsRoute = AdminAppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => AdminRoute,
 } as any)
+const GalleryNggallerySundayServicesRoute =
+  GalleryNggallerySundayServicesRouteImport.update({
+    id: '/gallery/nggallery/sunday-services',
+    path: '/gallery/nggallery/sunday-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -328,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
+  '/home': typeof HomeRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
   '/podcasts': typeof PodcastsRouteWithChildren
@@ -364,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/pages/giving': typeof PagesGivingRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -372,6 +393,7 @@ export interface FileRoutesByFullPath {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
+  '/gallery/nggallery/sunday-services': typeof GalleryNggallerySundayServicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -379,6 +401,7 @@ export interface FileRoutesByTo {
   '/book-appointment': typeof BookAppointmentRoute
   '/contact': typeof ContactRoute
   '/give': typeof GiveRoute
+  '/home': typeof HomeRoute
   '/plan-a-visit': typeof PlanAVisitRoute
   '/prayer-request': typeof PrayerRequestRoute
   '/share-testimony': typeof ShareTestimonyRoute
@@ -412,6 +435,7 @@ export interface FileRoutesByTo {
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/pages/giving': typeof PagesGivingRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -420,6 +444,7 @@ export interface FileRoutesByTo {
   '/ministries': typeof MinistriesIndexRoute
   '/podcasts': typeof PodcastsIndexRoute
   '/sermons': typeof SermonsIndexRoute
+  '/gallery/nggallery/sunday-services': typeof GalleryNggallerySundayServicesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -430,6 +455,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/events': typeof EventsRouteWithChildren
   '/give': typeof GiveRoute
+  '/home': typeof HomeRoute
   '/media': typeof MediaRouteWithChildren
   '/plan-a-visit': typeof PlanAVisitRoute
   '/podcasts': typeof PodcastsRouteWithChildren
@@ -466,6 +492,7 @@ export interface FileRoutesById {
   '/ministries/mens-fellowship': typeof MinistriesMensFellowshipRoute
   '/ministries/outreach': typeof MinistriesOutreachRoute
   '/ministries/womens-fellowship': typeof MinistriesWomensFellowshipRoute
+  '/pages/giving': typeof PagesGivingRoute
   '/podcasts/$slug': typeof PodcastsSlugRoute
   '/sermons/$slug': typeof SermonsSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -474,6 +501,7 @@ export interface FileRoutesById {
   '/ministries/': typeof MinistriesIndexRoute
   '/podcasts/': typeof PodcastsIndexRoute
   '/sermons/': typeof SermonsIndexRoute
+  '/gallery/nggallery/sunday-services': typeof GalleryNggallerySundayServicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -485,6 +513,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/events'
     | '/give'
+    | '/home'
     | '/media'
     | '/plan-a-visit'
     | '/podcasts'
@@ -521,6 +550,7 @@ export interface FileRouteTypes {
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
+    | '/pages/giving'
     | '/podcasts/$slug'
     | '/sermons/$slug'
     | '/admin/'
@@ -529,6 +559,7 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
+    | '/gallery/nggallery/sunday-services'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -536,6 +567,7 @@ export interface FileRouteTypes {
     | '/book-appointment'
     | '/contact'
     | '/give'
+    | '/home'
     | '/plan-a-visit'
     | '/prayer-request'
     | '/share-testimony'
@@ -569,6 +601,7 @@ export interface FileRouteTypes {
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
+    | '/pages/giving'
     | '/podcasts/$slug'
     | '/sermons/$slug'
     | '/admin'
@@ -577,6 +610,7 @@ export interface FileRouteTypes {
     | '/ministries'
     | '/podcasts'
     | '/sermons'
+    | '/gallery/nggallery/sunday-services'
   id:
     | '__root__'
     | '/'
@@ -586,6 +620,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/events'
     | '/give'
+    | '/home'
     | '/media'
     | '/plan-a-visit'
     | '/podcasts'
@@ -622,6 +657,7 @@ export interface FileRouteTypes {
     | '/ministries/mens-fellowship'
     | '/ministries/outreach'
     | '/ministries/womens-fellowship'
+    | '/pages/giving'
     | '/podcasts/$slug'
     | '/sermons/$slug'
     | '/admin/'
@@ -630,6 +666,7 @@ export interface FileRouteTypes {
     | '/ministries/'
     | '/podcasts/'
     | '/sermons/'
+    | '/gallery/nggallery/sunday-services'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -640,6 +677,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EventsRoute: typeof EventsRouteWithChildren
   GiveRoute: typeof GiveRoute
+  HomeRoute: typeof HomeRoute
   MediaRoute: typeof MediaRouteWithChildren
   PlanAVisitRoute: typeof PlanAVisitRoute
   PodcastsRoute: typeof PodcastsRouteWithChildren
@@ -653,7 +691,9 @@ export interface RootRouteChildren {
   MinistriesMensFellowshipRoute: typeof MinistriesMensFellowshipRoute
   MinistriesOutreachRoute: typeof MinistriesOutreachRoute
   MinistriesWomensFellowshipRoute: typeof MinistriesWomensFellowshipRoute
+  PagesGivingRoute: typeof PagesGivingRoute
   MinistriesIndexRoute: typeof MinistriesIndexRoute
+  GalleryNggallerySundayServicesRoute: typeof GalleryNggallerySundayServicesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -712,6 +752,13 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/media'
       preLoaderRoute: typeof MediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/give': {
@@ -818,6 +865,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/podcasts/$slug'
       preLoaderRoute: typeof PodcastsSlugRouteImport
       parentRoute: typeof PodcastsRoute
+    }
+    '/pages/giving': {
+      id: '/pages/giving'
+      path: '/pages/giving'
+      fullPath: '/pages/giving'
+      preLoaderRoute: typeof PagesGivingRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/ministries/womens-fellowship': {
       id: '/ministries/womens-fellowship'
@@ -1015,6 +1069,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAppointmentsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/gallery/nggallery/sunday-services': {
+      id: '/gallery/nggallery/sunday-services'
+      path: '/gallery/nggallery/sunday-services'
+      fullPath: '/gallery/nggallery/sunday-services'
+      preLoaderRoute: typeof GalleryNggallerySundayServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1130,6 +1191,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EventsRoute: EventsRouteWithChildren,
   GiveRoute: GiveRoute,
+  HomeRoute: HomeRoute,
   MediaRoute: MediaRouteWithChildren,
   PlanAVisitRoute: PlanAVisitRoute,
   PodcastsRoute: PodcastsRouteWithChildren,
@@ -1143,7 +1205,9 @@ const rootRouteChildren: RootRouteChildren = {
   MinistriesMensFellowshipRoute: MinistriesMensFellowshipRoute,
   MinistriesOutreachRoute: MinistriesOutreachRoute,
   MinistriesWomensFellowshipRoute: MinistriesWomensFellowshipRoute,
+  PagesGivingRoute: PagesGivingRoute,
   MinistriesIndexRoute: MinistriesIndexRoute,
+  GalleryNggallerySundayServicesRoute: GalleryNggallerySundayServicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
