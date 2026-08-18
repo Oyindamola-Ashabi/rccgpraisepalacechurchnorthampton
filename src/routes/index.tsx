@@ -40,13 +40,17 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "RCCG Praise Palace Northampton — It Shall End In Praise" },
-      { name: "description", content: "RCCG Praise Palace Northampton — a Redeemed Christian Church of God parish. Join us for Sunday worship, bible study, ministries and community." },
-      { property: "og:title", content: "RCCG Praise Palace Northampton — It Shall End In Praise" },
-      { property: "og:description", content: "A vibrant RCCG family in Northampton. Worship, grow and serve with us." },
-      { property: "og:url", content: "/" },
+      { title: "Church in Northampton | RCCG Praise Palace Northampton" },
+      { name: "description", content: "Looking for a church in Northampton? RCCG Praise Palace is a welcoming Christian church in Northampton where people and families can worship, grow in faith and connect with a vibrant church community." },
+      { property: "og:title", content: "Church in Northampton | RCCG Praise Palace Northampton" },
+      { property: "og:description", content: "Looking for a church in Northampton? RCCG Praise Palace is a welcoming Christian church in Northampton where people and families can worship, grow in faith and connect with a vibrant church community." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://praisepalace.org.uk/" },
+      { name: "twitter:title", content: "Church in Northampton | RCCG Praise Palace Northampton" },
+      { name: "twitter:description", content: "Looking for a church in Northampton? RCCG Praise Palace is a welcoming Christian church in Northampton where people and families can worship, grow in faith and connect with a vibrant church community." },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://praisepalace.org.uk/" }],
+
     scripts: [
       {
         type: "application/ld+json",
