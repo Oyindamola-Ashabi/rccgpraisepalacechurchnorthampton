@@ -48,6 +48,14 @@ function merge<T extends Record<string, any>>(fallback: T, row: Partial<T> | nul
   return out as T;
 }
 
+/** Merge a site_settings row over the fallback (phone stays optional). */
+export function mergeSettings(row: Partial<SiteSettings> | null | undefined): SiteSettings {
+  const merged = merge(SETTINGS_FALLBACK, row);
+  const phone = (row as any)?.phone;
+  merged.phone = typeof phone === "string" && phone.trim() ? phone : null;
+  return merged;
+}
+
 export function useSiteSettings(): SiteSettings {
   const [settings, setSettings] = useState<SiteSettings>(SETTINGS_FALLBACK);
 

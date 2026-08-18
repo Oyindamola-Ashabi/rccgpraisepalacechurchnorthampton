@@ -24,6 +24,9 @@ function cardIcon(key: string | null | undefined) {
   return (key && CARD_ICONS[key]) || Sparkles;
 }
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
+import { supabase } from "@/integrations/supabase/client";
+import { SETTINGS_FALLBACK, mergeSettings } from "@/lib/cms";
+import { buildChurchSchema } from "@/lib/church-schema";
 
 export const Route = createFileRoute("/")({
   /** Site Settings drive the homepage structured data, so it renders in the SSR HTML. */
