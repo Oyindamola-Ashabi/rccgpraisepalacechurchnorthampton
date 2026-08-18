@@ -38,9 +38,7 @@ export function buildChurchSchema(settings: SiteSettings = SETTINGS_FALLBACK) {
   // Telephone is optional in Site Settings: omit entirely when blank.
   if (settings.phone?.trim()) schema.telephone = settings.phone.trim();
   if (settings.map_url?.trim()) schema.hasMap = settings.map_url.trim();
-  if (settings.service_times?.trim()) schema.slogan = undefined;
   if (sameAs.length) schema.sameAs = sameAs;
 
-  delete schema.slogan;
   return schema;
 }
