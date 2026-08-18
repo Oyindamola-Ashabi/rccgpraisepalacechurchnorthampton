@@ -1,13 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "";
+const BASE_URL = "https://praisepalace.org.uk";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const paths = ["/", "/about", "/events", "/events/couples", "/ministries/mens-fellowship", "/ministries/womens-fellowship", "/book-appointment", "/media", "/events/albums", "/media/podcast", "/sermons", "/contact", "/plan-a-visit", "/prayer-request", "/share-testimony", "/give"];
+        const paths = [
+          "/",
+          "/about",
+          "/events",
+          "/events/couples-retreat",
+          "/events/albums",
+          "/ministries",
+          "/ministries/mens-fellowship",
+          "/ministries/womens-fellowship",
+          "/ministries/community-outreach",
+          "/ministries/outreach",
+          "/media",
+          "/media/podcast",
+          "/podcasts",
+          "/sermons",
+          "/testimonies",
+          "/book-appointment",
+          "/contact",
+          "/plan-a-visit",
+          "/prayer-request",
+          "/share-testimony",
+          "/give",
+        ];
         const urls = paths.map((p) => `  <url><loc>${BASE_URL}${p}</loc><changefreq>weekly</changefreq></url>`).join("\n");
         const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
         return new Response(xml, { headers: { "Content-Type": "application/xml", "Cache-Control": "public, max-age=3600" } });
