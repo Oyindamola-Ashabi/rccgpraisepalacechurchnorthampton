@@ -24,9 +24,21 @@ function cardIcon(key: string | null | undefined) {
   return (key && CARD_ICONS[key]) || Sparkles;
 }
 import { Highlight, HighlightGold, Paragraphs } from "@/components/rich-text";
+import { supabase } from "@/integrations/supabase/client";
+import { SETTINGS_FALLBACK, mergeSettings } from "@/lib/cms";
+import { buildChurchSchema } from "@/lib/church-schema";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
+  /** Site Settings drive the homepage structured data, so it renders in the SSR HTML. */
+  loader: async () => {
+    try {
+      const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+      return { settings: mergeSettings(data as any) };
+    } catch {
+      return { settings: SETTINGS_FALLBACK };
+    }
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "RCCG Praise Palace Northampton — It Shall End In Praise" },
       { name: "description", content: "RCCG Praise Palace Northampton — a Redeemed Christian Church of God parish. Join us for Sunday worship, bible study, ministries and community." },
@@ -35,6 +47,12 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(buildChurchSchema(loaderData?.settings ?? SETTINGS_FALLBACK)),
+      },
+    ],
   }),
   component: HomePage,
 });
