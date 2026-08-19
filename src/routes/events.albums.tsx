@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
 import { AlbumGrid } from "@/components/album-flipbook";
 import { useAllAlbums, useAlbumCategories, albumCategoryKey, categoryKey, type GalleryAlbumRow } from "@/lib/cms";
@@ -111,7 +111,7 @@ function AlbumsPage() {
         <SectionHeader
           eyebrow="Browse"
           title="Choose an album"
-          subtitle="Pick a category, then a year, and open an album to page through the photographs and watch the videos inside."
+          subtitle="Pick a category and open an album to page through the photographs and watch the videos inside."
         />
 
         {categories.length > 1 && (
