@@ -24,7 +24,15 @@ export type InboxConfig = {
   extraControls?: (row: any, refresh: () => void) => React.ReactNode;
   panel?: (row: any, refresh: () => void) => React.ReactNode;
   searchFields: string[];
-
+  /** Optional PostgREST select (e.g. to join a related table). Defaults to "*". */
+  select?: string;
+  /** Extra searchable strings derived from a row (e.g. joined values). */
+  searchValues?: (row: any) => (string | null | undefined)[];
+  /** Optional secondary dropdown filter (e.g. filter by event). */
+  secondaryFilter?: {
+    label: string;
+    valueOf: (row: any) => string | null | undefined;
+  };
 };
 
 export function AdminInbox({ config }: { config: InboxConfig }) {
@@ -35,13 +43,14 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [secondary, setSecondary] = useState("all");
   const [openId, setOpenId] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
     const { data, error } = await supabase
       .from(config.table as any)
-      .select("*")
+      .select(config.select ?? "*")
       .order("created_at", { ascending: false });
     if (error) setError(error.message);
     else {
@@ -56,14 +65,29 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.table]);
 
+  const secondaryOptions = useMemo(() => {
+    if (!config.secondaryFilter) return [] as string[];
+    const set = new Set<string>();
+    rows.forEach((r) => {
+      const v = config.secondaryFilter!.valueOf(r);
+      if (v) set.add(v);
+    });
+    return Array.from(set).sort();
+  }, [rows, config]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((r) => {
       if (statusFilter !== "all" && r[config.statusField] !== statusFilter) return false;
+      if (config.secondaryFilter && secondary !== "all" && config.secondaryFilter.valueOf(r) !== secondary) return false;
       if (!q) return true;
-      return config.searchFields.some((f) => String(r[f] ?? "").toLowerCase().includes(q));
+      const extra = config.searchValues?.(r) ?? [];
+      return (
+        config.searchFields.some((f) => String(r[f] ?? "").toLowerCase().includes(q)) ||
+        extra.some((v) => String(v ?? "").toLowerCase().includes(q))
+      );
     });
-  }, [rows, query, statusFilter, config]);
+  }, [rows, query, statusFilter, secondary, config]);
 
   const unread = rows.filter((r) => !r.is_read).length;
 
@@ -104,6 +128,18 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
             className="w-full rounded-xl border bg-background py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]"
           />
         </div>
+        {config.secondaryFilter && secondaryOptions.length > 0 && (
+          <select
+            value={secondary}
+            onChange={(e) => setSecondary(e.target.value)}
+            className="rounded-xl border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]"
+          >
+            <option value="all">All {config.secondaryFilter.label}</option>
+            {secondaryOptions.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        )}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}

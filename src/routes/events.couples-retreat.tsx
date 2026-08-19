@@ -152,12 +152,6 @@ function CouplesRetreatPage() {
         </div>
       </section>
 
-      {/* Buttons sit directly below the hero so the banner image stays clean. */}
-      <div className="border-b bg-card/60">
-        <div className="mx-auto flex max-w-5xl justify-center px-6 py-6">
-          <RetreatButtons />
-        </div>
-      </div>
 
       {/* ---------------- INTRODUCTION ---------------- */}
       {visible("intro") && (
@@ -175,6 +169,10 @@ function CouplesRetreatPage() {
               </h2>
               <div className="mt-5">
                 <Paragraphs text={text("intro", "body", "")} />
+              </div>
+              {/* Buttons live after this section's editable content. */}
+              <div className="mt-8">
+                <RetreatButtons />
               </div>
             </div>
           </div>
@@ -291,7 +289,7 @@ function CouplesRetreatPage() {
                 Details of the next Couples Retreat will be announced soon.
               </p>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {retreats.map((r) => (
                   <RetreatCard key={r.id} retreat={r} highlighted={featured?.id === r.id} />
                 ))}
