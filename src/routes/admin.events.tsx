@@ -22,7 +22,7 @@ function AdminEventsPage() {
   const [rows, setRows] = useState<ChurchEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [draft, setDraft] = useState({ title: "", start_at: "" });
+  const [draft, setDraft] = useState({ title: "", start_at: "", event_type: "general", registration_open: false });
   const [creating, setCreating] = useState(false);
 
   async function load() {
@@ -42,11 +42,13 @@ function AdminEventsPage() {
     const { error } = await supabase.from("events").insert({
       title: draft.title.trim(),
       start_at: new Date(draft.start_at).toISOString(),
+      event_type: draft.event_type,
+      registration_open: draft.event_type === COUPLES_RETREAT_TYPE ? draft.registration_open : false,
       sort_order: rows.length,
     } as any);
     setCreating(false);
     if (error) { setError("Could not add event: " + error.message); return; }
-    setError(null); setDraft({ title: "", start_at: "" }); load();
+    setError(null); setDraft({ title: "", start_at: "", event_type: "general", registration_open: false }); load();
   }
 
   return (
