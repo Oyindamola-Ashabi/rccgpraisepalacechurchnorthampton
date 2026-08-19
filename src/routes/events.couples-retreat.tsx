@@ -1,29 +1,54 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { PageHero, Section, SectionHeader, BrandButton } from "@/components/section-ui";
-import { Calendar, MapPin, Mail, Phone, Loader2, CheckCircle2, Heart, Users, Sparkles, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Section, SectionHeader } from "@/components/section-ui";
+import {
+  Calendar,
+  MapPin,
+  Mail,
+  Phone,
+  Loader2,
+  CheckCircle2,
+  Clock,
+  Quote,
+  ArrowRight,
+  Images,
+  HeartHandshake,
+} from "lucide-react";
 
 import { eventPhotos } from "@/lib/gallery-images";
 import { supabase } from "@/integrations/supabase/client";
 import {
   usePageContent,
-  useCouplesRetreatAlbums,
+  useSectionItems,
+  useCouplesRetreatEvents,
   useSiteSettings,
   formatEventDate,
   formatEventTime,
+  eventKey,
+  slugify,
   type ChurchEventRow,
 } from "@/lib/cms";
 
 const couplesImg = eventPhotos.couples.url;
 const dinnerImg = eventPhotos.familyMeals.url;
 
+/** Where "View Previous Couples Retreats" always goes — the one church gallery. */
+const ALBUMS_TO = "/events/albums" as const;
+const ALBUMS_SEARCH = { category: "couples-retreat" } as any;
+
 export const Route = createFileRoute("/events/couples-retreat")({
+  validateSearch: (search: Record<string, unknown>): { event?: string } =>
+    typeof search.event === "string" ? { event: search.event } : {},
   head: () => ({
     meta: [
       { title: "Couples Retreat — RCCG Praise Palace Northampton" },
-      { name: "description", content: "The Couples Retreat at RCCG Praise Palace Northampton — teaching, fellowship and rest for married couples. Register your place." },
+      {
+        name: "description",
+        content:
+          "The Couples Retreat at RCCG Praise Palace Northampton — biblical teaching, fellowship and time away for married couples. Register your interest.",
+      },
       { property: "og:title", content: "Couples Retreat — RCCG Praise Palace Northampton" },
-      { property: "og:description", content: "Love, legacy and laughter — a retreat for married couples." },
+      { property: "og:description", content: "Stronger together — growing in love, faith and partnership." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,159 +57,420 @@ export const Route = createFileRoute("/events/couples-retreat")({
   component: CouplesRetreatPage,
 });
 
-function useRetreatEvent() {
-  const [event, setEvent] = useState<ChurchEventRow | null>(null);
-  useEffect(() => {
-    let active = true;
-    supabase
-      .from("events")
-      .select("*")
-      .eq("slug", "couples-retreat")
-      .maybeSingle()
-      .then(({ data }) => {
-        if (active && data) setEvent(data as any);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-  return event;
+/** Splits the CMS Scripture field ("quote | reference") into its two parts. */
+function splitScripture(value: string): { quote: string; reference: string } {
+  const [quote, reference] = value.split("|");
+  return { quote: (quote ?? "").trim(), reference: (reference ?? "").trim() };
+}
+
+function Paragraphs({ text, className = "" }: { text: string; className?: string }) {
+  return (
+    <>
+      {text
+        .split(/\n{2,}/)
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p, i) => (
+          <p key={i} className={`leading-relaxed text-muted-foreground ${i > 0 ? "mt-4" : ""} ${className}`}>
+            {p}
+          </p>
+        ))}
+    </>
+  );
+}
+
+function scrollToRegister() {
+  document.getElementById("register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function RetreatButtons({ variant = "light" }: { variant?: "light" | "dark" }) {
+  const secondary =
+    variant === "dark"
+      ? "border-2 border-white/70 text-white hover:bg-white hover:text-[#E13495]"
+      : "border-2 border-border bg-card text-foreground hover:border-[#E13495] hover:text-[#E13495]";
+  return (
+    <div className="flex flex-wrap gap-3">
+      <button
+        type="button"
+        onClick={scrollToRegister}
+        className="inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95"
+      >
+        <HeartHandshake className="h-4 w-4" /> Register Your Interest
+      </button>
+      <Link
+        to={ALBUMS_TO}
+        search={ALBUMS_SEARCH}
+        className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${secondary}`}
+      >
+        <Images className="h-4 w-4" /> View Previous Couples Retreats
+      </Link>
+    </div>
+  );
 }
 
 function CouplesRetreatPage() {
-  const { text, image } = usePageContent("couples-retreat");
+  const { event: eventParam } = Route.useSearch();
+  const { text, image, visible } = usePageContent("couples-retreat");
   const settings = useSiteSettings();
-  const event = useRetreatEvent();
-  const { rows: albums } = useCouplesRetreatAlbums();
+  const { rows: retreats } = useCouplesRetreatEvents();
+  const { rows: expectItems } = useSectionItems("couples-retreat", "expect");
+  const { rows: annualItems } = useSectionItems("couples-retreat", "annual");
 
-  // A date is only shown once an administrator publishes the real event details.
-  const hasDate = Boolean(event?.is_published && event?.start_at);
+  // The retreat highlighted at the top of the "Upcoming" block: the one the
+  // visitor arrived from, otherwise the next one on the calendar.
+  const featured = useMemo(() => {
+    if (eventParam) {
+      const match = retreats.find((r) => eventKey(r) === eventParam || r.id === eventParam);
+      if (match) return match;
+    }
+    return retreats.find((r) => r.registration_open) ?? retreats[0] ?? null;
+  }, [retreats, eventParam]);
+
+  const scripture = splitScripture(text("christ_centred", "subheading", ""));
 
   return (
     <>
-      <PageHero
-        eyebrow={text("hero", "subheading", "Couples Retreat")}
-        title={<>Love. <span className="text-[#F0DE51]">Legacy.</span> Christ.</>}
-        subtitle={text("hero", "body", "A refreshing retreat for married couples — teaching, fellowship, rest and laughter.")}
-        image={image("hero", couplesImg)}
-      />
-
-      <Section>
-        <div className="grid gap-12 lg:grid-cols-2 items-center">
-          <img
-            src={image("details", dinnerImg)}
-            alt="Couples at the retreat"
-            className="rounded-3xl shadow-elegant object-cover w-full aspect-[4/3]"
-            loading="lazy"
-          />
-          <div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold">
-              {text("intro", "headline", "A weekend set apart for your marriage")}
-            </h2>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              {text(
-                "intro",
-                "body",
-                "Step away from the rush and invest in your marriage. Expect honest teaching, prayer, shared meals and space to breathe together — all rooted in God's design for covenant love.",
-              )}
-            </p>
-
-            <div className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center gap-3">
-                <Calendar className="h-4 w-4 text-[#E13495]" />
-                {hasDate ? (
-                  <span>
-                    {formatEventDate(event!.start_at)} · {formatEventTime(event!.start_at)}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">Next retreat date to be announced</span>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-[#E13495]" />
-                <span>{event?.venue || settings.address || "Venue to be announced"}</span>
-              </div>
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a
-                href="#register"
-                className="rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95"
-              >
-                Register your place
-              </a>
-              <BrandButton to="/contact" variant="outline">Ask a question</BrandButton>
-            </div>
+      {/* ---------------- HERO ---------------- */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 gradient-brand opacity-90" />
+        <img
+          src={image("hero", couplesImg)}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
+        <div className="relative mx-auto max-w-4xl px-6 py-24 text-center text-white md:py-32">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.25em] backdrop-blur">
+            {text("hero", "subheading", "Couples Retreat")}
+          </div>
+          <h1 className="font-display text-3xl font-black leading-tight md:text-5xl">
+            {text("hero", "headline", "Stronger Together. Growing in Love, Faith & Partnership.")}
+          </h1>
+          <div className="mx-auto mt-6 max-w-2xl text-left text-white/90 [&_p]:text-white/90">
+            <Paragraphs text={text("hero", "body", "")} className="!text-white/90" />
+          </div>
+          <div className="mt-8 flex justify-center">
+            <RetreatButtons variant="dark" />
           </div>
         </div>
-      </Section>
-
-      <section className="bg-secondary/40 border-y">
-        <Section className="!py-16">
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              { Icon: Heart, title: "Honest teaching", body: "Practical, scriptural sessions on communication, intimacy and purpose." },
-              { Icon: Users, title: "Real fellowship", body: "Time with other couples walking the same road — encouragement that lasts." },
-              { Icon: Sparkles, title: "Rest and joy", body: "Good food, laughter and unhurried time together away from the routine." },
-            ].map(({ Icon, title, body }) => (
-              <div key={title} className="rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
-                <Icon className="h-6 w-6 text-[#E13495]" />
-                <h3 className="mt-3 font-display text-lg font-bold">{title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{body}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
       </section>
 
-      <Section id="register">
-        <SectionHeader
-          eyebrow={text("register", "subheading", "Registration")}
-          title={text("register", "headline", "Reserve your place")}
-          subtitle={text("register", "body", "Tell us who's coming and we'll be in touch with the full details.")}
-        />
-        <RegistrationForm eventId={event?.id ?? null} />
-      </Section>
+      {/* ---------------- INTRODUCTION ---------------- */}
+      {visible("intro") && (
+        <Section>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <img
+              src={image("intro", image("details", dinnerImg))}
+              alt="Couples together at the retreat"
+              className="aspect-[4/3] w-full rounded-3xl object-cover shadow-elegant"
+              loading="lazy"
+            />
+            <div>
+              <h2 className="font-display text-2xl font-bold md:text-4xl">
+                {text("intro", "headline", "Every marriage needs intentional investment.")}
+              </h2>
+              <div className="mt-5">
+                <Paragraphs text={text("intro", "body", "")} />
+              </div>
+            </div>
+          </div>
+        </Section>
+      )}
 
-      {albums.length > 0 && (
-        <section className="bg-secondary/40 border-y">
-          <Section className="!py-14">
-            <div className="text-center">
-              <h2 className="font-display text-2xl font-bold">Photographs from previous retreats</h2>
-              <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-                All retreat albums now live with the rest of our church albums.
+      {/* ---------------- WHAT TO EXPECT ---------------- */}
+      {visible("expect") && (
+        <section className="border-y bg-secondary/40">
+          <Section>
+            <SectionHeader
+              eyebrow="The Retreat"
+              title={text("expect", "headline", "What to Expect")}
+              subtitle={text("expect", "body", "")}
+            />
+            {expectItems.length > 0 && (
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {expectItems.map((item) => (
+                  <li key={item.id} className="flex gap-3 rounded-2xl bg-card p-4 shadow-card ring-1 ring-black/5">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#E13495]" />
+                    <div>
+                      <p className="text-sm font-semibold">{item.title}</p>
+                      {item.body && <p className="mt-1 text-xs text-muted-foreground">{item.body}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {text("expect", "cta_label", "").trim() && (
+              <p className="mx-auto mt-10 max-w-3xl text-center text-muted-foreground">
+                {text("expect", "cta_label", "")}
               </p>
-              <Link
-                to="/events/albums"
-                className="mt-5 inline-flex items-center gap-1 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant"
-              >
-                View church albums <ArrowRight className="h-4 w-4" />
-              </Link>
+            )}
+          </Section>
+        </section>
+      )}
+
+      {/* ---------------- TIME AWAY ---------------- */}
+      {visible("time_away") && (
+        <Section>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div className="order-2 lg:order-1">
+              <h2 className="font-display text-2xl font-bold md:text-3xl">
+                {text("time_away", "headline", "Time Away for the Two of You")}
+              </h2>
+              <div className="mt-5">
+                <Paragraphs text={text("time_away", "body", "")} />
+              </div>
+            </div>
+            <img
+              src={image("time_away", couplesImg)}
+              alt="Time away together"
+              className="order-1 aspect-[4/3] w-full rounded-3xl object-cover shadow-elegant lg:order-2"
+              loading="lazy"
+            />
+          </div>
+        </Section>
+      )}
+
+      {/* ---------------- CHRIST-CENTRED ---------------- */}
+      {visible("christ_centred") && (
+        <section className="border-y bg-secondary/30">
+          <Section className="!py-16">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="font-display text-2xl font-bold md:text-3xl">
+                {text("christ_centred", "headline", "A Christ-Centred Experience")}
+              </h2>
+              {scripture.quote && (
+                <figure className="mt-8 rounded-3xl bg-card p-8 shadow-card ring-1 ring-black/5">
+                  <Quote className="mx-auto h-7 w-7 text-[#E13495]" />
+                  <blockquote className="mt-4 font-display text-lg leading-relaxed md:text-xl">
+                    {scripture.quote}
+                  </blockquote>
+                  {scripture.reference && (
+                    <figcaption className="mt-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#E13495]">
+                      {scripture.reference}
+                    </figcaption>
+                  )}
+                </figure>
+              )}
+              <div className="mt-8 text-left sm:text-center">
+                <Paragraphs text={text("christ_centred", "body", "")} />
+              </div>
             </div>
           </Section>
         </section>
       )}
 
-
-      <Section className="!py-14">
-        <div className="rounded-3xl gradient-brand p-8 text-white md:p-12">
-          <h2 className="font-display text-2xl font-bold md:text-3xl">{text("contact", "headline", "Questions about the retreat?")}</h2>
-          <p className="mt-2 text-white/90">{text("contact", "body", "Our team is glad to help you plan your weekend.")}</p>
-          <div className="mt-5 flex flex-wrap gap-4 text-sm">
-            {settings.email && (
-              <a href={`mailto:${settings.email}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
-                <Mail className="h-4 w-4" /> {settings.email}
-              </a>
-            )}
-            {settings.phone && (
-              <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
-                <Phone className="h-4 w-4" /> {settings.phone}
-              </a>
-            )}
+      {/* ---------------- WHO SHOULD ATTEND ---------------- */}
+      {visible("who") && (
+        <Section className="!py-16">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="font-display text-2xl font-bold md:text-3xl">
+              {text("who", "headline", "Who Should Attend?")}
+            </h2>
+            <div className="mt-5">
+              <Paragraphs text={text("who", "body", "")} />
+            </div>
           </div>
-        </div>
+        </Section>
+      )}
+
+      {/* ---------------- UPCOMING RETREAT ---------------- */}
+      {visible("upcoming") && (
+        <section className="border-y bg-secondary/40" id="upcoming">
+          <Section>
+            <SectionHeader
+              eyebrow="Upcoming Couples Retreat"
+              title={text("upcoming", "headline", "Your Marriage Is Worth Investing In")}
+              subtitle={text("upcoming", "body", "")}
+            />
+            {retreats.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground">
+                Details of the next Couples Retreat will be announced soon.
+              </p>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {retreats.map((r) => (
+                  <RetreatCard key={r.id} retreat={r} highlighted={featured?.id === r.id} />
+                ))}
+              </div>
+            )}
+          </Section>
+        </section>
+      )}
+
+      {/* ---------------- WHY ATTEND ---------------- */}
+      {visible("why") && (
+        <Section className="!py-16">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="font-display text-2xl font-bold md:text-3xl">{text("why", "headline", "Why Attend?")}</h2>
+            <div className="mt-5 text-left sm:text-center">
+              <Paragraphs text={text("why", "body", "")} />
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {/* ---------------- ANNUAL RETREATS ---------------- */}
+      {visible("annual") && annualItems.length > 0 && (
+        <section className="border-y bg-secondary/30">
+          <Section>
+            <SectionHeader eyebrow="Twice Every Year" title={text("annual", "headline", "Our Annual Retreats")} />
+            <div className="grid gap-6 md:grid-cols-2">
+              {annualItems.map((item) => (
+                <div key={item.id} className="rounded-3xl bg-card p-7 shadow-card ring-1 ring-black/5">
+                  {item.image_url && (
+                    <img src={item.image_url} alt="" className="mb-5 aspect-[16/9] w-full rounded-2xl object-cover" loading="lazy" />
+                  )}
+                  <h3 className="font-display text-xl font-bold">{item.title}</h3>
+                  {item.body && <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>}
+                </div>
+              ))}
+            </div>
+            {text("annual", "body", "").trim() && (
+              <p className="mx-auto mt-8 max-w-3xl text-center text-muted-foreground">{text("annual", "body", "")}</p>
+            )}
+          </Section>
+        </section>
+      )}
+
+      {/* ---------------- REGISTRATION ---------------- */}
+      <Section id="register">
+        <SectionHeader
+          eyebrow={text("register", "subheading", "Registration")}
+          title={text("register", "headline", "Register Your Interest")}
+          subtitle={text("register", "body", "")}
+        />
+        <RegistrationForm retreats={retreats} preselected={featured} />
       </Section>
+
+      {/* ---------------- COME AND GROW TOGETHER ---------------- */}
+      {visible("closing") && (
+        <section className="border-y bg-secondary/40">
+          <Section className="!py-16">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="font-display text-2xl font-bold md:text-3xl">
+                {text("closing", "headline", "Come and Grow Together")}
+              </h2>
+              <div className="mt-5 text-left sm:text-center">
+                <Paragraphs text={text("closing", "body", "")} />
+              </div>
+              {text("closing", "subheading", "").trim() && (
+                <p className="mt-8 inline-block rounded-full bg-[#F0DE51] px-6 py-3 font-display text-base font-bold text-[#3a2b00]">
+                  {text("closing", "subheading", "")}
+                </p>
+              )}
+              <div className="mt-8 flex justify-center">
+                <RetreatButtons />
+              </div>
+            </div>
+          </Section>
+        </section>
+      )}
+
+      {/* ---------------- ALBUMS LINK ---------------- */}
+      {visible("albums") && (
+        <Section className="!py-14">
+          <div className="rounded-3xl bg-card p-8 text-center shadow-card ring-1 ring-black/5">
+            <h2 className="font-display text-xl font-bold">
+              {text("albums", "headline", "Photographs from previous retreats")}
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
+              {text("albums", "body", "Every retreat album lives with the rest of our church albums.")}
+            </p>
+            <Link
+              to={ALBUMS_TO}
+        search={ALBUMS_SEARCH}
+              className="mt-5 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant"
+            >
+              View Previous Couples Retreats <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </Section>
+      )}
+
+      {/* ---------------- CONTACT ---------------- */}
+      {visible("contact") && (
+        <Section className="!py-14">
+          <div className="rounded-3xl gradient-brand p-8 text-white md:p-12">
+            <h2 className="font-display text-2xl font-bold md:text-3xl">
+              {text("contact", "headline", "Questions about the retreat?")}
+            </h2>
+            <p className="mt-2 text-white/90">{text("contact", "body", "Our team is glad to help you plan your time away.")}</p>
+            <div className="mt-5 flex flex-wrap gap-4 text-sm">
+              {settings.email && (
+                <a href={`mailto:${settings.email}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
+                  <Mail className="h-4 w-4" /> {settings.email}
+                </a>
+              )}
+              {settings.phone && (
+                <a href={`tel:${settings.phone.replace(/\s+/g, "")}`} className="inline-flex max-w-full items-center gap-2 break-all rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">
+                  <Phone className="h-4 w-4" /> {settings.phone}
+                </a>
+              )}
+            </div>
+          </div>
+        </Section>
+      )}
     </>
+  );
+}
+
+/** One upcoming Couples Retreat, using only details entered in Admin → Events. */
+function RetreatCard({ retreat, highlighted }: { retreat: ChurchEventRow; highlighted: boolean }) {
+  const open = Boolean(retreat.registration_open);
+  return (
+    <article
+      className={`overflow-hidden rounded-3xl bg-card shadow-card ring-1 transition ${
+        highlighted ? "ring-2 ring-[#E13495]" : "ring-black/5"
+      }`}
+    >
+      {retreat.image_url && (
+        <img src={retreat.image_url} alt={retreat.title} className="aspect-[16/9] w-full object-cover" loading="lazy" />
+      )}
+      <div className="p-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-display text-xl font-bold">{retreat.title}</h3>
+          {retreat.badge_label?.trim() && (
+            <span className="rounded-full gradient-brand px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+              {retreat.badge_label}
+            </span>
+          )}
+        </div>
+        {retreat.description && <p className="mt-3 text-sm text-muted-foreground">{retreat.description}</p>}
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-[#E13495]" /> {formatEventDate(retreat.start_at)}
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-[#E13495]" /> {formatEventTime(retreat.start_at)}
+          </div>
+          {retreat.venue && (
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-[#E13495]" /> {retreat.venue}
+            </div>
+          )}
+        </div>
+        <div className="mt-5">
+          {open ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
+                Registration of interest is open
+              </p>
+              <button
+                type="button"
+                onClick={scrollToRegister}
+                className="mt-3 inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant hover:opacity-95"
+              >
+                <HeartHandshake className="h-4 w-4" /> Register Your Interest
+              </button>
+            </>
+          ) : (
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Registration for this retreat has not opened yet
+            </p>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -202,12 +488,32 @@ const EMPTY_FORM = {
 
 const DRAFT_KEY = "couples-retreat-registration";
 
-function RegistrationForm({ eventId }: { eventId: string | null }) {
+function RegistrationForm({
+  retreats,
+  preselected,
+}: {
+  retreats: ChurchEventRow[];
+  preselected: ChurchEventRow | null;
+}) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [eventId, setEventId] = useState<string>("");
+
+  // Couples may register for any retreat whose interest list is open; when none
+  // are open they can still express interest in an announced retreat.
+  const choices = useMemo(() => {
+    const open = retreats.filter((r) => r.registration_open);
+    return open.length ? open : retreats;
+  }, [retreats]);
+
+  useEffect(() => {
+    if (eventId && choices.some((c) => c.id === eventId)) return;
+    const wanted = preselected && choices.some((c) => c.id === preselected.id) ? preselected.id : choices[0]?.id ?? "";
+    setEventId(wanted);
+  }, [choices, preselected, eventId]);
 
   // Keep a local draft so a half-finished application is not lost on refresh.
   useEffect(() => {
@@ -243,14 +549,14 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setError("Please enter a valid email address.");
     if (!Number.isFinite(attendees) || attendees < 1 || attendees > 50) return setError("Please enter between 1 and 50 attendees.");
     if (form.message.length > 1000) return setError("Please keep your message under 1000 characters.");
-    if (!consent) return setError("Please confirm you are happy for us to contact you about the retreat.");
+    if (!consent) return setError("Please tick the consent box so we may contact you.");
+
+    const chosen = choices.find((c) => c.id === eventId) ?? null;
 
     setBusy(true);
-    // NOTE: `status`, `is_read` and `admin_notes` are deliberately NOT sent —
-    // visitors have no column permission on them and the database fills them in.
-    const { error: err } = await supabase.from("event_registrations").insert({
-      event_id: eventId,
-      event_slug: "couples-retreat",
+    const { error: insertError } = await supabase.from("event_registrations").insert({
+      event_id: chosen?.id ?? null,
+      event_slug: chosen ? eventKey(chosen) || slugify(chosen.title) : "couples-retreat",
       full_name: name,
       spouse_name: form.spouse_name.trim() || null,
       email,
@@ -261,38 +567,51 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
       accessibility_requirements: form.accessibility_requirements.trim() || null,
       message: form.message.trim() || null,
       consent_given: true,
-    });
+    } as any);
     setBusy(false);
 
-    if (err) {
-      if (import.meta.env.DEV) console.error("[couples-retreat registration]", err);
-      setError("Sorry, we could not save your registration. Please try again or email us.");
+    if (insertError) {
+      setError("Sorry, we could not submit your registration. Please try again or contact the church office.");
       return;
     }
 
-    setDone(true);
     setForm(EMPTY_FORM);
     setConsent(false);
     try {
       window.localStorage.removeItem(DRAFT_KEY);
     } catch {
-      /* ignore */
+      /* storage may be unavailable */
     }
+    setDone(true);
   }
 
-  const input = "mt-1 w-full rounded-xl border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]";
+  const input = "mt-1 w-full rounded-xl border bg-background px-4 py-2.5 text-sm";
   const labelText = "text-xs font-semibold uppercase tracking-widest text-muted-foreground";
 
   return (
     <>
-      <form onSubmit={submit} className="mx-auto max-w-2xl rounded-3xl bg-card p-6 shadow-card ring-1 ring-black/5 md:p-8">
+      <form onSubmit={submit} className="mx-auto max-w-3xl rounded-3xl bg-card p-6 shadow-card ring-1 ring-black/5 md:p-8">
+        {choices.length > 0 && (
+          <label className="mb-5 block">
+            <span className={labelText}>Which Couples Retreat are you interested in?</span>
+            <select value={eventId} onChange={(e) => setEventId(e.target.value)} className={input}>
+              {choices.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title} — {formatEventDate(c.start_at)}
+                  {c.registration_open ? "" : " (interest list not yet open)"}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelText}>Full name</span>
+            <span className={labelText}>Your full name</span>
             <input required maxLength={100} value={form.full_name} onChange={set("full_name")} className={input} />
           </label>
           <label className="block">
-            <span className={labelText}>Spouse's name</span>
+            <span className={labelText}>Spouse's name (optional)</span>
             <input maxLength={100} value={form.spouse_name} onChange={set("spouse_name")} className={input} />
           </label>
           <label className="block">
@@ -352,7 +671,7 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
           className="mt-6 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant hover:opacity-95 disabled:opacity-60"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          {busy ? "Submitting…" : "Submit application"}
+          {busy ? "Submitting…" : "Register Your Interest"}
         </button>
       </form>
 
@@ -362,7 +681,7 @@ function RegistrationForm({ eventId }: { eventId: string | null }) {
             <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500" />
             <h3 className="mt-4 font-display text-xl font-bold">Thank you!</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Your registration has been received. We'll be in touch with the retreat details shortly.
+              Your interest has been received. We'll be in touch with the retreat details shortly.
             </p>
             <button
               onClick={() => setDone(false)}

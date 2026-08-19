@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      album_categories: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appointment_notifications: {
         Row: {
           appointment_id: string
@@ -332,10 +362,12 @@ export type Database = {
           description: string | null
           detail_page: string | null
           end_at: string | null
+          event_type: string
           id: string
           image_url: string | null
           is_featured: boolean
           is_published: boolean
+          registration_open: boolean
           registration_url: string | null
           show_on_homepage: boolean
           slug: string | null
@@ -351,10 +383,12 @@ export type Database = {
           description?: string | null
           detail_page?: string | null
           end_at?: string | null
+          event_type?: string
           id?: string
           image_url?: string | null
           is_featured?: boolean
           is_published?: boolean
+          registration_open?: boolean
           registration_url?: string | null
           show_on_homepage?: boolean
           slug?: string | null
@@ -370,10 +404,12 @@ export type Database = {
           description?: string | null
           detail_page?: string | null
           end_at?: string | null
+          event_type?: string
           id?: string
           image_url?: string | null
           is_featured?: boolean
           is_published?: boolean
+          registration_open?: boolean
           registration_url?: string | null
           show_on_homepage?: boolean
           slug?: string | null

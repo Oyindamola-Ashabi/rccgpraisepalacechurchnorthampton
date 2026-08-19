@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle, useMediaLibrary } from "@/components/admin/cms-ui";
-import { BADGE_SUGGESTIONS, safeFlipHtml5Url, type GalleryAlbum, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
+import { BADGE_SUGGESTIONS, categoryKey, safeFlipHtml5Url, useAlbumCategories, type AlbumCategory, type GalleryAlbum, type GalleryAlbumRow, type GalleryImage } from "@/lib/cms";
 import { uploadAlbumImage, uploadAlbumVideo } from "@/lib/media";
 import { FlipHtml5Viewer } from "@/components/album-flipbook";
 
@@ -50,8 +50,10 @@ function AdminGalleryPage() {
 
   return (
     <div>
-      <AdminHeading title="Albums" description="Group photographs and videos into albums. Published albums appear on the public Events → Albums page." />
+      <AdminHeading title="Albums" description="Group photographs and videos into albums. Published albums appear on the public Events → Albums page, arranged by category and year." />
       <Alert error={error} />
+
+      <CategoryManager editable={editable} onError={setError} />
 
       {loading ? (
         <div className="mt-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#E13495]" /></div>
@@ -76,6 +78,71 @@ function AdminGalleryPage() {
         </form>
       )}
     </div>
+  );
+}
+
+/** Album categories — the groupings visitors use to browse the albums page. */
+function CategoryManager({ editable, onError }: { editable: boolean; onError: (m: string | null) => void }) {
+  const { rows, reload } = useAlbumCategories(true) as { rows: AlbumCategory[]; reload: () => void };
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function add(e: React.FormEvent) {
+    e.preventDefault();
+    const value = name.trim();
+    if (busy || !value) return;
+    setBusy(true);
+    const { error } = await supabase.from("album_categories" as any).insert({
+      name: value,
+      slug: categoryKey(value) || `category-${Date.now()}`,
+      sort_order: rows.length,
+    } as any);
+    setBusy(false);
+    if (error) onError("Could not add the category: " + error.message);
+    else { onError(null); setName(""); reload(); }
+  }
+
+  async function update(id: string, patch: Record<string, unknown>) {
+    const { error } = await supabase.from("album_categories" as any).update(patch as any).eq("id", id);
+    if (error) onError(error.message); else { onError(null); reload(); }
+  }
+
+  return (
+    <section className="mt-6 rounded-2xl bg-card p-6 shadow-card ring-1 ring-black/5">
+      <h2 className="font-display text-lg font-bold">Album categories</h2>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Visitors choose a category first, then a year. Every album should be given one of these categories.
+      </p>
+      <ul className="mt-4 space-y-2">
+        {rows.length === 0 && <li className="text-sm text-muted-foreground">No categories yet.</li>}
+        {rows.map((c) => (
+          <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border px-4 py-2">
+            <span className="font-semibold text-sm">{c.name}</span>
+            <span className="text-[11px] text-muted-foreground">{c.slug}</span>
+            {editable && (
+              <div className="ml-auto flex items-center gap-3">
+                <Toggle label="Shown" checked={c.is_active} onChange={(v) => update(c.id, { is_active: v })} />
+                <DeleteButton
+                  confirmText={`Remove the category “${c.name}”? Albums keep their wording.`}
+                  onConfirm={async () => {
+                    const { error } = await supabase.from("album_categories" as any).delete().eq("id", c.id);
+                    if (error) onError(error.message); else reload();
+                  }}
+                />
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {editable && (
+        <form onSubmit={add} className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="min-w-[220px] flex-1"><Field label="New category name" value={name} onChange={setName} /></div>
+          <button type="submit" disabled={busy} className="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold hover:bg-secondary/60 disabled:opacity-60">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Add category
+          </button>
+        </form>
+      )}
+    </section>
   );
 }
 
@@ -190,7 +257,7 @@ function AlbumCard({
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Display order" type="number" value={String(form.sort_order)} onChange={(v) => set("sort_order", Number(v) || 0)} disabled={!editable} />
-        <Field label="Category (e.g. Couples Retreat, Main Gallery)" value={(form as any).category ?? ""} onChange={(v) => set("category" as any, v as any)} disabled={!editable} />
+        <CategorySelect value={(form as any).category ?? ""} onChange={(v) => set("category" as any, v as any)} disabled={!editable} />
         <Field
           label="Album badge"
           value={(form as any).badge_label ?? ""}
@@ -369,5 +436,29 @@ function AlbumImageRow({
         )}
       </div>
     </li>
+  );
+}
+
+/** Choose which category an album belongs to, from the categories set up above. */
+function CategorySelect({ value, onChange, disabled }: { value: string; onChange: (v: string) => void; disabled?: boolean }) {
+  const { rows } = useAlbumCategories(true) as { rows: AlbumCategory[] };
+  const known = rows.some((c) => categoryKey(c.name) === categoryKey(value) || c.slug === categoryKey(value));
+  return (
+    <label className="block">
+      <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Category</span>
+      <select
+        value={known ? value : value ? "__current" : ""}
+        onChange={(e) => onChange(e.target.value === "__current" ? value : e.target.value)}
+        disabled={disabled}
+        className="mt-1 w-full rounded-xl border bg-background px-4 py-2.5 text-sm"
+      >
+        <option value="">No category</option>
+        {rows.map((c) => (
+          <option key={c.id} value={c.name}>{c.name}</option>
+        ))}
+        {value && !known && <option value="__current">{value} (current wording)</option>}
+      </select>
+      <span className="mt-1 block text-[11px] text-muted-foreground">Manage the list of categories at the top of this page.</span>
+    </label>
   );
 }

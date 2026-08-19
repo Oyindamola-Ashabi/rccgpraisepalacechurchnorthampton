@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, type SectionItem } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, isCouplesRetreatEvent, type SectionItem } from "@/lib/cms";
 
 /** Card icons an administrator can choose per item. */
 const CARD_ICONS: Record<string, any> = {
@@ -120,7 +120,9 @@ function HomePage() {
     .filter((e) => e.is_published && e.show_on_homepage && eventEndsAt(e) >= Date.now())
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
     .map((e) => {
-      const link = (e as any).detail_page ?? e.registration_url ?? null;
+      // Couples Retreats always send visitors to the Couples Retreat page.
+      const retreat = isCouplesRetreatEvent(e as any);
+      const link = retreat ? "/events/couples-retreat" : ((e as any).detail_page ?? e.registration_url ?? null);
       const internal = !!link && link.startsWith("/");
       return {
         key: e.id,

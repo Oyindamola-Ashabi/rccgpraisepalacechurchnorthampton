@@ -12,5 +12,5 @@ export const Route = createFileRoute("/events/couples")({
     ],
     links: [{ rel: "canonical", href: "/events/couples-retreat" }],
   }),
-  component: () => <Navigate to="/events/couples-retreat" replace />,
+  component: () => <Navigate to="/events/couples-retreat" search={{}} replace />,
 });

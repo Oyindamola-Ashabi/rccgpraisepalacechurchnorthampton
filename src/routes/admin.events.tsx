@@ -4,7 +4,7 @@ import { Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { canManage, isStaff, useAdminSession } from "@/lib/admin-auth";
 import { AdminHeading, Alert, DeleteButton, Field, ImageField, SaveButton, TextArea, Toggle } from "@/components/admin/cms-ui";
-import type { ChurchEvent } from "@/lib/cms";
+import { EVENT_TYPES, COUPLES_RETREAT_TYPE, type ChurchEvent } from "@/lib/cms";
 
 export const Route = createFileRoute("/admin/events")({ ssr: false, component: AdminEventsPage });
 
@@ -104,6 +104,8 @@ function EventCard({
       image_url: form.image_url,
       registration_url: form.registration_url,
       badge_label: (form.badge_label ?? "").trim() || null,
+      event_type: (form as any).event_type || "general",
+      registration_open: !!(form as any).registration_open,
       show_on_homepage: form.show_on_homepage,
       is_featured: form.is_featured,
       is_published: form.is_published,
@@ -125,6 +127,14 @@ function EventCard({
         <div className="flex flex-wrap items-center gap-3">
           <Toggle label="Published" checked={form.is_published} onChange={(v) => set("is_published", v)} disabled={!editable} />
           <Toggle label="Show on Homepage" checked={!!form.show_on_homepage} onChange={(v) => set("show_on_homepage", v)} disabled={!editable} />
+          {(form as any).event_type === COUPLES_RETREAT_TYPE && (
+            <Toggle
+              label="Registration of interest open"
+              checked={!!(form as any).registration_open}
+              onChange={(v) => set("registration_open" as any, v as any)}
+              disabled={!editable}
+            />
+          )}
           {canDelete && (
             <DeleteButton
               confirmText={`Delete the event “${event.title}”?`}
@@ -138,6 +148,22 @@ function EventCard({
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Type of event</span>
+          <select
+            value={(form as any).event_type ?? "general"}
+            onChange={(e) => set("event_type" as any, e.target.value as any)}
+            disabled={!editable}
+            className="mt-1 w-full rounded-xl border bg-background px-4 py-2.5 text-sm"
+          >
+            {EVENT_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+          <span className="mt-1 block text-[11px] text-muted-foreground">
+            Couples Retreats appear on the Couples Retreat page and take registrations there.
+          </span>
+        </label>
         <Field label="Title" value={form.title} onChange={(v) => set("title", v)} disabled={!editable} />
         <Field label="Venue" value={form.venue ?? ""} onChange={(v) => set("venue", v)} disabled={!editable} />
         <Field label="Starts" type="datetime-local" value={form.start_at} onChange={(v) => set("start_at", v)} disabled={!editable} />

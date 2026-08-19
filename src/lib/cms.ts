@@ -227,13 +227,46 @@ export const SECTION_LIBRARY: Record<string, SectionSpec[]> = {
     },
   ],
   "couples-retreat": [
-    { key: "hero", label: "1. Page Header", hint: "The main heading, introductory text and background image at the very top of the page.", template: "hero" },
-    { key: "intro", label: "2. Retreat Information", hint: "The section heading and description that explain the retreat.", template: "rich_text" },
-    { key: "details", label: "3. Event Details picture", hint: "The photograph beside the retreat information. The date, time and venue come from Admin → Events (Couples Retreat).", template: "image_and_text" },
-    { key: "register", label: "4. Registration Section", hint: "The heading, introduction and help text shown above the registration form. Submitted registrations appear in Admin → Event Registrations.", template: "form_section" },
-    { key: "contact", label: "5. Contact / Help", hint: "The help banner at the bottom of the page for couples with questions.", template: "cta" },
-    { key: "albums", label: "6. Albums Link", hint: "The wording of the section that points visitors to the church albums at /events/albums.", template: "album_list" },
+    { key: "hero", label: "1. Page Header", hint: "The main heading, introductory text and background image at the very top of the page. The two buttons are always “Register Your Interest” and “View Previous Couples Retreats”.", template: "hero" },
+    { key: "intro", label: "2. Introduction", hint: "The heading and paragraph that open the page, plus the supporting picture.", template: "image_and_text" },
+    {
+      key: "expect",
+      label: "3. What to Expect",
+      hint: "The heading and introduction, plus the list of areas explored at the retreat. Add, edit, reorder or hide list items as you wish.",
+      template: "card_grid",
+      itemsLabel: "Manage the list",
+      itemNoun: "list item",
+      sectionFields: { headline: "Section heading", body: "Introduction text", cta_label: "Closing sentence (optional)" },
+      itemFields: { title: "List item", body: "Short description (optional)" },
+    },
+    { key: "time_away", label: "4. Time Away for the Two of You", hint: "The heading, paragraph and supporting picture of the “Time Away” block.", template: "image_and_text" },
+    {
+      key: "christ_centred",
+      label: "5. A Christ-Centred Experience",
+      hint: "The heading, paragraph and the Scripture displayed prominently. Put the Scripture and its reference in the Scripture field, separated by a vertical bar, e.g. “…text…| Ecclesiastes 4:12”.",
+      template: "rich_text",
+      sectionFields: { headline: "Section heading", body: "Paragraphs", subheading: "Scripture | Reference" },
+    },
+    { key: "who", label: "6. Who Should Attend?", hint: "The heading and paragraphs describing who the retreat is for.", template: "rich_text" },
+    { key: "upcoming", label: "7. Upcoming Retreat wording", hint: "The supporting heading and introduction above the next Couples Retreat. The retreat title, date, time, venue, picture and registration status all come from Admin → Events.", template: "event_list" },
+    { key: "why", label: "8. Why Attend?", hint: "The heading and paragraphs of the “Why Attend?” block.", template: "rich_text" },
+    {
+      key: "annual",
+      label: "9. Our Annual Retreats",
+      hint: "The cards describing the retreats held each year. Add, edit, reorder or remove them freely.",
+      template: "card_grid",
+      itemsLabel: "Manage retreat cards",
+      itemNoun: "retreat card",
+      sectionFields: { headline: "Section heading", body: "Closing sentence" },
+      itemFields: { title: "Retreat name", body: "Description" },
+    },
+    { key: "closing", label: "10. Come and Grow Together", hint: "The closing invitation, its highlighted line and the final call to action.", template: "cta", sectionFields: { headline: "Heading", subheading: "Highlighted line", body: "Closing words" } },
+    { key: "register", label: "11. Registration Section", hint: "The heading, introduction and help text shown above the registration form. Submitted registrations appear in Admin → Event Registrations.", template: "form_section" },
+    { key: "contact", label: "12. Contact / Help", hint: "The help banner at the bottom of the page for couples with questions.", template: "cta" },
+    { key: "details", label: "Supporting picture (Introduction)", hint: "An additional photograph used beside the retreat information.", template: "image_and_text" },
+    { key: "albums", label: "Albums Link wording", hint: "The wording of the section that points visitors to the Couples Retreat albums.", template: "album_list" },
   ],
+
 };
 
 /** Plain-English names for common section keys used across the remaining pages. */
@@ -404,7 +437,25 @@ export type ChurchEvent = {
   sort_order: number;
   badge_label?: string | null;
   show_on_homepage?: boolean;
+  /** "general" for ordinary events, "couples-retreat" for a Couples Retreat. */
+  event_type?: string | null;
+  /** True when couples may register their interest in this event. */
+  registration_open?: boolean | null;
 };
+
+/** The event types an administrator may choose in Admin → Events. */
+export const EVENT_TYPES = [
+  { value: "general", label: "General event" },
+  { value: "couples-retreat", label: "Couples Retreat" },
+] as const;
+
+export const COUPLES_RETREAT_TYPE = "couples-retreat";
+
+/** True when an event record is one of the Couples Retreats. */
+export function isCouplesRetreatEvent(ev: Partial<ChurchEvent> & { slug?: string | null }): boolean {
+  return (ev.event_type ?? "general") === COUPLES_RETREAT_TYPE || ev.slug === COUPLES_RETREAT_TYPE;
+}
+
 
 /** An event is "upcoming" until its end date (or start date) has passed. */
 export function eventEndsAt(ev: { start_at: string; end_at?: string | null }): number {
@@ -897,10 +948,29 @@ export function usePastEvents(limit = 24) {
 
 /** Where an event card should link: its own page, then a registration link, else nowhere. */
 export function eventLink(ev: Partial<ChurchEventRow>): { to: string | null; external: boolean } {
+  if (isCouplesRetreatEvent(ev)) return { to: `/events/couples-retreat?event=${eventKey(ev)}`, external: false };
   if (ev.detail_page) return { to: ev.detail_page, external: false };
   if (ev.registration_url) return { to: ev.registration_url, external: true };
   return { to: null, external: false };
 }
+
+/** A readable reference for one event — its slug when set, otherwise its id. */
+export function eventKey(ev: Partial<ChurchEventRow>): string {
+  return (ev.slug ?? "").trim() || (ev.id ?? "");
+}
+
+/** Published Couples Retreats that have not yet finished, soonest first. */
+export function useCouplesRetreatEvents() {
+  const { rows, loading } = useCmsList<ChurchEventRow>(() =>
+    supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .order("start_at", { ascending: true }),
+  );
+  return { rows: rows.filter((e) => isCouplesRetreatEvent(e) && isUpcomingEvent(e)), loading };
+}
+
 
 /* =====================================================================
  * Podcast playback (uploaded / external platform / YouTube)
@@ -992,19 +1062,62 @@ export function isFlipAlbum(a: Partial<GalleryAlbumRow>): boolean {
 }
 
 
+/* --------------------------------------------------------------------
+ * Album categories
+ *
+ * gallery_albums.category keeps whatever wording was typed originally
+ * ("Couples Retreat", "couples retreat", "gallery" …). Nothing in the
+ * database was rewritten. Matching is done on a simplified form of the
+ * wording, so albums created before categories existed keep working.
+ * ------------------------------------------------------------------ */
+
+export type AlbumCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export const COUPLES_CATEGORY_SLUG = "couples-retreat";
+
+/** The simplified form of a category name, used for matching only. */
+export function categoryKey(value: string | null | undefined): string {
+  return (value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** The category an album belongs to, in simplified form ("" when it has none). */
+export function albumCategoryKey(a: Partial<GalleryAlbumRow>): string {
+  if (a.event_slug === COUPLES_CATEGORY_SLUG) return COUPLES_CATEGORY_SLUG;
+  return categoryKey(a.category);
+}
+
+/** Album categories managed in Admin → Albums. */
+export function useAlbumCategories(includeHidden = false) {
+  return useCmsList<AlbumCategory>(() => {
+    let q = supabase.from("album_categories" as any).select("*");
+    if (!includeHidden) q = q.eq("is_active", true);
+    return q.order("sort_order").order("name");
+  }, [includeHidden]);
+}
+
 /** Short label shown at the top-left of an album cover — blank means no label. */
 export function albumBadge(album: Partial<GalleryAlbumRow>): string | null {
   const value = (album.badge_label ?? "").trim();
   if (value) return value;
   const category = (album.category ?? "").trim();
-  if (!category || category.toLowerCase() === "couples-retreat") return null;
+  if (!category || categoryKey(category) === COUPLES_CATEGORY_SLUG) return null;
   return category;
 }
 
 /** True when an album belongs to the Couples Retreat series. */
 export function isCouplesAlbum(a: Partial<GalleryAlbumRow>): boolean {
-  return a.event_slug === "couples-retreat" || (a.category ?? "").toLowerCase() === "couples-retreat";
+  return albumCategoryKey(a) === COUPLES_CATEGORY_SLUG;
 }
+
 
 export function usePublishedAlbums(eventSlug?: string) {
   return useCmsList<GalleryAlbumRow>(() => {
