@@ -149,11 +149,15 @@ function CouplesRetreatPage() {
           <div className="mx-auto mt-6 max-w-2xl text-left text-white/90 [&_p]:text-white/90">
             <Paragraphs text={text("hero", "body", "")} className="!text-white/90" />
           </div>
-          <div className="mt-8 flex justify-center">
-            <RetreatButtons variant="dark" />
-          </div>
         </div>
       </section>
+
+      {/* Buttons sit directly below the hero so the banner image stays clean. */}
+      <div className="border-b bg-card/60">
+        <div className="mx-auto flex max-w-5xl justify-center px-6 py-6">
+          <RetreatButtons />
+        </div>
+      </div>
 
       {/* ---------------- INTRODUCTION ---------------- */}
       {visible("intro") && (
