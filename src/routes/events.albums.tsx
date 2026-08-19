@@ -66,13 +66,7 @@ function AlbumsPage() {
 
   const inCategory = activeCategory === "All" ? albums : albums.filter((a) => matches(a, activeCategory));
 
-  const years = useMemo(() => {
-    const set = new Set<string>();
-    inCategory.forEach((a) => a.album_year && set.add(String(a.album_year)));
-    return [...set].sort((a, b) => Number(b) - Number(a));
-  }, [inCategory]);
-
-  const shown = year === "All" ? inCategory : inCategory.filter((a) => String(a.album_year) === year);
+  const shown = inCategory;
 
   // Within a category the albums are grouped by year, newest year first.
   const grouped = useMemo(() => {
