@@ -65,14 +65,29 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.table]);
 
+  const secondaryOptions = useMemo(() => {
+    if (!config.secondaryFilter) return [] as string[];
+    const set = new Set<string>();
+    rows.forEach((r) => {
+      const v = config.secondaryFilter!.valueOf(r);
+      if (v) set.add(v);
+    });
+    return Array.from(set).sort();
+  }, [rows, config]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((r) => {
       if (statusFilter !== "all" && r[config.statusField] !== statusFilter) return false;
+      if (config.secondaryFilter && secondary !== "all" && config.secondaryFilter.valueOf(r) !== secondary) return false;
       if (!q) return true;
-      return config.searchFields.some((f) => String(r[f] ?? "").toLowerCase().includes(q));
+      const extra = config.searchValues?.(r) ?? [];
+      return (
+        config.searchFields.some((f) => String(r[f] ?? "").toLowerCase().includes(q)) ||
+        extra.some((v) => String(v ?? "").toLowerCase().includes(q))
+      );
     });
-  }, [rows, query, statusFilter, config]);
+  }, [rows, query, statusFilter, secondary, config]);
 
   const unread = rows.filter((r) => !r.is_read).length;
 
