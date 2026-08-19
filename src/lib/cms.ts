@@ -1043,19 +1043,62 @@ export function isFlipAlbum(a: Partial<GalleryAlbumRow>): boolean {
 }
 
 
+/* --------------------------------------------------------------------
+ * Album categories
+ *
+ * gallery_albums.category keeps whatever wording was typed originally
+ * ("Couples Retreat", "couples retreat", "gallery" …). Nothing in the
+ * database was rewritten. Matching is done on a simplified form of the
+ * wording, so albums created before categories existed keep working.
+ * ------------------------------------------------------------------ */
+
+export type AlbumCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export const COUPLES_CATEGORY_SLUG = "couples-retreat";
+
+/** The simplified form of a category name, used for matching only. */
+export function categoryKey(value: string | null | undefined): string {
+  return (value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** The category an album belongs to, in simplified form ("" when it has none). */
+export function albumCategoryKey(a: Partial<GalleryAlbumRow>): string {
+  if (a.event_slug === COUPLES_CATEGORY_SLUG) return COUPLES_CATEGORY_SLUG;
+  return categoryKey(a.category);
+}
+
+/** Album categories managed in Admin → Albums. */
+export function useAlbumCategories(includeHidden = false) {
+  return useCmsList<AlbumCategory>(() => {
+    let q = supabase.from("album_categories" as any).select("*");
+    if (!includeHidden) q = q.eq("is_active", true);
+    return q.order("sort_order").order("name");
+  }, [includeHidden]);
+}
+
 /** Short label shown at the top-left of an album cover — blank means no label. */
 export function albumBadge(album: Partial<GalleryAlbumRow>): string | null {
   const value = (album.badge_label ?? "").trim();
   if (value) return value;
   const category = (album.category ?? "").trim();
-  if (!category || category.toLowerCase() === "couples-retreat") return null;
+  if (!category || categoryKey(category) === COUPLES_CATEGORY_SLUG) return null;
   return category;
 }
 
 /** True when an album belongs to the Couples Retreat series. */
 export function isCouplesAlbum(a: Partial<GalleryAlbumRow>): boolean {
-  return a.event_slug === "couples-retreat" || (a.category ?? "").toLowerCase() === "couples-retreat";
+  return albumCategoryKey(a) === COUPLES_CATEGORY_SLUG;
 }
+
 
 export function usePublishedAlbums(eventSlug?: string) {
   return useCmsList<GalleryAlbumRow>(() => {
