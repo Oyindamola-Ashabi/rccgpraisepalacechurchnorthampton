@@ -133,18 +133,6 @@ function AlbumsPage() {
           </div>
         )}
 
-        {years.length > 1 && (
-          <div className="mb-10 flex flex-wrap justify-center gap-2">
-            <button onClick={() => setYear("All")} className={pill(year === "All")}>
-              All years
-            </button>
-            {years.map((y) => (
-              <button key={y} onClick={() => setYear(y)} className={pill(year === y)}>
-                {y}
-              </button>
-            ))}
-          </div>
-        )}
 
         {loading ? (
           <p className="text-center text-sm text-muted-foreground">Loading albums…</p>
