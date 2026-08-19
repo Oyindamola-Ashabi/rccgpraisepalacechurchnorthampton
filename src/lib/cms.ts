@@ -948,10 +948,29 @@ export function usePastEvents(limit = 24) {
 
 /** Where an event card should link: its own page, then a registration link, else nowhere. */
 export function eventLink(ev: Partial<ChurchEventRow>): { to: string | null; external: boolean } {
+  if (isCouplesRetreatEvent(ev)) return { to: `/events/couples-retreat?event=${eventKey(ev)}`, external: false };
   if (ev.detail_page) return { to: ev.detail_page, external: false };
   if (ev.registration_url) return { to: ev.registration_url, external: true };
   return { to: null, external: false };
 }
+
+/** A readable reference for one event — its slug when set, otherwise its id. */
+export function eventKey(ev: Partial<ChurchEventRow>): string {
+  return (ev.slug ?? "").trim() || (ev.id ?? "");
+}
+
+/** Published Couples Retreats that have not yet finished, soonest first. */
+export function useCouplesRetreatEvents() {
+  const { rows, loading } = useCmsList<ChurchEventRow>(() =>
+    supabase
+      .from("events")
+      .select("*")
+      .eq("is_published", true)
+      .order("start_at", { ascending: true }),
+  );
+  return { rows: rows.filter((e) => isCouplesRetreatEvent(e) && isUpcomingEvent(e)), loading };
+}
+
 
 /* =====================================================================
  * Podcast playback (uploaded / external platform / YouTube)
