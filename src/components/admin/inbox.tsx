@@ -43,13 +43,14 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [secondary, setSecondary] = useState("all");
   const [openId, setOpenId] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
     const { data, error } = await supabase
       .from(config.table as any)
-      .select("*")
+      .select(config.select ?? "*")
       .order("created_at", { ascending: false });
     if (error) setError(error.message);
     else {
