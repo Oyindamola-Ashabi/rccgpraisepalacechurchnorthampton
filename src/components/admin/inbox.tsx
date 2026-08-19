@@ -24,7 +24,15 @@ export type InboxConfig = {
   extraControls?: (row: any, refresh: () => void) => React.ReactNode;
   panel?: (row: any, refresh: () => void) => React.ReactNode;
   searchFields: string[];
-
+  /** Optional PostgREST select (e.g. to join a related table). Defaults to "*". */
+  select?: string;
+  /** Extra searchable strings derived from a row (e.g. joined values). */
+  searchValues?: (row: any) => (string | null | undefined)[];
+  /** Optional secondary dropdown filter (e.g. filter by event). */
+  secondaryFilter?: {
+    label: string;
+    valueOf: (row: any) => string | null | undefined;
+  };
 };
 
 export function AdminInbox({ config }: { config: InboxConfig }) {
