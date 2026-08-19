@@ -152,12 +152,6 @@ function CouplesRetreatPage() {
         </div>
       </section>
 
-      {/* Buttons sit directly below the hero so the banner image stays clean. */}
-      <div className="border-b bg-card/60">
-        <div className="mx-auto flex max-w-5xl justify-center px-6 py-6">
-          <RetreatButtons />
-        </div>
-      </div>
 
       {/* ---------------- INTRODUCTION ---------------- */}
       {visible("intro") && (
