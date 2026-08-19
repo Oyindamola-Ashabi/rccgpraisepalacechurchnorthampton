@@ -34,7 +34,7 @@ function AlbumsPage() {
   const navigate = useNavigate();
   const { rows: albums, loading } = useAllAlbums();
   const { rows: categoryRows } = useAlbumCategories();
-  const [year, setYear] = useState<string>("All");
+
 
   // The category buttons: the categories set up in Admin, plus any wording
   // already used by an album that has not been set up as a category yet.
@@ -83,7 +83,7 @@ function AlbumsPage() {
   }, [shown]);
 
   function chooseCategory(key: string) {
-    setYear("All");
+
     navigate({ to: "/events/albums", search: key === "All" ? {} : { category: key } });
   }
 
