@@ -120,7 +120,9 @@ function HomePage() {
     .filter((e) => e.is_published && e.show_on_homepage && eventEndsAt(e) >= Date.now())
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
     .map((e) => {
-      const link = (e as any).detail_page ?? e.registration_url ?? null;
+      // Couples Retreats always send visitors to the Couples Retreat page.
+      const retreat = isCouplesRetreatEvent(e as any);
+      const link = retreat ? "/events/couples-retreat" : ((e as any).detail_page ?? e.registration_url ?? null);
       const internal = !!link && link.startsWith("/");
       return {
         key: e.id,
