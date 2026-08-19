@@ -33,12 +33,12 @@ const couplesImg = eventPhotos.couples.url;
 const dinnerImg = eventPhotos.familyMeals.url;
 
 /** Where "View Previous Couples Retreats" always goes — the one church gallery. */
-const ALBUMS_LINK = "/events/albums?category=couples-retreat";
+const ALBUMS_TO = "/events/albums" as const;
+const ALBUMS_SEARCH = { category: "couples-retreat" } as any;
 
 export const Route = createFileRoute("/events/couples-retreat")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    event: typeof search.event === "string" ? search.event : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { event?: string } =>
+    typeof search.event === "string" ? { event: search.event } : {},
   head: () => ({
     meta: [
       { title: "Couples Retreat — RCCG Praise Palace Northampton" },
@@ -98,7 +98,8 @@ function RetreatButtons({ variant = "light" }: { variant?: "light" | "dark" }) {
         <HeartHandshake className="h-4 w-4" /> Register Your Interest
       </button>
       <Link
-        to={ALBUMS_LINK}
+        to={ALBUMS_TO}
+        search={ALBUMS_SEARCH}
         className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${secondary}`}
       >
         <Images className="h-4 w-4" /> View Previous Couples Retreats
@@ -376,7 +377,8 @@ function CouplesRetreatPage() {
               {text("albums", "body", "Every retreat album lives with the rest of our church albums.")}
             </p>
             <Link
-              to={ALBUMS_LINK}
+              to={ALBUMS_TO}
+        search={ALBUMS_SEARCH}
               className="mt-5 inline-flex items-center gap-2 rounded-full gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-elegant"
             >
               View Previous Couples Retreats <ArrowRight className="h-4 w-4" />
