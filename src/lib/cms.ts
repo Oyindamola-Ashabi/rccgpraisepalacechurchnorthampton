@@ -437,7 +437,25 @@ export type ChurchEvent = {
   sort_order: number;
   badge_label?: string | null;
   show_on_homepage?: boolean;
+  /** "general" for ordinary events, "couples-retreat" for a Couples Retreat. */
+  event_type?: string | null;
+  /** True when couples may register their interest in this event. */
+  registration_open?: boolean | null;
 };
+
+/** The event types an administrator may choose in Admin → Events. */
+export const EVENT_TYPES = [
+  { value: "general", label: "General event" },
+  { value: "couples-retreat", label: "Couples Retreat" },
+] as const;
+
+export const COUPLES_RETREAT_TYPE = "couples-retreat";
+
+/** True when an event record is one of the Couples Retreats. */
+export function isCouplesRetreatEvent(ev: Partial<ChurchEvent> & { slug?: string | null }): boolean {
+  return (ev.event_type ?? "general") === COUPLES_RETREAT_TYPE || ev.slug === COUPLES_RETREAT_TYPE;
+}
+
 
 /** An event is "upcoming" until its end date (or start date) has passed. */
 export function eventEndsAt(ev: { start_at: string; end_at?: string | null }): number {
