@@ -6,7 +6,7 @@ import heroImg from "@/assets/hero-worship.jpg";
 import pastorAsset from "@/assets/pastor.jpg";
 const pastorsImg = pastorAsset;
 import { eventPhotos, heroSlides } from "@/lib/gallery-images";
-import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, type SectionItem } from "@/lib/cms";
+import { usePageContent, useSiteSettings, useSectionItems, usePublishedEvents, eventEndsAt, formatEventDate, formatEventTime, imageOr, isCouplesRetreatEvent, type SectionItem } from "@/lib/cms";
 
 /** Card icons an administrator can choose per item. */
 const CARD_ICONS: Record<string, any> = {

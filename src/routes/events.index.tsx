@@ -3,7 +3,7 @@ import { PageHero, Section } from "@/components/section-ui";
 import { Calendar, MapPin, Clock, ArrowRight, CalendarPlus } from "lucide-react";
 import heroImg from "@/assets/hero-worship.jpg";
 import { eventPhotos } from "@/lib/gallery-images";
-import { usePublishedEvents, formatEventDate, formatEventTime, eventEndsAt, type ChurchEvent } from "@/lib/cms";
+import { usePublishedEvents, formatEventDate, formatEventTime, eventEndsAt, type ChurchEvent, isCouplesRetreatEvent } from "@/lib/cms";
 import { useState } from "react";
 
 export const Route = createFileRoute("/events/")({
@@ -36,7 +36,7 @@ type EventCardData = {
 };
 
 function toCard(e: ChurchEvent & { detail_page?: string | null }): EventCardData {
-  const link = e.detail_page ?? e.registration_url ?? undefined;
+  const link = isCouplesRetreatEvent(e as any) ? "/events/couples-retreat" : (e.detail_page ?? e.registration_url ?? undefined);
   const internal = !!link && link.startsWith("/");
   return {
     id: e.id,
