@@ -22,7 +22,7 @@ function AdminEventsPage() {
   const [rows, setRows] = useState<ChurchEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [draft, setDraft] = useState({ title: "", start_at: "" });
+  const [draft, setDraft] = useState({ title: "", start_at: "", event_type: "general", registration_open: false });
   const [creating, setCreating] = useState(false);
 
   async function load() {
@@ -42,11 +42,13 @@ function AdminEventsPage() {
     const { error } = await supabase.from("events").insert({
       title: draft.title.trim(),
       start_at: new Date(draft.start_at).toISOString(),
+      event_type: draft.event_type,
+      registration_open: draft.event_type === COUPLES_RETREAT_TYPE ? draft.registration_open : false,
       sort_order: rows.length,
     } as any);
     setCreating(false);
     if (error) { setError("Could not add event: " + error.message); return; }
-    setError(null); setDraft({ title: "", start_at: "" }); load();
+    setError(null); setDraft({ title: "", start_at: "", event_type: "general", registration_open: false }); load();
   }
 
   return (
@@ -69,6 +71,25 @@ function AdminEventsPage() {
           <div className="mt-4 flex flex-wrap items-end gap-3">
             <div className="min-w-[200px] flex-1"><Field label="Event title" value={draft.title} onChange={(v) => setDraft({ ...draft, title: v })} required /></div>
             <div className="min-w-[200px]"><Field label="Starts" type="datetime-local" value={draft.start_at} onChange={(v) => setDraft({ ...draft, start_at: v })} required /></div>
+            <label className="block min-w-[200px]">
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Type of event</span>
+              <select
+                value={draft.event_type}
+                onChange={(e) => setDraft({ ...draft, event_type: e.target.value })}
+                className="mt-1 w-full rounded-xl border bg-background px-4 py-2.5 text-sm"
+              >
+                {EVENT_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </label>
+            {draft.event_type === COUPLES_RETREAT_TYPE && (
+              <Toggle
+                label="Registration of interest open"
+                checked={draft.registration_open}
+                onChange={(v) => setDraft({ ...draft, registration_open: v })}
+              />
+            )}
             <button type="submit" disabled={creating} className="inline-flex items-center gap-2 rounded-full gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-elegant disabled:opacity-60">
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Add event
             </button>

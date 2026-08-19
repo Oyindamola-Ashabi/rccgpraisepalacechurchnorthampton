@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { PageHero, Section, SectionHeader } from "@/components/section-ui";
 import { AlbumGrid } from "@/components/album-flipbook";
 import { useAllAlbums, useAlbumCategories, albumCategoryKey, categoryKey, type GalleryAlbumRow } from "@/lib/cms";
@@ -34,7 +34,7 @@ function AlbumsPage() {
   const navigate = useNavigate();
   const { rows: albums, loading } = useAllAlbums();
   const { rows: categoryRows } = useAlbumCategories();
-  const [year, setYear] = useState<string>("All");
+
 
   // The category buttons: the categories set up in Admin, plus any wording
   // already used by an album that has not been set up as a category yet.
@@ -66,13 +66,7 @@ function AlbumsPage() {
 
   const inCategory = activeCategory === "All" ? albums : albums.filter((a) => matches(a, activeCategory));
 
-  const years = useMemo(() => {
-    const set = new Set<string>();
-    inCategory.forEach((a) => a.album_year && set.add(String(a.album_year)));
-    return [...set].sort((a, b) => Number(b) - Number(a));
-  }, [inCategory]);
-
-  const shown = year === "All" ? inCategory : inCategory.filter((a) => String(a.album_year) === year);
+  const shown = inCategory;
 
   // Within a category the albums are grouped by year, newest year first.
   const grouped = useMemo(() => {
@@ -89,7 +83,7 @@ function AlbumsPage() {
   }, [shown]);
 
   function chooseCategory(key: string) {
-    setYear("All");
+
     navigate({ to: "/events/albums", search: key === "All" ? {} : { category: key } });
   }
 
@@ -117,7 +111,7 @@ function AlbumsPage() {
         <SectionHeader
           eyebrow="Browse"
           title="Choose an album"
-          subtitle="Pick a category, then a year, and open an album to page through the photographs and watch the videos inside."
+          subtitle="Pick a category and open an album to page through the photographs and watch the videos inside."
         />
 
         {categories.length > 1 && (
@@ -133,18 +127,6 @@ function AlbumsPage() {
           </div>
         )}
 
-        {years.length > 1 && (
-          <div className="mb-10 flex flex-wrap justify-center gap-2">
-            <button onClick={() => setYear("All")} className={pill(year === "All")}>
-              All years
-            </button>
-            {years.map((y) => (
-              <button key={y} onClick={() => setYear(y)} className={pill(year === y)}>
-                {y}
-              </button>
-            ))}
-          </div>
-        )}
 
         {loading ? (
           <p className="text-center text-sm text-muted-foreground">Loading albums…</p>
