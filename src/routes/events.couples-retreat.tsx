@@ -170,6 +170,10 @@ function CouplesRetreatPage() {
               <div className="mt-5">
                 <Paragraphs text={text("intro", "body", "")} />
               </div>
+              {/* Buttons live after this section's editable content. */}
+              <div className="mt-8">
+                <RetreatButtons />
+              </div>
             </div>
           </div>
         </Section>
