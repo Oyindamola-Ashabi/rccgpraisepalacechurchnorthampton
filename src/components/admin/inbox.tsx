@@ -128,6 +128,18 @@ export function AdminInbox({ config }: { config: InboxConfig }) {
             className="w-full rounded-xl border bg-background py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]"
           />
         </div>
+        {config.secondaryFilter && secondaryOptions.length > 0 && (
+          <select
+            value={secondary}
+            onChange={(e) => setSecondary(e.target.value)}
+            className="rounded-xl border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E13495]"
+          >
+            <option value="all">All {config.secondaryFilter.label}</option>
+            {secondaryOptions.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        )}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
